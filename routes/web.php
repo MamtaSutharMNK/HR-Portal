@@ -9,7 +9,7 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 
 
     Route::view('/',  'index')->name('index');
- Route::view('/demologin',  'demologin')->name('demologin');
+    Route::view('/demologin',  'demologin')->name('demologin');
     Route::view('/demoregister',  'demoregister')->name('demoregister');
     Route::view('/tables',  'tables')->name('tables');
 
