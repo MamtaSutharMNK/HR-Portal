@@ -21,6 +21,19 @@
     <link href="{{asset('static/css/sb-admin-2.min.css')}}" rel="stylesheet">
 
 </head>
+@guest
+                    @if (Route::has('login'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                        </li>
+                    @endif
+
+                    @if (Route::has('register'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                        </li>
+                    @endif
+                @else
 
 <body id="page-top">
 
@@ -65,11 +78,16 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-body">Are you sure want to logout?</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
-                </div>
+                    <a class="btn btn-primary" href="{{ route('logout') }}" onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">Logout</a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                         @csrf
+                    </form>
+                
+            </div>
             </div>
         </div>
     </div>
@@ -93,4 +111,4 @@
 
 </body>
 
-</html>
+   @endguest
