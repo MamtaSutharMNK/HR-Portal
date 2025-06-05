@@ -10,6 +10,7 @@
     <meta name="author" content="">
 
     <title>{{config('app.name')}}</title>
+    <link rel="shortcut icon" href="{{ asset('static\img\specialty-mga-uk.png')}}" type="image/x-icon">
 
     <!-- Custom fonts for this template-->
     <link href="{{asset('static/vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
@@ -19,6 +20,12 @@
 
     <!-- Custom styles for this template-->
     <link href="{{asset('static/css/sb-admin-2.min.css')}}" rel="stylesheet">
+    <link href="{{asset('static/css/sb-admin-2.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.0/dist/sweetalert2.min.css">
+
+    <style>
+  
+    </style>
 
 </head>
 
@@ -35,7 +42,8 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{{asset('static/js/sb-admin-2.min.js')}}"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.0/dist/sweetalert2.all.min.js"></script>
+    
 </body>
 
 </html>

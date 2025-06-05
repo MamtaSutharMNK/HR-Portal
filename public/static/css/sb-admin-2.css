@@ -11279,3 +11279,19 @@ footer.sticky-footer .copyright {
 body.sidebar-toggled footer.sticky-footer {
   width: 100%;
 }
+
+
+ .bg-register-image {
+      /* Optional background styles if any */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%; /* or set a fixed height if needed */
+      padding: 20px; /* optional padding */
+    }
+    .bg-register-image img {
+      width: 200px; /* smaller size */
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
