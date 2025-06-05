@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -19,9 +18,22 @@
 
     <!-- Custom styles for this template-->
     <link href="{{asset('static/css/sb-admin-2.min.css')}}" rel="stylesheet">
-
+    <link rel="shortcut icon" href="{{ asset('static\img\specialty-mga-uk.png')}}" type="image/x-icon">
 </head>
 
+@guest
+    @if (Route::has('login'))
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+        </li>
+    @endif
+
+    @if (Route::has('register'))
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+        </li>
+    @endif
+@else
 <body id="page-top">
 
     <!-- Page Wrapper -->
@@ -68,7 +80,11 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <a class="btn btn-primary" href="{{ route('logout') }}" onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">Logout</a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                         @csrf
+                    </form>
                 </div>
             </div>
         </div>
@@ -92,5 +108,6 @@
     <script src="{{asset('static/js/demo/chart-pie-demo.js')}}"></script>
 
 </body>
+@endguest
 
 </html>
