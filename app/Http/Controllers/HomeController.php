@@ -26,4 +26,8 @@ class HomeController extends Controller
         return view('index');
     }
 
+     public function fteRequest()
+    {
+        return view('fte_request');
+    }
 }

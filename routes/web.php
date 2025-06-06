@@ -7,6 +7,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 Auth::routes();
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
+Route::get('/fte_request', [App\Http\Controllers\HomeController::class, 'fteRequest'])->name('fte_request');
 
 Route::view('/tables',  'tables')->name('tables');
 
