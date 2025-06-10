@@ -13,8 +13,17 @@
                 <div class="card o-hidden border-0 shadow-lg my-5">
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
-                        <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-password-image"></div>
+                        <div class="row align-items-center">
+                            <div class="col-lg-5 d-none d-lg-block bg-register-image">
+                    <div></div>
+                    <div class="mgalogo">
+                        <img src="{{ asset('static\img\specialty-mga-uk.png')}}" alt="Specialty MGA UK Logo">
+                    </div>
+                    <div class="hrlogo">
+                        <img src="{{ asset('static\img\human-resources.png')}}" alt="hr logo">
+                    </div>
+                </div>
+                            <div class="col-lg d-none d-lg-block bg-password-image"></div>
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
@@ -33,7 +42,7 @@
                                             <label for="email">{{ __('Email Address:') }}</label>
                                             <input type="email" class="form-control form-control-user @error('email') is-invalid @enderror"
                                                 id="email" aria-describedby="emailHelp" name="email" value="{{ old('email') }}" required autocomplete="email" 
-                                                placeholder="Enter Email Address...">
+                                                placeholder="Enter Email Address..." autofocus>
                                             
                                             @error('email')
                                                 <span class="invalid-feedback" role="alert">

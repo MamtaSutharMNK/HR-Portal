@@ -11281,7 +11281,7 @@ body.sidebar-toggled footer.sticky-footer {
 }
 
 
- .bg-register-image {
+.bg-register-image {
       /* Optional background styles if any */
       display: flex;
       justify-content: center;
@@ -11289,9 +11289,18 @@ body.sidebar-toggled footer.sticky-footer {
       height: 100%; /* or set a fixed height if needed */
       padding: 20px; /* optional padding */
     }
-    .bg-register-image img {
-      width: 200px; /* smaller size */
+    .bg-register-image .mgalogo img {
+      width: 150px; /* smaller size */
       height: auto;
       display: block;
       margin: 0 auto;
+      padding: 10px;
     }
+    .bg-register-image .hrlogo img {
+      width: 300px; /* smaller size */
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      padding: 10px;
+    }
+    

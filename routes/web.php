@@ -11,7 +11,7 @@ Route::get('/fte_request', [App\Http\Controllers\HomeController::class, 'fteRequ
 
 Route::view('/tables',  'tables')->name('tables');
 
-Route::get('/hello', function(){
-    Alert::success("welocme");
-    return view('welcome');
-});
+// Route::get('/hello', function(){
+//     Alert::success("welocme");
+//     return view('welcome');
+// });
