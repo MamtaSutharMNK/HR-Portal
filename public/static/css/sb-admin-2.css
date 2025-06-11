@@ -11303,4 +11303,16 @@ body.sidebar-toggled footer.sticky-footer {
       margin: 0 auto;
       padding: 10px;
     }
-    
+      .form-label-custom {
+      display: block;
+      color: #000;
+      font-weight: 500;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      margin-left: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+    .form-control-custom {
+      font-size: 1rem;
+     
+    }
