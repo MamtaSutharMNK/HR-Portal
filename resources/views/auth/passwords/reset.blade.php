@@ -12,7 +12,16 @@
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-password-image"></div>
+                                <div class="col-lg-5 d-none d-lg-block bg-register-image">
+                    <div></div>
+                    <div class="mgalogo">
+                        <img src="{{ asset('static\img\specialty-mga-uk.png')}}" alt="Specialty MGA UK Logo">
+                    </div>
+                    <div class="hrlogo">
+                        <img src="{{ asset('static\img\human-resources.png')}}" alt="hr logo">
+                    </div>
+                </div>                        
+                            <div class="col-lg d-none d-lg-block bg-password-image"></div>
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
@@ -64,11 +73,6 @@
                                             {{ __('Reset Password') }}
                                         </button>
                                     </form>
-                                    <!--
-                                    <hr>
-                                    <div class="text-center">
-                                        <a class="small" href="{{ route('login') }}">Back to Login</a>
-                                    </div> -->
                                 </div>
                             </div>
                         </div>
