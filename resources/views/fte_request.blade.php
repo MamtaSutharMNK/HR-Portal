@@ -145,7 +145,7 @@
 
                             <div class="col-md-3" id="ctcTypeWrapper">
                                 <label class="form-label-custom">CTC Type</label>
-                                <select id="ctcType" class="form-control form-control-custom">
+                                <select id="ctcType" name="ctc_type" class="form-control form-control-custom">
                                     <option value="">Select Type</option>
                                     @foreach (config('dropdown.ctc_types') as $key => $value)
                                         <option value="{{ $key }}">{{ $value }}</option>
@@ -157,9 +157,9 @@
                             <div class="col-md-4" id="ctcRangeWrapper">
                                 <label class="form-label-custom">CTC Range</label>
                                 <div class="d-flex align-items-center gap-2" style="gap: 0.1rem">
-                                    <input type="number" step="0.1" name="annual_ctc_start" placeholder="Start Range" class="form-control form-control-custom" style="width: 190px;">
+                                    <input type="number" step="0.1" name="ctc_start_range" placeholder="Start Range" class="form-control form-control-custom" style="width: 190px;">
                                     <span style="font-size: 20px;">-</span>
-                                    <input type="number" step="0.1" name="annual_ctc_end" placeholder="End Range" class="form-control form-control-custom" style="width: 190px;">
+                                    <input type="number" step="0.1" name="ctc_end_range" placeholder="End Range" class="form-control form-control-custom" style="width: 190px;">
                                 </div>
                             </div>
                         </div>

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('request_forms', function (Blueprint $table) {
+Schema::create('request_forms', function (Blueprint $table) {
             $table->id();
             $table->string('request_uuid')->unique();
             $table->unsignedBigInteger('department_id')->nullable();
@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('country_id')->nullable();
             $table->unsignedBigInteger('function_id')->nullable();
             $table->unsignedBigInteger('currency_id')->nullable();
+            $table->string('requested_by');
             $table->date('date_of_request');
             $table->text('location_type');
             $table->integer('no_of_positions');
@@ -30,8 +31,10 @@ return new class extends Migration
             $table->text('relocation_support')->nullable();
             $table->string('work_location', 255)->nullable();
             $table->date('target_start_date')->nullable();
+            $table->string('ctc_type');
+            $table->decimal('ctc_start_range',10,2); 
+            $table->decimal('ctc_end_range',10,2);   
             $table->integer('experience')->nullable();
-            $table->string('band');
             $table->text('justification_details')->nullable();
             $table->string('replacing_employee', 255)->nullable();
             $table->text('consequences_of_not_hiring')->nullable();
@@ -40,9 +43,8 @@ return new class extends Migration
             $table->foreign('department_id')->references('id')->on('departments')->onDelete('set null');
             $table->foreign('manager_id')->references('id')->on('managers')->onDelete('set null');
             $table->foreign('country_id')->references('id')->on('countries')->onDelete('set null');
-            $table->foreign('function_id')->references('id')->on('functions')->onDelete('set null');
+            $table->foreign('function_id')->references('id')->on('job_roles')->onDelete('set null');
             $table->foreign('currency_id')->references('id')->on('currencies')->onDelete('set null');
-
         });
     }
 

@@ -11,7 +11,7 @@ class Department extends Model
     use HasFactory;
 
     public function functionModel(){
-        return $this->belongsTo(FunctionModel::class, 'function_id');
+        return $this->belongsTo(JobRole::class, 'function_id');
     }
 
     public function requestForms()

@@ -49,7 +49,7 @@ return [
     ],
     'ctc_types'=>[
         0 => 'Monthly',
-        2 => 'Yearly'
+        1 => 'Yearly'
     ]
 
 ];

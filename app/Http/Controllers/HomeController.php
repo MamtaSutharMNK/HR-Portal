@@ -8,7 +8,6 @@ use App\Models\Manager;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\JobRole;
-use App\Models\RequestForm;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
@@ -38,11 +37,11 @@ class HomeController extends Controller
      public function fteRequest()
     {
         $currencies = Currency::where('status',1)->get();
-        // $manager = Manager::where('status',1)->get();
+        $manager = Manager::where('status',1)->get();
         $country = Country::where('status',1)->get();
         $departments = Department::where('status',1)->get();
         $jobroles = JobRole::all();
-        $manager = RequestForm::whereNotNull('manager_id')->with('manager')->get()->pluck('manager.name')->unique();
+
         return view('fte_request',['currencies'=>$currencies,'managers'=>$manager,'countries'=>$country, 'departments'=>$departments ,'jobroles' =>$jobroles]);
     }
 
