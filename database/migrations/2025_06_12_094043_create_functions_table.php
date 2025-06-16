@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('department', function (Blueprint $table) {
+        Schema::create('functions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('function_id');
-            $table->foreign('function_id')->references('id')->on('function')->onDelete('cascade');
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('department');
+        Schema::dropIfExists('functions');
     }
 };

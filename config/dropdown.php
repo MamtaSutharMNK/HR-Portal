@@ -39,14 +39,18 @@ return [
     ],
 
     'visa_required' => [
-        'Yes' => 'Yes',
-        'No' => 'No',
+        1 => 'Yes',
+        0 => 'No',
     ],
 
     'relocation_support' => [
-        'Yes' => 'Yes',
-        'No' => 'No',
+        1 => 'Yes',
+        0 => 'No',
     ],
+    'ctc_types'=>[
+        0 => 'Monthly',
+        2 => 'Yearly'
+    ]
 
 ];
 

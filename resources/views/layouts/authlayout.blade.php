@@ -39,7 +39,20 @@
     <!-- Custom scripts for all pages-->
     <script src="{{asset('static/js/sb-admin-2.min.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.0/dist/sweetalert2.all.min.js"></script>
-    
+
+    <script src="{{ asset('js/form-handler.js') }}"></script>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const jobroleSelect = document.getElementById("jobrole");
+    const bandInput = document.getElementById("band");
+
+    jobroleSelect.addEventListener("change", function() {
+        const selectedOption = jobroleSelect.options[jobroleSelect.selectedIndex];
+        bandInput.value = selectedOption.getAttribute("data-band") || "";
+    });
+});
+</script>
 </body>
 
 </html>

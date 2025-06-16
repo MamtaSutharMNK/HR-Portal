@@ -1,0 +1,56 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('request_forms', function (Blueprint $table) {
+            $table->id();
+            $table->string('request_uuid')->unique();
+            $table->unsignedBigInteger('department_id')->nullable();
+            $table->unsignedBigInteger('manager_id')->nullable();
+            $table->unsignedBigInteger('country_id')->nullable();
+            $table->unsignedBigInteger('function_id')->nullable();
+            $table->unsignedBigInteger('currency_id')->nullable();
+            $table->date('date_of_request');
+            $table->text('location_type');
+            $table->integer('no_of_positions');
+            $table->text('type_of_employment');
+            $table->text('employment_category');
+            $table->text('requisition_type');
+            $table->text('recruitment_source')->nullable();
+            $table->text('work_permit')->nullable();
+            $table->text('relocation_support')->nullable();
+            $table->string('work_location', 255)->nullable();
+            $table->date('target_start_date')->nullable();
+            $table->integer('experience')->nullable();
+            $table->string('band');
+            $table->text('justification_details')->nullable();
+            $table->string('replacing_employee', 255)->nullable();
+            $table->text('consequences_of_not_hiring')->nullable();
+            $table->timestamps();
+
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('set null');
+            $table->foreign('manager_id')->references('id')->on('managers')->onDelete('set null');
+            $table->foreign('country_id')->references('id')->on('countries')->onDelete('set null');
+            $table->foreign('function_id')->references('id')->on('functions')->onDelete('set null');
+            $table->foreign('currency_id')->references('id')->on('currencies')->onDelete('set null');
+
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('request_forms');
+    }
+};

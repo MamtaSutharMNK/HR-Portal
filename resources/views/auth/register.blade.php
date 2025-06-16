@@ -34,6 +34,17 @@
                                 @enderror
                             </div>
                             <div class="form-group">
+                                <label for="email">{{ __('Employee ID:') }}</label>
+                                <input id="emp_id" type="text" class="form-control form-control-user @error('emp_id') is-invalid @enderror" name="emp_id" placeholder="Employee ID" value="{{ old('emp_id') }}" 
+                                required autocomplete="emp_id">   
+
+                                @error('emp_id')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                            <div class="form-group">
                                 <label for="email">{{ __('Email Address:') }}</label>
                                 <input type="email" class="form-control form-control-user @error('email') is-invalid @enderror" id="email"  name="email"
                                     placeholder="Email Address" value="{{ old('email') }}" required autocomplete="email">

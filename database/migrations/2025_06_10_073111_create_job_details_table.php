@@ -13,13 +13,17 @@ return new class extends Migration
     {
         Schema::create('job_details', function (Blueprint $table) {
             $table->id();
+            $table->string('fte_request_id')->nullable();
             $table->string('job_title');
             $table->text('education');
-            $table->text('language_required');
-            $table->text('certifications');
-            $table->text('job_description');
-            $table->text('key_skills');
+            $table->text('language_required')->nullable();
+            $table->text('certifications')->nullable();
+            $table->text('job_description')->nullable();
+            $table->text('key_skills')->nullable();
             $table->timestamps();
+
+            $table->foreign('fte_request_id')->references('request_uuid')->on('request_forms')->onDelete('set null');
+
         });
     }
 
