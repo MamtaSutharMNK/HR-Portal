@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class JobDetail extends Model
 {
     protected $fillable = [
+        'fte_request_id',
         'job_title',
         'education',
         'key_skills',

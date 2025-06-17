@@ -3,14 +3,13 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use RealRashid\SweetAlert\Facades\Alert;
+use App\Http\Controllers\FteRequestFormController;
 
 Auth::routes();
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
-Route::get('/fte_request', [App\Http\Controllers\HomeController::class, 'fteRequest'])->name('fte_request');
-
-Route::post('/request_form', [App\Http\Controllers\RequestFormController::class, 'store'])->name('request_form.store');
-
 
 Route::view('/tables',  'tables')->name('tables');
+
+Route::resource('fte_request', FteRequestFormController::class)->middleware('auth');
 

@@ -21,7 +21,12 @@
     <!-- Custom styles for this template-->
     <link href="{{asset('static/css/sb-admin-2.min.css')}}" rel="stylesheet">
     <link href="{{asset('static/css/sb-admin-2.css')}}" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.0/dist/sweetalert2.min.css">
+
+    <!-- css for fte request form -->
+    <link href="{{asset('static/css/fte.css')}}" rel="stylesheet">  
+
 
 </head>
 
@@ -39,20 +44,11 @@
     <!-- Custom scripts for all pages-->
     <script src="{{asset('static/js/sb-admin-2.min.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.0/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script src="{{ asset('js/form-handler.js') }}"></script>
+    <!-- script for fte page -->
+    <script src="{{asset('static/js/fte.js')}}"></script>
 
-    <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const jobroleSelect = document.getElementById("jobrole");
-    const bandInput = document.getElementById("band");
-
-    jobroleSelect.addEventListener("change", function() {
-        const selectedOption = jobroleSelect.options[jobroleSelect.selectedIndex];
-        bandInput.value = selectedOption.getAttribute("data-band") || "";
-    });
-});
-</script>
 </body>
 
 </html>

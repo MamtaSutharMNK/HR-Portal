@@ -143,7 +143,7 @@ return [
     |
     */
 
-    'path' => env('SESSION_PATH', '/fte_request'),
+    'path' => env('SESSION_PATH', '/request_form'),
 
     /*
     |--------------------------------------------------------------------------

@@ -334,4 +334,21 @@
                 <!-- /.container-fluid -->
       
     <!-- End of Main Content -->
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if(session('success'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            title: 'Success!',
+            text: '{{ session('success') }}',
+            icon: 'success',
+            timer: 2500,
+            showConfirmButton: false,
+
+        });
+    });
+</script>
+@endif
 @endsection

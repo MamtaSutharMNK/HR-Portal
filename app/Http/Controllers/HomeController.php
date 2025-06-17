@@ -34,15 +34,6 @@ class HomeController extends Controller
         return view('index');
     }
 
-     public function fteRequest()
-    {
-        $currencies = Currency::where('status',1)->get();
-        $manager = Manager::where('status',1)->get();
-        $country = Country::where('status',1)->get();
-        $departments = Department::where('status',1)->get();
-        $jobroles = JobRole::all();
-
-        return view('fte_request',['currencies'=>$currencies,'managers'=>$manager,'countries'=>$country, 'departments'=>$departments ,'jobroles' =>$jobroles]);
-    }
+    
 
 }
