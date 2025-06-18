@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use RealRashid\SweetAlert\Facades\Alert;
+use App\Http\Controllers\FteRequestFormController;
 
 Auth::routes();
 
@@ -10,7 +11,5 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('in
 
 Route::view('/tables',  'tables')->name('tables');
 
-Route::get('/hello', function(){
-    Alert::success("welocme");
-    return view('welcome');
-});
+Route::resource('fte_request', FteRequestFormController::class)->middleware('auth');
+

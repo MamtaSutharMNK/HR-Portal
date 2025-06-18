@@ -1,0 +1,13 @@
+.form-label-custom {
+    display: block; 
+    margin-bottom: 5px; 
+}
+
+.form-control-custom {
+    margin-left: 5px; 
+}
+
+.form-label-custom:not(.exclude)::after {
+    content: " *";
+    color: red;
+}

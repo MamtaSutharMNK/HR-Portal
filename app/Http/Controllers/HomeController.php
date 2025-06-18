@@ -2,6 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Country;
+use App\Models\Currency;
+use App\Models\Manager;
+use App\Models\User;
+use App\Models\Department;
+use App\Models\JobRole;
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -25,5 +33,7 @@ class HomeController extends Controller
     {
         return view('index');
     }
+
+    
 
 }

@@ -5,25 +5,26 @@
     <div class="card o-hidden border-0 shadow-lg my-5">
         <div class="card-body p-0">
             <!-- Nested Row within Card Body -->
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-lg-5 d-none d-lg-block bg-register-image">
                     <div></div>
-                    <div>
+                    <div class="mgalogo">
                         <img src="{{ asset('static\img\specialty-mga-uk.png')}}" alt="Specialty MGA UK Logo">
                     </div>
-                    <div class="d-none d-lg-block bg-register-image">
+                    <div class="hrlogo">
                         <img src="{{ asset('static\img\human-resources.png')}}" alt="hr logo">
                     </div>
                 </div>
-                <div class="col-lg-7">
+                <div class="col-lg-6">
                     <div class="p-5">
                         <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
+                                <h1 class="h4 text-gray-900 mb-4">Create an Account</h1>
                         </div>
                         <form class="user" method="POST" action="{{ route('register') }}">
                             @csrf
                             <div class="form-group">
-                                <input id="name" type="text" class="form-control form-control-user @error('name') is-invalid @enderror" name="name" placeholder="First Name" value="{{ old('name') }}" 
+                                <label for="email">{{ __('Name:') }}</label>
+                                <input id="name" type="text" class="form-control form-control-user @error('name') is-invalid @enderror" name="name" placeholder="Name" value="{{ old('name') }}" 
                                 required autocomplete="name" autofocus>   
 
                                 @error('name')
@@ -33,6 +34,18 @@
                                 @enderror
                             </div>
                             <div class="form-group">
+                                <label for="email">{{ __('Employee ID:') }}</label>
+                                <input id="emp_id" type="text" class="form-control form-control-user @error('emp_id') is-invalid @enderror" name="emp_id" placeholder="Employee ID" value="{{ old('emp_id') }}" 
+                                required autocomplete="emp_id">   
+
+                                @error('emp_id')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="email">{{ __('Email Address:') }}</label>
                                 <input type="email" class="form-control form-control-user @error('email') is-invalid @enderror" id="email"  name="email"
                                     placeholder="Email Address" value="{{ old('email') }}" required autocomplete="email">
 
@@ -45,6 +58,7 @@
                             </div>
                             <div class="form-group row">
                                 <div class="col-sm-6 mb-3 mb-sm-0">
+                                <label for="email">{{ __('Password:') }}</label>
                                     <input type="password" class="form-control form-control-user @error('password') is-invalid @enderror" name="password"
                                         id="password" placeholder="Password" required autocomplete="new-password">
 
@@ -55,6 +69,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-sm-6">
+                                <label for="email">{{ __('Repeat Password:') }}</label>
                                     <input type="password" class="form-control form-control-user" name="password_confirmation"
                                         id="password-confirm" placeholder="Repeat Password" required autocomplete="new-password">
                                 </div>
