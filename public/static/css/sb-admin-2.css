@@ -11290,10 +11290,10 @@ body.sidebar-toggled footer.sticky-footer {
       padding: 20px; /* optional padding */
     }
     .bg-register-image .mgalogo img {
-      width: 150px; /* smaller size */
+      width: 200px; /* smaller size */
       height: auto;
       display: block;
-      margin: 0 auto;
+      margin: 10px auto;
       padding: 10px;
     }
     .bg-register-image .hrlogo img {

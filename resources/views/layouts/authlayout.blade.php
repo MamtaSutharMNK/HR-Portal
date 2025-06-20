@@ -49,6 +49,7 @@
     <!-- script for fte page -->
     <script src="{{asset('static/js/fte.js')}}"></script>
 
+
 </body>
 
 </html>

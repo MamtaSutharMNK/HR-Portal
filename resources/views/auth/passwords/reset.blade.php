@@ -15,7 +15,7 @@
                                 <div class="col-lg-5 d-none d-lg-block bg-register-image">
                     <div></div>
                     <div class="mgalogo">
-                        <img src="{{ asset('static\img\specialty-mga-uk.png')}}" alt="Specialty MGA UK Logo">
+                        <img src="{{ asset('static\img\MNK group Logo.svg')}}" alt="Specialty MGA UK Logo">
                     </div>
                     <div class="hrlogo">
                         <img src="{{ asset('static\img\human-resources.png')}}" alt="hr logo">
@@ -28,7 +28,7 @@
                                         <h1 class="h4 text-gray-900 mb-2">{{ __('Reset Your Password') }}</h1>
                                         <p class="mb-4">Please enter your new password below.</p>
                                     </div>
-                                    <form method="POST" class="user" action="{{ route('password.update') }}">
+                                    <form method="POST" class="user" action="{{ route('password.update') }}" class="needs-validation" novalidate>
                                         @csrf
                                         <input type="hidden" name="token" value="{{ $token }}">
                               

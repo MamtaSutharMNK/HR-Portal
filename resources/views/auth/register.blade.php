@@ -9,7 +9,7 @@
                 <div class="col-lg-5 d-none d-lg-block bg-register-image">
                     <div></div>
                     <div class="mgalogo">
-                        <img src="{{ asset('static\img\specialty-mga-uk.png')}}" alt="Specialty MGA UK Logo">
+                        <img src="{{ asset('static\img\MNK group Logo.svg')}}" alt="Specialty MGA UK Logo">
                     </div>
                     <div class="hrlogo">
                         <img src="{{ asset('static\img\human-resources.png')}}" alt="hr logo">
@@ -20,7 +20,7 @@
                         <div class="text-center">
                                 <h1 class="h4 text-gray-900 mb-4">Create an Account</h1>
                         </div>
-                        <form class="user" method="POST" action="{{ route('register') }}">
+                        <form class="user" method="POST" action="{{ route('register') }}" class="needs-validation" novalidate>
                             @csrf
                             <div class="form-group">
                                 <label for="email">{{ __('Name:') }}</label>

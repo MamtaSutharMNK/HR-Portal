@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Manager extends Model
+
+class RequestingBranch extends Model
 {
-    use HasFactory;
+    use hasFactory;
     
     public function requestForms()
     {
-        return $this->hasMany(RequestForm::class, 'manager_id');
+        return $this->hasMany(RequestForm::class, 'branch_id');
     }
-
 }

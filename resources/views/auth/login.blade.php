@@ -1,7 +1,6 @@
 @extends('layouts.authlayout')
 
 @section('content')
-
 <div class="container">
 <!-- Outer Row -->
      <div class="row justify-content-center">
@@ -14,7 +13,7 @@
                         <div class="col-lg-5 d-none d-lg-block bg-register-image">
                             <div></div>
                             <div class="mgalogo">
-                                <img src="{{ asset('static\img\specialty-mga-uk.png')}}" alt="Specialty MGA UK Logo">
+                                <img src="{{ asset('static\img\MNK group Logo.svg')}}" alt="mnk group logo" >
                             </div>
                             <div class="hrlogo">
                                 <img src="{{ asset('static\img\human-resources.png')}}" alt="hr logo">
@@ -26,7 +25,7 @@
                                 <div class="text-center">
                                     <h1 class="h4 text-gray-900 mb-4">{{ __('Login') }} </h1>
                                 </div>
-                                <form  class='user' method="POST" action="{{ route('login') }}">
+                                <form  class='user' method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
                                     @csrf
                                     <div class="form-group">
                                         <label for="email">{{ __('Email Address:') }}</label>

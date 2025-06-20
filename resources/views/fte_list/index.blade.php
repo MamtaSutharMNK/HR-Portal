@@ -11,42 +11,43 @@
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">FTE LIST</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Position</th>
-                                            <th>Office</th>
-                                            <th>Age</th>
-                                            <th>Start date</th>
-                                            <th>Salary</th>
+                                            <th>Request Id</th> 
+                                            <th>Department</th>
+                                            <th>Department Function</th>
+                                            <th>Manager</th>
+                                            <th>Date of request</th>
+                                            <th >Action</th>
                                         </tr>
                                     </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Position</th>
-                                            <th>Office</th>
-                                            <th>Age</th>
-                                            <th>Start date</th>
-                                            <th>Salary</th>
-                                        </tr>
-                                    </tfoot>
                                     <tbody>
-                                        <tr>
-                                            <td>Tiger Nixon</td>
-                                            <td>System Architect</td>
-                                            <td>Edinburgh</td>
-                                            <td>61</td>
-                                            <td>2011/04/25</td>
-                                            <td>$320,800</td>
-                                        </tr>
-                                       
-                                        
+                                        @foreach($data as $item)
+                                            <tr>
+                                                <td>{{ $item->request_uuid }}</td>
+                                                <td>{{ $item->department->name ?? 'N/A' }}</td>
+                                                <td>{{ $item->department_function ?? 'N/A' }}</td>
+                                                <td>{{ $item->manager_name ?? 'N/A' }}</td>
+                                                <td>{{ $item->created_at->format('d-m-Y') }}</td>
+                                                <td>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-primary dropdown-toggle bg-primary" type="button" id="actionDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            Action
+                                                        </button>
+                                                        <div class="dropdown-menu" aria-labelledby="actionDropdown">
+                                                            <a class="dropdown-item" href="{{ route('fte_request.show', $item->id )}}">
+                                                                <i class="fas fa-eye mr-2"></i>View
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>

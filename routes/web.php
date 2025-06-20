@@ -13,3 +13,6 @@ Route::view('/tables',  'tables')->name('tables');
 
 Route::resource('fte_request', FteRequestFormController::class)->middleware('auth');
 
+Route::post('/fte_request/status-update', [FteRequestFormController::class, 'updateStatus'])->name('fte_request.status_update');
+
+

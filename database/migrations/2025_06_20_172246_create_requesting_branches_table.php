@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('job_roles', function (Blueprint $table) {
+        Schema::create('requesting_branches', function (Blueprint $table) {
             $table->id();
-            $table->string('function_title');
-            $table->char('band', 1);
+            $table->string('name');
+            $table->string('branch_code', 10);
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('job_roles');
+        Schema::dropIfExists('requesting_branches');
     }
 };
