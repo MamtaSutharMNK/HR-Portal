@@ -23,7 +23,7 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="p-3">
-                            <p><strong>Manager:</strong> {{ $data->manager->name ?? '-' }}</p>
+                            <p><strong>Manager:</strong> {{ $data->manager_name ?? '-' }}</p>
                         </div>
                     </div>
                 </div>
@@ -35,7 +35,11 @@
                             <p><strong>Name:</strong> {{ $data->requested_by ?? '-' }}</p>
                         </div>
                     </div> -->
-
+                     <div class="col-md-4 mb-3">
+                        <div class="p-3">
+                            <p><strong>Manager Email:</strong> {{ $data->manager_email ?? '-' }}</p>
+                        </div>
+                    </div>
                     <div class="col-md-4 mb-3">
                         <div class="p-3">
                             <p><strong>Business Unit:</strong> {{ $data->department->name ?? '-' }}</p>
@@ -43,20 +47,16 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="p-3">
-                            <p><strong>Department Function:</strong> {{ $data->job_roles->function_title ?? '-' }}</p>
+                            <p><strong>Department Function:</strong> {{ $data->department_function ?? '-' }}</p>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Band:</strong> {{ $data->job_roles->band ?? '-' }}</p>
-                        </div>
-                    </div>
+                    
                 </div>
 
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <div class="p-3">
-                            <p><strong>Location type:</strong> {{ $data->location_type ?? '-' }}</p>
+                            <p><strong>Requesting Branch</strong> {{ $data->requestingBranch->name ?? '-' }}</p>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -92,12 +92,12 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <div class="p-3">
-                            <p><strong>Target Start Date:</strong> {{ $data->target_start_date ?? '-' }}</p>
+                            <p><strong>Target End Date:</strong> {{ $data->target_by_when ?? '-' }}</p>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="p-3">
-                            <p><strong>currency:</strong> {{ $data->currency->name ?? '-' }}</p>
+                            <p><strong>currency:</strong> {{ $data->currency ?? '-' }}</p>
                         </div>
                     </div>
                     <div class="col-md-4 mb-3">
@@ -166,24 +166,9 @@
                             <p><strong>Consequences of not Hiring:</strong> {{ $data->consequences_of_not_hiring ?? '-' }}</p> 
                         </div>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Recruitment Source:</strong> {{ $data->recruitment_source ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Work Permit:</strong> {{ config('dropdown.visa_required')[$data->work_permit] ?? '-' }}</p>
-                        </div>
-                    </div>
+
                 </div>
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Relocation Support:</strong> {{ config('dropdown.relocation_support')[$data->relocation_support] ?? '-' }}</p> 
-                        </div>
-                    </div>
-                </div>
+             
              <!-- Buttons Row -->
                 @php
                     use App\Models\RequestForm;

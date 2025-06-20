@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('request_forms', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id')->after('id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        Schema::create('requesting_branches', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('branch_code', 10);
+            $table->boolean('status')->default(1);
+            $table->timestamps();
         });
     }
 
@@ -22,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('request_forms', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('requesting_branches');
     }
 };

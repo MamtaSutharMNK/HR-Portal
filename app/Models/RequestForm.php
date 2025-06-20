@@ -22,40 +22,37 @@ class RequestForm extends Model
     protected $fillable = [
         'user_id',
         'request_uuid',
-        'manager_id',
-        'country_id',
-        'department_id',
-        'function_id',
-        'currency_id',
-        'requested_by',
         'date_of_request',
-        'location_type',
+        'department_id',
+        'branch_id',
+        'country',
+        'requested_by',
+        'manager_name',
+        'manager_email',
         'no_of_positions',
         'type_of_employment',
         'employment_category',
-        'requisition_type',
-        'recruitment_source',
-        'work_permit',
-        'relocation_support',
         'work_location',
-        'target_start_date',
+        'target_by_when',
+        'department_function',
+        'employee_level',
+        'currency',
         'ctc_type',
         'ctc_start_range',
         'ctc_end_range',
+        'experience',
+        'requisition_type',
         'justification_details',
         'replacing_employee',
-        'consequences_of_not_hiring'
+        'consequences_of_not_hiring',
+        'status',
+        'mail_status',
         
     ];
 
-    public function manager()
+    public function user()
     {
-        return $this->belongsTo(Manager::class,'manager_id');
-    }
-
-    public function country()
-    {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(User::class);
     }
 
     public function department()
@@ -63,16 +60,11 @@ class RequestForm extends Model
         return $this->belongsTo(Department::class);
     }
 
-    public function currency()
+    public function requestingBranch()
     {
-        return $this->belongsTo(Currency::class);
-    }
-    public function job_roles()
-    {
-        return $this->belongsTo(JobRole::class, 'function_id'); 
+        return $this->belongsTo(RequestingBranch::class);
     }
 
-    
     public function jobDetail()
     {
         return $this->hasOne(JobDetail::class, 'fte_request_id');

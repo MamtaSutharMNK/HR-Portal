@@ -31,8 +31,8 @@
                                             <tr>
                                                 <td>{{ $item->request_uuid }}</td>
                                                 <td>{{ $item->department->name ?? 'N/A' }}</td>
-                                                <td>{{ $item->job_roles->function_title ?? 'N/A' }}</td>
-                                                <td>{{ $item->manager->name ?? 'N/A' }}</td>
+                                                <td>{{ $item->department_function ?? 'N/A' }}</td>
+                                                <td>{{ $item->manager_name ?? 'N/A' }}</td>
                                                 <td>{{ $item->created_at->format('d-m-Y') }}</td>
                                                 <td>
                                                     <div class="dropdown">

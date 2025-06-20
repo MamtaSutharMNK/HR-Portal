@@ -99,18 +99,16 @@
                                 <div class="invalid-feedback">Please select a department</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label-custom">Hiring Region / Country</label>
-                                <select id="countrySelect" name="country_id" class="form-control form-control-custom" required>
-                                    <option value="">Select Country</option>
-                                       @foreach($countries as $code)
-                                           <option value="{{ $code->id }}">{{ $code->name }}</option>
-                                       @endforeach
-                                </select>
+                                <label class="form-label-custom">HIRING REGION/Country</label>
+                                <input list="countries" id="country" name="country" class="form-control form-control-custom" required>
+                                <datalist id="countries"></datalist>
                                 <div class="invalid-feedback">Please select country</div>
+                            </div> 
+                                
 
-                            </div>
+                           
                         </div>
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label class="form-label-custom">Location Type</label>
                             @foreach (config('dropdown.location_type') as $key => $value)
                                 <div class="form-check form-check-inline">
@@ -118,23 +116,38 @@
                                     <label class="form-check-label">{{ $value }}</label>
                                 </div>
                             @endforeach
-                        </div>
+                        </div> -->
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom">Requested By</label>
                                 <input type="text" name="requested_by" class="form-control form-control-custom" required>
-                                <div class="invalid-feedback">Please enter a valid name.</div>
+                                <div class="invalid-feedback">Enter the name.</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label-custom">Approving Manager</label>
-                                <select name="manager_id" class="form-control form-control-custom" required>
-                                    <option value="">Select Manager</option>
-                                    @foreach($managers as $manager)
-                                        <option value="{{ $manager->id }}">{{ $manager->name }}</option>
-                                    @endforeach
+                                <label class="form-label-custom">Requesting Branch</label>
+                                <select name="branch_id" class="form-control form-control-custom" required>
+                                    <option value="">Select Requesting Branch</option>
+                                       @foreach($branches as $branch)
+                                           <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                       @endforeach
                                 </select>
-                                <div class="invalid-feedback">Please select a manager</div>
+                                <div class="invalid-feedback">Please select a department</div>
+                            </div>
+     
+                        </div> 
+                        <div class="row mb-3">     
+                            
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Approving Manager Name</label>
+                                 <input type="text" name="manager_name" class="form-control form-control-custom" required>
+                                <div class="invalid-feedback">Enter the manager name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Approving Manager Email</label>
+                                <input type="email" name="manager_email" class="form-control form-control-custom" required>
+                                <div class="invalid-feedback">Enter a valid email.</div>
+                                <div style="margin-left:5px">Note:This email should be official</div>
                             </div>
                         </div>
                         <hr>
@@ -185,43 +198,45 @@
 
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label-custom">Target Start Date</label>
-                                <input type="date" name="target_start_date" class="form-control form-control-custom" required min="<?= date('Y-m-d'); ?>">
+                                <label class="form-label-custom">Target by when</label>
+                                <input type="date" name="target_by_when" class="form-control form-control-custom" required min="<?= date('Y-m-d'); ?>">
                                 <div class="invalid-feedback">Enter a target date</div>
                             </div>
 
                         </div>
 
                         <div class="row mb-3">
-
                             <div class="col-md-6">
                                 <label class="form-label-custom">Department / Function</label>
-                                <select id="jobrole" name="function_id" class="form-control form-control-custom" required>
-                                    <option value="">Select Department Function</option>
-                                         @foreach($jobroles as $jobrole)
-                                            <option value="{{ $jobrole->id }}" data-band="{{ $jobrole->band }}">{{ $jobrole->function_title }}</option>
-                                          @endforeach
-                                </select>
+                                <input type="text" name="department_function" class="form-control form-control-custom" required >
                                 <div class="invalid-feedback">Please select department function</div>
-
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label-custom exclude">Band</label>
-                                <input type="text" name="band" id="band" class="form-control form-control-custom" value="{{$jobrole->band}}" disabled>
+                                <label for="employee_level" class="form-label-custom">Employee Level</label>
+                                <select id="employee_level" name="employee_level" class="form-control form-control-custom" required>
+                                    <option value="">-- Select Level --</option>
+                                    <option value="0">Associate I (0–1 yrs)</option>
+                                    <option value="1">Associate II (1–2 yrs)</option>
+                                    <option value="2">Associate III (2–3 yrs)</option>
+                                    <option value="3">Technical Lead (3–5 yrs)</option>
+                                    <option value="3b">Quality Lead (3–5 yrs)</option>
+                                    <option value="4">Team Lead (5–7 yrs)</option>
+                                    <option value="4b">Process Expert (5–7 yrs)</option>
+                                    <option value="5">Manager (7–10 yrs)</option>
+                                    <option value="6">Senior Manager (10–13 yrs)</option>
+                                    <option value="7">Divisional Head I (13–15 yrs)</option>
+                                    <option value="8">Divisional Head II (15–18 yrs)</option>
+                                    <option value="9">Location Head (18+ yrs)</option>
+                                </select>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-3">
-                                <label class="form-label-custom">Budgeted Currency</label>
-                                <select id="currencySelect" name="currency_id" class="form-control form-control-custom" required>
-                                    <option value="">Select Currency</option>
-                                    @foreach($currencies as $currency)
-                                        <option value="{{ $currency->id }}">{{ $currency->name }}</option>
-                                    @endforeach
-                                </select>
+                            <label class="form-label-custom">Budgeted Currency</label>
+                                <input list="currencies" id="currency" name="currency" class="form-control form-control-custom" required>
+                                <datalist id="currencies"></datalist>
                                 <div class="invalid-feedback">Please select currency</div>
-
-                            </div>
+                            </div>   
 
                             <div class="col-md-3" id="ctcTypeWrapper">
                                 <label class="form-label-custom">CTC Type</label>
@@ -294,13 +309,33 @@
                             <h5 class="text-primary fw-bold">4. Business Justification</h5>
                         </div>
 
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label class="form-label-custom">Requisition Type</label>
                             @foreach (config('dropdown.requisition_types') as $key => $value)
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" name="requisition_type[]" value="{{ $key}}" style="margin-left: 7px" >
                                 <label class="form-check-label">{{ $value}}</label>
                             </div>
+                            @endforeach
+                        </div> -->
+                        <div class="mb-3">
+                            <label class="form-label-custom">Requisition Type</label>
+                            @foreach (config('dropdown.requisition_types') as $key => $value)
+                                @php
+                                    $explanations = [
+                                        'New' => 'For brand new positions',
+                                        'Replacement' => 'To replace an existing employee',
+                                        'Expansion' => 'To grow the team or department',
+                                        'TemporaryNeed' => 'For short-term or seasonal staffing needs',
+                                        'ProjectBased' => 'For roles tied to a specific project duration',
+                                    ];
+                                @endphp
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="requisition_type[]" value="{{ $key }}" title="{{ $explanations[$key] ?? $value }}" style="margin-left: 7px">
+                                    <label class="form-check-label" title="{{ $explanations[$key] ?? $value }}">
+                                        {{ $value }}
+                                    </label>
+                                </div>
                             @endforeach
                         </div>
                         <div class="row mb-3" id="replacing-employee-group" style="display: none;">
@@ -322,49 +357,6 @@
                             
                         </div>
                         <hr>    
-                        <!--Section 5: Recruitment Details -->
-                        <div class="mb-4">
-                            <h5 class="text-primary fw-bold">5. Recruitment Details</h5>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label-custom">Recruitment Source</label>
-
-                            @foreach (config('dropdown.recruitment_sources') as $key => $value)
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="recruitment_source[]" value="{{$key}}" style="margin-left: 7px">
-                                <label class="form-check-label">{{$value}}</label>
-                            </div>
-                            @endforeach
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label-custom exclude">Preferred Nationality (if any)</label>
-                                <input type="text" name="name" class="form-control form-control-custom" placeholder="Optional">
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label-custom exclude">Visa / Work Permit Required?</label>
-                            @foreach (config('dropdown.visa_required') as $key => $value)
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="work_permit" value="{{$key}}" style="margin-left: 7px">
-                                <label class="form-check-label">{{$value}}</label>
-                            </div>
-                            @endforeach
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label-custom exclude">Relocation Support Needed?</label>
-                            @foreach (config('dropdown.relocation_support') as $key => $value)
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="relocation_support" value="{{$key}}" style="margin-left: 7px">
-                                <label class="form-check-label">{{$value}}</label>
-                            </div>
-                            @endforeach
-
-                        </div>
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-primary btn-lg w-50">Submit</button>
                         </div>
@@ -392,6 +384,43 @@
         toggleReplacingField();
         $('input[name="requisition_type[]"]').on('change', toggleReplacingField);
     });
+
+    fetch('https://restcountries.com/v3.1/all?fields=name')
+        .then(response => response.json())
+        .then(data => {
+
+          const datalist = document.getElementById("countries");
+          data.forEach(country => {
+            const option = document.createElement("option");
+            option.value = country.name.common;
+            datalist.appendChild(option);
+          });
+        })
+        .catch(error => console.error("Error fetching countries:", error));
+
+
+        fetch('https://restcountries.com/v3.1/all?fields=currencies')
+  .then(response => response.json())
+  .then(data => {
+    const currencySet = new Set();
+    data.forEach(country => {
+      const currencies = country.currencies;
+      if (currencies) {
+        Object.entries(currencies).forEach(([code, details]) => {
+          currencySet.add(`${details.name} (${code})`);
+        });
+      }
+    });
+
+    const datalist = document.getElementById("currencies");
+    Array.from(currencySet).sort().forEach(currency => {
+      const option = document.createElement("option");
+      option.value = currency;
+      datalist.appendChild(option);
+    });
+  })
+  .catch(error => console.error("Error fetching currencies:", error));
+
 </script>
 
 @endsection

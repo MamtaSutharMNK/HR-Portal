@@ -10,11 +10,10 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Mail;
 use Ramsey\Uuid\Uuid;
-use App\Models\Country;
-use App\Models\Currency;
-use App\Models\Manager;
 use App\Models\User;
 use App\Models\Department;
+use App\Models\RequestingBranch;
+
 use App\Models\JobRole;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,13 +26,12 @@ class FteRequestFormController extends Controller
      */
     public function index()
     {
-        $currencies = Currency::where('status',1)->get();
-        $manager = Manager::where('status',1)->get();
-        $country = Country::where('status',1)->get();
         $departments = Department::where('status',1)->get();
+        $branches = RequestingBranch::where('status',1)->get();
+
         $jobroles = JobRole::all();
 
-        return view('fte_request',['currencies'=>$currencies,'managers'=>$manager,'countries'=>$country, 'departments'=>$departments ,'jobroles' =>$jobroles]);
+        return view('fte_request',['branches'=>$branches, 'departments'=>$departments ,'jobroles' =>$jobroles]);
     }
 
     /**
@@ -41,9 +39,7 @@ class FteRequestFormController extends Controller
      */
     public function create()
     {
-        $currencies = Currency::where('status',1)->get();
-        $manager = Manager::where('status',1)->get();
-        $country = Country::where('status',1)->get();
+       
         $departments = Department::where('status',1)->get();
         $jobroles = JobRole::all();
 
@@ -62,33 +58,63 @@ class FteRequestFormController extends Controller
             $dateOfRequest = $validated['date_of_request'] ?? now();
             $requestUuid =  substr(Uuid::uuid4()->toString(), 0, 7);
             $userId = Auth::user()->id;
+            // $requestData = RequestForm::create([
+            //     'user_id' => $userId,
+            //     'request_uuid' => $requestUuid,
+            //     'date_of_request' => $dateOfRequest,
+            //     'requested_by' => $request->requested_by,
+            //     'manager_id' => $request->manager_id,
+            //     'country_id' => $request->country_id,
+            //     'function_id' => $request->function_id,
+            //     'department_id' => $request->department_id,
+            //     'currency_id' => $request->currency_id ?? null,
+            //     'no_of_positions' => $request->no_of_positions,
+            //     'location_type' => isset($request->location_type) ? implode(',', $request->location_type) : null,   
+            //     'type_of_employment' => isset($request->type_of_employment) ? implode(',', $request->type_of_employment) : null,
+            //     'employment_category' => isset($request->employment_category) ? implode(',', $request->employment_category) : null,
+            //     'requisition_type' => isset($request->requisition_type) ? implode(',', $request->requisition_type) : null,
+            //     'recruitment_source' => isset($request->recruitment_source) ? implode(',', $request->recruitment_source) : null,
+            //     'work_permit' => $request->work_permit ?? null,
+            //     'relocation_support' => $request->relocation_support ?? null,
+            //     'work_location' => $request->work_location ?? null,
+            //     'target_start_date' => $request->target_start_date ?? null,
+            //     'ctc_type' => $request->ctc_type,
+            //     'ctc_start_range' => $request->ctc_start_range,
+            //     'ctc_end_range' => $request->ctc_end_range,
+            //     'justification_details' => $request->justification_details ?? null,
+            //     'replacing_employee' => $request->replacing_employee ?? null,
+            //     'consequences_of_not_hiring' => $request->consequences_of_not_hiring ?? null,
+            
+            // ]);
+            // dd($request->all());
             $requestData = RequestForm::create([
                 'user_id' => $userId,
                 'request_uuid' => $requestUuid,
                 'date_of_request' => $dateOfRequest,
+                'department_id' => $request->department_id ?? null,
+                'branch_id' => $request->branch_id ?? null,
+                'country' => $request->country,
                 'requested_by' => $request->requested_by,
-                'manager_id' => $request->manager_id,
-                'country_id' => $request->country_id,
-                'function_id' => $request->function_id,
-                'department_id' => $request->department_id,
-                'currency_id' => $request->currency_id ?? null,
+                'manager_name' => $request->manager_name,
+                'manager_email' => $request->manager_email,
                 'no_of_positions' => $request->no_of_positions,
-                'location_type' => isset($request->location_type) ? implode(',', $request->location_type) : null,   
                 'type_of_employment' => isset($request->type_of_employment) ? implode(',', $request->type_of_employment) : null,
                 'employment_category' => isset($request->employment_category) ? implode(',', $request->employment_category) : null,
-                'requisition_type' => isset($request->requisition_type) ? implode(',', $request->requisition_type) : null,
-                'recruitment_source' => isset($request->recruitment_source) ? implode(',', $request->recruitment_source) : null,
-                'work_permit' => $request->work_permit ?? null,
-                'relocation_support' => $request->relocation_support ?? null,
                 'work_location' => $request->work_location ?? null,
-                'target_start_date' => $request->target_start_date ?? null,
+                'target_by_when' => $request->target_by_when ?? null,
+                'department_function' => $request->department_function,
+                'employee_level' => $request->employee_level,
+                'currency' => $request->currency,
                 'ctc_type' => $request->ctc_type,
                 'ctc_start_range' => $request->ctc_start_range,
                 'ctc_end_range' => $request->ctc_end_range,
+                'experience' => $request->experience ?? null,
+                'requisition_type' => isset($request->requisition_type) ? implode(',', $request->requisition_type) : null,
                 'justification_details' => $request->justification_details ?? null,
                 'replacing_employee' => $request->replacing_employee ?? null,
                 'consequences_of_not_hiring' => $request->consequences_of_not_hiring ?? null,
-            
+                'status' => 1,
+                'mail_status' => 0,
             ]);
                 
             $jobDetail = JobDetail::create([
@@ -122,7 +148,7 @@ class FteRequestFormController extends Controller
      */
     public function show(string $id)
     {
-       $data = RequestForm::where('id', $id)->with('manager','country','department','currency','job_roles','jobDetail')->first();
+       $data = RequestForm::where('id', $id)->with('department','jobDetail','requestingBranch')->first();
        
         return view('fte_list.show',['data'=>$data]);
     }
