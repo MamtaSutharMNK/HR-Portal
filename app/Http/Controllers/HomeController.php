@@ -8,7 +8,6 @@ use App\Models\Manager;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\JobRole;
-use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
 

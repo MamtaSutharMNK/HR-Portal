@@ -19,6 +19,7 @@ use App\Models\JobRole;
 use Illuminate\Support\Facades\Auth;
 
 
+
 class FteRequestFormController extends Controller
 {
     /**
@@ -46,7 +47,7 @@ class FteRequestFormController extends Controller
         $departments = Department::where('status',1)->get();
         $jobroles = JobRole::all();
 
-        $data = RequestForm::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->get();
+        $data = RequestForm::where('user_id', Auth::user()->id)->where('status', 1)->orderBy('created_at', 'desc')->get();
 
         return view('fte_list.index',['data'=>$data]);
     }
@@ -60,8 +61,9 @@ class FteRequestFormController extends Controller
 
             $dateOfRequest = $validated['date_of_request'] ?? now();
             $requestUuid =  substr(Uuid::uuid4()->toString(), 0, 7);
-        
+            $userId = Auth::user()->id;
             $requestData = RequestForm::create([
+                'user_id' => $userId,
                 'request_uuid' => $requestUuid,
                 'date_of_request' => $dateOfRequest,
                 'requested_by' => $request->requested_by,
@@ -100,8 +102,8 @@ class FteRequestFormController extends Controller
                 'experience' => $request->experience ?? null,
             ]);
 
-            $to = env('CTO_MAIL');
-            $bcc = env('HR_MAIL','CFO_MAIL');
+            $to = env('CFO_MAIL');
+            $bcc = env('HR_MAIL','CTO_MAIL');
             Mail::to('Ramnath.Thirunathan@mnkgcs.com')
                     ->cc($to)
                     ->bcc($bcc)
@@ -120,7 +122,9 @@ class FteRequestFormController extends Controller
      */
     public function show(string $id)
     {
-        //
+       $data = RequestForm::where('id', $id)->with('manager','country','department','currency','job_roles','jobDetail')->first();
+       
+        return view('fte_list.show',['data'=>$data]);
     }
 
     /**
@@ -136,7 +140,7 @@ class FteRequestFormController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        
     }
 
     /**
@@ -146,4 +150,68 @@ class FteRequestFormController extends Controller
     {
         //
     }
+
+public function updateStatus(Request $request)
+{
+
+    try {
+        $requestForm = RequestForm::findOrFail($request->id);
+        $currentUser = Auth::user()->email;
+
+        if ($request->action === 'accept') {
+
+            $requestForm->mail_status = 1;
+            $mail = env('HR_MAIL');
+            if ($currentUser === env('CFO_MAIL') && $requestForm->mail_status == RequestForm::MAIL_PENDING) {
+                $requestForm->mail_status = 1; // CFO_Mail_APPROVAL
+                $mail = env('CFO_MAIL');
+            }
+
+            if ($currentUser === env('CTO_MAIL') && $requestForm->mail_status == RequestForm::CFO_Mail_APPROVAL) {
+                $requestForm->mail_status = 3; // CTO_Mail_APPROVAL
+                $mail = env('CTO_MAIL');
+            }
+
+            if ($currentUser === env('HR_MAIL')) {
+                $mail = env('HR_MAIL');
+                if($requestForm->mail_status == RequestForm::MAIL_PENDING){
+                    $requestForm->mail_status = 1;
+                }elseif($requestForm->mail_status == RequestForm::CFO_Mail_APPROVAL){
+                    $requestForm->mail_status = 3;
+                }else{
+                    $requestForm->mail_status = 5; 
+                }
+            }
+
+            $requestForm->save();
+
+            Mail::to($mail)
+            ->cc(env('HR_MAIL'))
+            ->send(new FteRequestMail($requestForm));
+            return response()->json(['success' => true, 'message' => 'Approved Successfully']);
+        }
+
+        // Reject Logic
+        if ($request->action === 'reject') {
+            if ($currentUser === env('CFO_MAIL')) {
+                $requestForm->mail_status = 2; // CFO_Mail_REJECT
+            } elseif ($currentUser === env('CTO_MAIL')) {
+                $requestForm->mail_status = 4; // CTO_Mail_REJECT
+            } elseif ($currentUser === env('HR_MAIL')) {
+                $requestForm->mail_status = 6; // HR_Mail_REJECT
+            }
+
+            $requestForm->save();
+
+            // Notify user of rejection
+            // Mail::to($requestForm->user->email)->send(new FteRequestMail($requestForm));
+            return response()->json(['success' => true, 'message' => 'Request rejected. User notified.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Invalid action.'], 400);
+
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    }
+}
 }

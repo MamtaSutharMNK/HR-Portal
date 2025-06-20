@@ -4,10 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 class RequestForm extends Model
 {
   
+    const Active = 1; 
+    const InActive = 0; 
+
+    const MAIL_PENDING = 0; 
+    const CFO_Mail_APPROVAL = 1; 
+    const CFO_Mail_REJECT = 2; 
+    const CTO_Mail_APPROVAL = 3; 
+    const CTO_Mail_REJECT = 4; 
+    const HR_Mail_APPROVAL = 5;
+    const HR_Mail_REJECT = 6;
+
     protected $fillable = [
+        'user_id',
         'request_uuid',
         'manager_id',
         'country_id',
@@ -54,14 +67,15 @@ class RequestForm extends Model
     {
         return $this->belongsTo(Currency::class);
     }
-    public function jobRole()
+    public function job_roles()
     {
-        return $this->belongsTo(JobRole::class, 'function_id');
+        return $this->belongsTo(JobRole::class, 'function_id'); 
     }
+
     
     public function jobDetail()
     {
-        return $this->belongsTo(JobDetail::class, 'job_detail_id');
+        return $this->hasOne(JobDetail::class, 'fte_request_id');
     }
 
 }

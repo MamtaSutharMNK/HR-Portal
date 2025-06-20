@@ -13,7 +13,7 @@
                             <div class="col-lg-5 d-none d-lg-block bg-register-image">
                                 <div></div>
                                 <div class="mgalogo">
-                                    <img src="{{ asset('static\img\specialty-mga-uk.png')}}" alt="Specialty MGA UK Logo">
+                                    <img src="{{ asset('static\img\MNK group Logo.svg')}}" alt="Specialty MGA UK Logo">
                                 </div>
                                 <div class="hrlogo">
                                     <img src="{{ asset('static\img\human-resources.png')}}" alt="hr logo">
@@ -27,7 +27,7 @@
                                         <p class="mb-4">We get it, stuff happens. Just enter your email address below
                                             and we'll send you a link to reset your password!</p>
                                     </div>
-                                    <form method="POST" class="user" action="{{ route('password.email') }}">
+                                    <form method="POST" class="user" action="{{ route('password.email') }}" class="needs-validation" novalidate>
                                         @csrf
                                         @if (session('status'))
                                         <div class="alert alert-success" role="alert">

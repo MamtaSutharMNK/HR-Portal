@@ -1,6 +1,7 @@
 @extends('layouts.authlayout')
 
 @section('content')   
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     (function () {
         'use strict';
@@ -24,7 +25,7 @@
 
         experienceInput.addEventListener('input', function () {
             const value = experienceInput.value;
-            const isValid = /^\d*\.?\d*$/.test(value); // Allows numbers and optional decimal
+            const isValid = /^\d*\.?\d*$/.test(value);
 
             if (!isValid) {
                 experienceInput.classList.add('is-invalid');
@@ -39,8 +40,10 @@
     document.addEventListener('DOMContentLoaded', function () {
         const textFields = [
             { inputId: 'educationInput', errorId: 'educationError' },
+            { inputId: 'jobDetailInput', errorId: 'jobDetailError' },
             { inputId: 'locationInput', errorId: 'locationError' },
             { inputId: 'skillsInput', errorId: 'skillsError' },
+            { inputId: 'languageInput', errorId: 'languageError' },
             { inputId: 'certificationsInput', errorId: 'certificationsError' }
         ];
 
@@ -72,10 +75,12 @@
                     <h2 class="text-center black-text">Full Time Employment Form</h2>
                 </div>
                 <div class="card-body" style=" padding: 0px 50px 50px 50px;">
+                    @if(!session()->pull('hide_skip_once'))
                     <div class="mt-4" style="text-align: right;">
                         <p>Do you want to skip?</p>
-                        <a href="{{ route('index') }}" class="btn btn-primary">Skip</a>
+                        <a href="{{ route('index') }}" class="btn btn-primary">Skip</a>  
                     </div>
+                    @endif  
                     <form method="POST" action="{{ route('fte_request.store') }}" class="needs-validation" novalidate>
                         @csrf
                         <!-- Section 1 -->
@@ -141,8 +146,8 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom">Job Title</label>
-                                <input type="text" name="job_title" class="form-control form-control-custom" required>
-                                <div class="invalid-feedback">Enter job title</div>
+                                <input type="text" id="jobDetailInput" name="job_title" class="form-control form-control-custom" required>
+                                <div class="invalid-feedback" id="jobsDetailError">Numbers are not allowed</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-custom">Number of Positions</label>
@@ -181,9 +186,8 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-custom">Target Start Date</label>
-                                <input type="date" name="target_start_date" class="form-control form-control-custom" required>
+                                <input type="date" name="target_start_date" class="form-control form-control-custom" required min="<?= date('Y-m-d'); ?>">
                                 <div class="invalid-feedback">Enter a target date</div>
-
                             </div>
 
                         </div>
@@ -195,10 +199,10 @@
                                 <select id="jobrole" name="function_id" class="form-control form-control-custom" required>
                                     <option value="">Select Department Function</option>
                                          @foreach($jobroles as $jobrole)
-                                        <option value="{{ $jobrole->id }}" data-band="{{ $jobrole->band }}">{{ $jobrole->function_title }}</option>
+                                            <option value="{{ $jobrole->id }}" data-band="{{ $jobrole->band }}">{{ $jobrole->function_title }}</option>
                                           @endforeach
                                 </select>
-                                <div class="invalid-feedback">Please select a function</div>
+                                <div class="invalid-feedback">Please select department function</div>
 
                             </div>
                             <div class="col-md-6">
@@ -263,19 +267,19 @@
                             <div class="col-md-6">
                                 <label class="form-label-custom">Key Skills</label>
                                 <input type="text" id="skillsInput" name="key_skills" class="form-control form-control-custom" required>
-                                <div class="invalid-feedback" id="skillsError">Enter key skills</div>
+                                <div class="invalid-feedback" id="skillsError">Numbers are not allowed</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-custom exclude">Languages Required</label>
-                                <input type="text" id="" name="language_required" class="form-control form-control-custom" >
-                                <div class="invalid-feedback" id="experinceError"></div>
+                                <input type="text" id="languageInput" name="language_required" class="form-control form-control-custom" >
+                                <div class="invalid-feedback" id="languageError">Enter the language</div>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom exclude">Certifications</label>
-                                <input type="text" id="certificationsInput" name="certifications" class="form-control form-control-custom" >
+                                <input type="text" id="certificationsInput" name="certifications" class="form-control form-control-custom" placeholder="If any (certifications)">
                                 <div class="invalid-feedback" id="certificationsError">Numberic not allowed</div>
                             </div>
                             <div class="col-md-6">
@@ -299,14 +303,12 @@
                             </div>
                             @endforeach
                         </div>
-
-                        <div class="row mb-3">
+                        <div class="row mb-3" id="replacing-employee-group" style="display: none;">
                             <div class="col-md-6">
                                 <label class="form-label-custom exclude">Replacing Employee</label>
-                                <input type="text" name="replacing_employee" class="form-control form-control-custom" placeholder="Name (if replacement)">
+                                <input type="text" name="replacing_employee" class="form-control form-control-custom" placeholder="Employee Name">
                             </div>
                         </div>
-
                         <div class="mb-3">
                             <label class="form-label-custom">Justification Details</label>
                             <textarea name="justification_details" rows="2" class="form-control form-control-custom" placeholder="Explain the reason for the requisition" required></textarea>
@@ -373,6 +375,23 @@
     </div>
 </div>
 
+<script>
+    $(document).ready(function() {
+        function toggleReplacingField() {
+            let showField = false;
+            $('input[name="requisition_type[]"]:checked').each(function() {
+                if ($(this).val() === 'Replacement') {
+                    showField = true;
+                }
+            });
 
+            $('#replacing-employee-group').toggle(showField);
+        }
+
+        // On page load and when any checkbox is toggled
+        toggleReplacingField();
+        $('input[name="requisition_type[]"]').on('change', toggleReplacingField);
+    });
+</script>
 
 @endsection

@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <title>{{ config('app.name')}}</title>
 
     <!-- Custom fonts for this template-->
@@ -120,6 +119,7 @@
     <script src="{{asset('static/js/demo/chart-area-demo.js')}}"></script>
     <script src="{{asset('static/js/demo/chart-pie-demo.js')}}"></script>
 
+    @stack('custome_js')
 </body>
 @endguest
 

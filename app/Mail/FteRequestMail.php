@@ -40,7 +40,7 @@ class FteRequestMail extends Mailable
             markdown: 'emails.fte_requestMail',
              with: [
                 'data' => $this->requestData,
-                'url' => url('/fte_request/show/'.$this->requestData->id),
+                'url' => route('fte_request.show', $this->requestData->id),
             ],
         );
     }
