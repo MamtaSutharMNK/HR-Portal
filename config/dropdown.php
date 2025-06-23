@@ -29,24 +29,7 @@ return [
         'TemporaryNeed' => 'Temporary Need',
         'ProjectBased' => 'Project-based',
     ],
-
-    'recruitment_sources' => [
-        'Internal' => 'Internal',
-        'External' => 'External',
-        'GlobalMobility' => 'Global Mobility',
-        'Agency' => 'Agency',
-        'EmployeeReferral' => 'Employee Referral',
-    ],
-
-    'visa_required' => [
-        1 => 'Yes',
-        0 => 'No',
-    ],
-
-    'relocation_support' => [
-        1 => 'Yes',
-        0 => 'No',
-    ],
+ 
     'ctc_types'=>[
         0 => 'Monthly',
         1 => 'Yearly'

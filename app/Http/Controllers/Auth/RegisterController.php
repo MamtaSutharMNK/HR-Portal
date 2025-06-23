@@ -8,7 +8,9 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Session;
+
+
 
 class RegisterController extends Controller
 {
@@ -30,7 +32,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/';
+    protected $redirectTo = '/fte_request';
 
     /**
      * Create a new controller instance.
@@ -74,4 +76,14 @@ class RegisterController extends Controller
         ]);
            
     }
+
+
+
+protected function registered(Request $request, $user)
+{
+    
+    Session::put('hide_skip_once', true);
+    return redirect('/fte_request');
+}
+
 }
