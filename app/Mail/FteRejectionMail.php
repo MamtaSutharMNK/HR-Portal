@@ -9,14 +9,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class FteRequestMail extends Mailable
+class FteRejectionMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public $requestData)
+    public function __construct(public $requestForm)
     {
         //
     }
@@ -27,7 +27,7 @@ class FteRequestMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'FTE Request Mail',
+            subject: 'FTE Rejection Mail',
         );
     }
 
@@ -36,11 +36,10 @@ class FteRequestMail extends Mailable
      */
     public function content(): Content
     {
-        return new Content(
-            markdown: 'emails.fte_requestMail',
+         return new Content(
+            markdown: 'emails.mail_rejection',
              with: [
-                'data' => $this->requestData,
-                'url' => route('fte_request.show', $this->requestData->id),
+                'data' => $this->requestForm
             ],
         );
     }
