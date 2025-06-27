@@ -36,8 +36,8 @@
                             <div class="form-group">
                                 <label for="email">{{ __('Employee ID:') }}</label>
                                 <input id="emp_id" type="text" class="form-control form-control-user @error('emp_id') is-invalid @enderror" name="emp_id" placeholder="Employee ID" value="{{ old('emp_id') }}" 
-                                required autocomplete="emp_id">   
-
+                                required autocomplete="emp_id"  pattern="^mnkgcs\d+$" title="Employee ID must start with 'mnkgcs' followed by numbers only">   
+                                <div id="errorFeedBack" style='color:#E23D3F;  font-weight:bold; font-size:small;'></div>
                                 @error('emp_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -90,4 +90,25 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const empInput = document.getElementById("emp_id");
+
+    empInput.onchange = function () {
+        const pattern = /^mnkgcs\d+$/;
+        const value = empInput.value;
+        const errorFeedback = empInput.nextElementSibling;
+
+        if (!pattern.test(value)) {
+            empInput.classList.add("is-invalid");
+            errorFeedback.innerHTML ="Enter correct Employee Id";
+        } else {
+            empInput.classList.remove("is-invalid");
+            errorFeedback.innerHTML = "";
+        }
+    };
+});
+</script>
+
  @endsection

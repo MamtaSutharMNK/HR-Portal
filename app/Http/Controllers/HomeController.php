@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Country;
-use App\Models\Currency;
-use App\Models\Manager;
-use App\Models\User;
-use App\Models\Department;
-use App\Models\JobRole;
-
 use Illuminate\Http\Request;
+use App\Models\RequestForm;
+use Illuminate\Support\Facades\DB;
+
 
 class HomeController extends Controller
 {
@@ -30,9 +26,14 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('index');
+        $statuses = RequestForm::STATUS_BY_ID;
+        $statusCounts = RequestForm::selectRaw('status, COUNT(*) as count')->groupBy('status')->pluck('count', 'status')->toArray();
+        $emailStatusCounts = RequestForm::selectRaw('mail_status, COUNT(*) as count')->groupBy('mail_status')
+            ->pluck('count', 'mail_status')->toArray();
+
+    // dd($emailStatusCounts);
+
+        return view('index',['statuses' => $statuses,'statusCount'=> $statusCounts,
+        'emailStatusCounts'=>$emailStatusCounts,'emailStatuses' => RequestForm::EMAIL_STATUS_LABELS]);
     }
-
-    
-
 }

@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('work_location', 255)->nullable();
             $table->date('target_by_when')->nullable();
             $table->string('department_function');
-            $table->string('employee_level');
+            $table->unsignedBigInteger('employee_level_id')->nullable();
             $table->string('currency');                                                                                                                                 
             $table->string('ctc_type');
             $table->decimal('ctc_start_range',10,2); 
@@ -45,6 +45,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('department_id')->references('id')->on('departments')->onDelete('set null');
             $table->foreign('branch_id')->references('id')->on('requesting_branches')->onDelete('set null');
+
         });
     }
 

@@ -20,6 +20,14 @@
     <hr class="sidebar-divider">
 
     <li class="nav-item">
+        <a class="nav-link" href="{{route('fte_request.index')}}">
+            <i class="fas fa-fw fa-table"></i>
+            <span>FTE Request Form</span></a>
+    </li>
+
+    <hr class="sidebar-divider">
+
+    <li class="nav-item">
         <a class="nav-link" href="{{route('fte_request.create')}}">
             <i class="fas fa-fw fa-table"></i>
             <span>FTE List</span></a>
