@@ -581,37 +581,37 @@
             });
         });
 
-$(document).ready(function () {
-        // Toggle Replacing Employee field
-        function toggleReplacingField() {
-            let showField = false;
+    $(document).ready(function () {
+            // Toggle Replacing Employee field
+            function toggleReplacingField() {
+                let showField = false;
 
-            $('input[name="requisition_type[]"]:checked').each(function () {
-                if ($(this).val() === 'Replacement') {
-                    showField = true;
+                $('input[name="requisition_type[]"]:checked').each(function () {
+                    if ($(this).val() === 'Replacement') {
+                        showField = true;
+                    }
+                });
+
+                const replacingGroup = $('#replacing-employee-group');
+                const replacingInput = replacingGroup.find('input[name="replacing_employee"]');
+
+                if (showField) {
+                    replacingGroup.show();
+                    replacingInput.prop('required', true);
+                } else {
+                    replacingInput.prop('required', false);
+                    replacingGroup.hide();
+                    replacingInput.val('');
                 }
-            });
-
-            const replacingGroup = $('#replacing-employee-group');
-            const replacingInput = replacingGroup.find('input[name="replacing_employee"]');
-
-            if (showField) {
-                replacingGroup.show();
-                replacingInput.prop('required', true);
-            } else {
-                replacingInput.prop('required', false);
-                replacingGroup.hide();
-                replacingInput.val('');
             }
-        }
 
-        toggleReplacingField(); // Initial check on page load
-        $('input[name="requisition_type[]"]').on('change', toggleReplacingField);
-    });
-
+            toggleReplacingField(); // Initial check on page load
+            $('input[name="requisition_type[]"]').on('change', toggleReplacingField);
+        });
 
 
-     document.addEventListener('DOMContentLoaded', function () {
+
+    document.addEventListener('DOMContentLoaded', function () {
         const approvalLevel = document.querySelector('select[name="approval_level"]');
         const localHead = document.querySelector('.L2');
         const globalHead = document.querySelector('.L3');

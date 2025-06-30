@@ -14,11 +14,12 @@ Auth::routes();
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->middleware('auth')->name('index');
 
-Route::view('/tables',  'tables')->name('tables');
+Route::view('/tables','tables')->name('tables');
+
 
 Route::resource('fte_request', FteRequestFormController::class)->middleware('auth');
 
-Route::post('/fte_request/upload', [FteRequestFormController::class, 'upload'])->middleware('auth');
+Route::post('/fte_request/upload', [FteRequestFormController::class, 'upload'])->name('fte.upload')->middleware('auth');
 Route::post('/fte_request/status-update', [FteRequestFormController::class, 'updateStatus'])->name('fte_request.status_update');
 
 Route::post('/fte_request/status-change', [FteRequestFormController::class, 'changeStatus'])->name('fte_request.status_change');
@@ -32,6 +33,10 @@ Route::post('/employeeLevels/batch', [EmployeeLevelController::class, 'storeBatc
 Route::get('/edit-view', function () {
     return view('fte_list.edit');
 });
+
+//Datatables route
+Route::get('/fte_request/list/ajax', [FteRequestFormController::class, 'ajaxList'])->name('fte_request.list.ajax');
+
 
 
                                                                                                                                                                                                                                                                                                                                                                                                

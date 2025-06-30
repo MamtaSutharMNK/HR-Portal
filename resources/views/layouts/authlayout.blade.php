@@ -48,19 +48,28 @@
 
     <!-- script for fte page -->
     <script src="{{asset('static/js/fte.js')}}"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/34.2.0/classic/ckeditor.js"></script>
-      <script>
-          ClassicEditor
-              .create( document.querySelector( '#editor' ),{
-                simpleUpload:{
-                    uploadUrl : '/fte_request/upload',
-                    headers :{
-                        'X-CSRF-TOKEN' : '{{ csrf_token() }}'
-                    }
+    <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const editorElement = document.querySelector('#editor');
+                if (editorElement) {
+                    ClassicEditor.create(editorElement, {
+                        simpleUpload: {
+                            uploadUrl: "{{ route('fte.upload') }}",
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        }
+                    })
+                    .then(editor => {
+                        console.log("CKEditor ready");
+                    })
+                    .catch(error => {
+                        console.error("CKEditor Init Error:", error);
+                    });
                 }
-                 
-              }).catch( error => {} );
-      </script>
+            });
+        </script>
 
 </body>
 

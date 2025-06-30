@@ -14,3 +14,5 @@
     <!-- Custom styles for this template-->
     <link href="{{asset('static/css/sb-admin-2.min.css')}}" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('static\img\MNK group Logo.svg')}}" type="image/x-icon">
+    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+

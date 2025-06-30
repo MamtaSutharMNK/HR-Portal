@@ -27,7 +27,7 @@ class FteRequestClose extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Fte Request Close',
+            subject: 'FTE Request Has Been Closeed',
         );
     }
 

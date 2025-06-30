@@ -21,6 +21,8 @@ use App\Mail\FteRejectionMail;
 use App\Mail\FteRequestClose;
 use App\Models\ActionLog;
 use Illuminate\Support\Str;
+use Yajra\DataTables\DataTables;
+
 
 
 class FteRequestFormController extends Controller
@@ -152,47 +154,35 @@ class FteRequestFormController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(RequestFormRequest $request, string $id)
     {
-    //     $request->validate([
-    //     'date_of_request' => 'required|date',
-    //     'requested_by' => 'required|string|max:255',
-    //     'department_id' => 'nullable|integer',
-    //     'branch_id' => 'nullable|integer',
-    //     'manager_email' => 'nullable|email',
-    //     'hr_email' => 'nullable|email',
-    //     'ctc_start_range' => 'nullable|numeric',
-    //     'ctc_end_range' => 'nullable|numeric',
-    //     // Add more validation rules as needed
-    // ]);
-
-    $fte = RequestForm::findOrFail($id);
-    $fte->update([
-        'date_of_request' => $request->date_of_request,
-        'requested_by' => $request->requested_by,
-        'department_id' => $request->department_id,
-        'branch_id' => $request->branch_id,
-        'manager_name' => $request->manager_name,
-        'manager_email' => $request->manager_email,
-        'hr_email' => $request->hr_email,
-        'level2_email' => $request->level2_email,
-        'level3_email' => $request->level3_email,
-        'no_of_positions' => $request->no_of_positions,
-        'position_filled' => $request->position_filled,
-        'type_of_employment' => is_array($request->type_of_employment) ? implode(',', $request->type_of_employment) : $request->type_of_employment,
-        'employment_category' => is_array($request->employment_category) ? implode(',', $request->employment_category) : $request->employment_category,
-        'work_location' => $request->work_location,
-        'target_by_when' => $request->target_by_when,
-        'department_function' => $request->department_function,
-        'employee_level' => $request->employee_level,
-        'currency' => $request->currency,
-        'ctc_type' => $request->ctc_type,
-        'ctc_start_range' => $request->ctc_start_range,
-        'ctc_end_range' => $request->ctc_end_range,
-        'justification_details' => $request->justification_details,
-        'replacing_employee' => $request->replacing_employee,
-        'consequences_of_not_hiring' => $request->consequences_of_not_hiring,
-        'requisition_type' => is_array($request->requisition_type) ? implode(',', $request->requisition_type) : $request->requisition_type
+        $fte = RequestForm::findOrFail($id);
+        $fte->update([
+            'date_of_request' => $request->date_of_request,
+            'requested_by' => $request->requested_by,
+            'department_id' => $request->department_id,
+            'branch_id' => $request->branch_id,
+            'manager_name' => $request->manager_name,
+            'manager_email' => $request->manager_email,
+            'hr_email' => $request->hr_email,
+            'level2_email' => $request->level2_email,
+            'level3_email' => $request->level3_email,
+            'no_of_positions' => $request->no_of_positions,
+            'position_filled' => $request->position_filled,
+            'type_of_employment' => is_array($request->type_of_employment) ? implode(',', $request->type_of_employment) : $request->type_of_employment,
+            'employment_category' => is_array($request->employment_category) ? implode(',', $request->employment_category) : $request->employment_category,
+            'work_location' => $request->work_location,
+            'target_by_when' => $request->target_by_when,
+            'department_function' => $request->department_function,
+            'employee_level' => $request->employee_level,
+            'currency' => $request->currency,
+            'ctc_type' => $request->ctc_type,
+            'ctc_start_range' => $request->ctc_start_range,
+            'ctc_end_range' => $request->ctc_end_range,
+            'justification_details' => $request->justification_details,
+            'replacing_employee' => $request->replacing_employee,
+            'consequences_of_not_hiring' => $request->consequences_of_not_hiring,
+            'requisition_type' => is_array($request->requisition_type) ? implode(',', $request->requisition_type) : $request->requisition_type
     ]);
     if ($fte->jobDetail) {
         $fte->jobDetail->update([
@@ -343,32 +333,58 @@ class FteRequestFormController extends Controller
     }
 
 
-public function upload(Request $request)
-{
-    if ($request->hasFile('upload')) {
-        $file = $request->file('upload');
-        $extension = $file->getClientOriginalExtension();
-        $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $extension;
+    public function upload(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $extension;
 
-        // Save to public/uploads directory
-        $path = $file->storeAs('public/uploads', $filename);
-        $url = Storage::url($path);
+            // Save to public/uploads directory
+            $path = $file->storeAs('public/uploads', $filename);
+            $url = Storage::url($path);
 
-        $mime = $file->getMimeType();
+            $mime = $file->getMimeType();
 
-        // Check if the file is an image
-        if (Str::startsWith($mime, 'image/')) {
-            return response()->json([
-                'url' => $url // CKEditor will auto-insert the <img>
-            ]);
-        } else {
-            // For docs, pdfs, etc., insert a download link
-            return response()->json([
-                'default' => "<p><a href='$url' target='_blank' rel='noopener'>Download File</a></p>"
-            ]);
+            // Check if the file is an image
+            if (Str::startsWith($mime, 'image/')) {
+                return response()->json([
+                    'url' => $url // CKEditor will auto-insert the <img>
+                ]);
+            } else {
+                // For docs, pdfs, etc., insert a download link
+                return response()->json([
+                    'default' => "<p><a href='$url' target='_blank' rel='noopener'>Download File</a></p>"
+                ]);
+            }
         }
+
+        return response()->json(['error' => 'No file uploaded.'], 400);
     }
 
-    return response()->json(['error' => 'No file uploaded.'], 400);
-}
+    // Datatables function
+    public function ajaxList(Request $request)
+    {
+        $query = RequestForm::with('department')->select('request_forms.*');
+
+        return DataTables::of($query)
+            ->addColumn('department_name', fn($row) => $row->department->name ?? 'N/A')
+            ->addColumn('status_label', fn($row) => '<span class="badge badge-' . RequestForm::STATUS_COLORS[$row->status] . '">' . RequestForm::STATUS_BY_ID[$row->status] . '</span>')
+            ->addColumn('mail_status_label', fn($row) => '<span class="badge badge-' . RequestForm::MAIL_STATUS_COLORS[$row->mail_status] . '">' . RequestForm::STATUS_BY_MAIL_ID[$row->mail_status] . '</span>')
+            ->addColumn('action', function ($row) {
+                $view = route('fte_request.show', $row->id);
+                $edit = route('fte_request.edit', $row->id);
+                return '
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">Action</button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="' . $view . '"><i class="fas fa-eye mr-2"></i>View</a>
+                            <a class="dropdown-item" href="' . $edit . '"><i class="fas fa-edit mr-2"></i>Edit</a>
+                        </div>
+                    </div>';
+            })
+            ->rawColumns(['status_label', 'mail_status_label', 'action'])
+            ->make(true);
+    }
+
 }
