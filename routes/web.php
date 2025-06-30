@@ -28,8 +28,6 @@ Route::post('/departments/batch', [DepartmentController::class, 'storeMultiple']
 
 Route::resource('employee-levels', EmployeeLevelController::class);
 
-Route::post('/employeeLevels/batch', [EmployeeLevelController::class, 'storeBatch']);
-
 Route::get('/edit-view', function () {
     return view('fte_list.edit');
 });

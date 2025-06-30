@@ -6,42 +6,9 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-
-<style>
-    .ant-description-row {
-        display: flex;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
-        border-bottom: 1px solid #eaeaea;
-        padding-bottom: 0.5rem;
-    }
-
-    .ant-description-item {
-        flex: 0 0 33.3333%;
-        padding: 0.5rem 1rem;
-    }
-
-    .ant-description-label {
-        font-weight: 600;
-        color: #6c757d;
-        display: block;
-        font-size: 0.9rem;
-        margin-bottom: 0.2rem;
-    }
-
-    .ant-description-content {
-        color: #212529;
-        font-size: 1rem;
-    }
-
-    .card-header h4 {
-        font-weight: 600;
-    }
-
-    .badge {
-        font-size: 0.85rem;
-    }
-</style>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/fte-show.css') }}">
+@endpush
 
 <div class="container-fluid">
     <div class="card shadow mb-4">
@@ -189,7 +156,7 @@
                 </div>
                 <div class="ant-description-item" style="flex: 0 0 100%">
                     <span class="ant-description-label">Job Description</span>
-                    <span class="ant-description-content">{{ $data->jobDetail->job_description ?? '-' }}</span>
+                    <span class="ant-description-content">{{ strip_tags($data->jobDetail->job_description ?? '-') }}</span>
                 </div>
             </div>
 

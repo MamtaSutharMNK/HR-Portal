@@ -16,7 +16,7 @@ const colorMap = {
 };
     document.addEventListener("DOMContentLoaded", function () {
         const statusCounts = @json($statusCount);
-        const statuses = @json($statuses);
+        const statuses = @json($status);
 
         const pieLabels = [];
         const pieData = [];
@@ -75,7 +75,7 @@ const colorMap = {
     <!-- Request Status Cards -->
     <h1 class="m-0 font-weight-bold text-primary mb-4">Request Status Overview</h1>
     <div class="row">
-        @foreach($statuses as $key => $label)
+        @foreach($status as $key => $label)
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card border-left-info shadow h-100 py-2">
                     <div class="card-body">
@@ -132,7 +132,7 @@ const colorMap = {
                         ];
                     @endphp
 
-                    @foreach ($emailStatuses as $code => $label)
+                    @foreach ($emailStatus as $code => $label)
                         @php
                             $count = $emailStatusCounts[$code] ?? 0;
                             $percentage = $totalEmails > 0 ? round(($count / $totalEmails) * 100, 1) : 0;

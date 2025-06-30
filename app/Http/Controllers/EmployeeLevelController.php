@@ -30,8 +30,21 @@ class EmployeeLevelController extends Controller
     public function store(Request $request)
     { 
        //
+        $request->validate([
+            'levels' => 'required|array',
+            'levels.*' => 'required|string|max:255',
+        ]);
 
+        $inserted = [];
+
+        foreach ($request->levels as $title) {
+            $level = EmployeeLevel::create(['title' => $title]);
+            $inserted[] = ['id' => $level->id, 'title' => $level->title];
+        }
+
+        return response()->json($inserted);
     }
+
 
     /**
      * Display the specified resource.
@@ -64,23 +77,4 @@ class EmployeeLevelController extends Controller
     {
         //
     }
-
-    public function storeBatch(Request $request)
-    {
-        
-        $request->validate([
-            'levels' => 'required|array',
-            'levels.*' => 'required|string|max:255',
-        ]);
-
-        $inserted = [];
-
-        foreach ($request->levels as $title) {
-            $level = EmployeeLevel::create(['title' => $title]);
-            $inserted[] = ['id' => $level->id, 'title' => $level->title];
-        }
-
-        return response()->json($inserted);
-    }
-
 }

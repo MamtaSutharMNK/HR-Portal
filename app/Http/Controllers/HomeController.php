@@ -31,9 +31,7 @@ class HomeController extends Controller
         $emailStatusCounts = RequestForm::selectRaw('mail_status, COUNT(*) as count')->groupBy('mail_status')
             ->pluck('count', 'mail_status')->toArray();
 
-    // dd($emailStatusCounts);
-
-        return view('index',['statuses' => $statuses,'statusCount'=> $statusCounts,
-        'emailStatusCounts'=>$emailStatusCounts,'emailStatuses' => RequestForm::EMAIL_STATUS_LABELS]);
+        return view('index',['status' => $statuses,'statusCount'=> $statusCounts,
+        'emailStatusCounts'=>$emailStatusCounts,'emailStatus' => RequestForm::EMAIL_STATUS_LABELS]);
     }
 }

@@ -10,7 +10,6 @@
 
     <div class="card shadow mb-4">
         <div class="card-body">
-
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <label><strong>Date of Request</strong></label>
@@ -138,7 +137,7 @@
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <label><strong>Languages Required</strong></label>
-                    <input type="text" name="language_required" class="form-control" value="{{ $data->jobDetail->language_required }}">
+                    <input type="text" name="language_required" class="form-control" value="{{ $data->jobDetail->language_required ?? 'NA'}}">
                 </div>
                 <div class="col-md-4 mb-3">
                     <label><strong>Certifications</strong></label>
@@ -189,6 +188,7 @@
 
 </div>
 
+@push('custome_js')
 <script>
    document.addEventListener('DOMContentLoaded', function () {
     const form = document.querySelector('form');
@@ -210,5 +210,6 @@
     });
 });
 </script>
+@endpush
 
 @endsection

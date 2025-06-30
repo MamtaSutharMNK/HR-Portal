@@ -555,7 +555,7 @@
 
             let formData = $(this).serialize();
 
-            $.post('/employeeLevels/batch', formData, function(response) {
+            $.post('employee-levels', formData, function(response) {
                 response.forEach(function(level) {
                     let newOption = new Option(level.title, level.id);
                     $('#employee_level').append(newOption);
