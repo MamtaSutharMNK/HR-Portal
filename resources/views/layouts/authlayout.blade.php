@@ -8,9 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{config('app.name')}}</title>
-    <link rel="shortcut icon" href="{{ asset('static\img\specialty-mga-uk.png')}}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('static\img\MNK group Logo.svg')}}" type="image/x-icon">
 
     <!-- Custom fonts for this template-->
     <link href="{{asset('static/vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
@@ -26,7 +27,6 @@
 
     <!-- css for fte request form -->
     <link href="{{asset('static/css/fte.css')}}" rel="stylesheet">  
-
 
 </head>
 
@@ -48,7 +48,28 @@
 
     <!-- script for fte page -->
     <script src="{{asset('static/js/fte.js')}}"></script>
-
+    <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const editorElement = document.querySelector('#editor');
+                if (editorElement) {
+                    ClassicEditor.create(editorElement, {
+                        simpleUpload: {
+                            uploadUrl: "{{ route('fte.upload') }}",
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        }
+                    })
+                    .then(editor => {
+                        console.log("CKEditor ready");
+                    })
+                    .catch(error => {
+                        console.error("CKEditor Init Error:", error);
+                    });
+                }
+            });
+        </script>
 
 </body>
 

@@ -1,195 +1,184 @@
 @extends('layouts.mainlayout')
 
 @section('content')
+@include('fte_list.reject_reason')
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <meta name="csrf-token" content="{{ csrf_token() }}">
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/fte-show.css') }}">
+@endpush
+
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-center text-primary">FTE REQUEST DETAILS</h1>
-
     <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-primary text-white text-center">
+            <h4 class="m-0">FTE Request Details</h4>
+        </div>
+
         <div class="card-body">
-            
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Request Id:</strong> {{ $data->request_uuid ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Date of Request:</strong> {{ $data->date_of_request ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Manager:</strong> {{ $data->manager_name ?? '-' }}</p>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <!-- admin  -->
-                    <!-- <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Name:</strong> {{ $data->requested_by ?? '-' }}</p>
-                        </div>
-                    </div> -->
-                     <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Manager Email:</strong> {{ $data->manager_email ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Business Unit:</strong> {{ $data->department->name ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Department Function:</strong> {{ $data->department_function ?? '-' }}</p>
-                        </div>
-                    </div>
-                    
+            {{-- Basic Info --}}
+            <div class="ant-description-row">
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Request ID</span>
+                    <span class="ant-description-content">{{ $data->request_uuid ?? '-' }}</span>
                 </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Date of Request</span>
+                    <span class="ant-description-content">{{ $data->date_of_request ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Requested By</span>
+                    <span class="ant-description-content">{{ $data->requested_by ?? '-' }}</span>
+                </div>
+            </div>
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Requesting Branch</strong> {{ $data->requestingBranch->name ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Job Title:</strong> {{ $data->jobDetail->job_title ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Number of Positions:</strong> {{ $data->no_of_positions ?? '-' }}</p>
-                        </div>
-                    </div>
+            {{-- Department & Manager --}}
+            <div class="ant-description-row">
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Department</span>
+                    <span class="ant-description-content">{{ $data->department->name ?? '-' }}</span>
                 </div>
-             
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Type of Employment:</strong> {{ $data->type_of_employment ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Employment Category:</strong> {{ $data->employment_category?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Work Location:</strong> {{ $data->work_location ?? '-' }}</p>
-                        </div>
-                    </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Function</span>
+                    <span class="ant-description-content">{{ $data->department_function ?? '-' }}</span>
                 </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Branch</span>
+                    <span class="ant-description-content">{{ $data->requestingBranch->name ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Manager Name</span>
+                    <span class="ant-description-content">{{ $data->manager_name ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Manager Email</span>
+                    <span class="ant-description-content">{{ $data->manager_email ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">HR Email</span>
+                    <span class="ant-description-content">{{ $data->hr_email ?? '-' }}</span>
+                </div>
+            </div>
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Target End Date:</strong> {{ $data->target_by_when ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>currency:</strong> {{ $data->currency ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>CTC Type:</strong> {{ config('dropdown.ctc_types')[$data->ctc_type] ?? '-' }}</p>
-                        </div>
-                    </div>
+            {{-- Job Details --}}
+            <div class="ant-description-row">
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Job Title</span>
+                    <span class="ant-description-content">{{ $data->jobDetail->job_title ?? '-' }}</span>
                 </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Employee Level</span>
+                    <span class="ant-description-content">{{ $data->employeeLevel->title ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">No. of Positions</span>
+                    <span class="ant-description-content">{{ $data->no_of_positions ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Position Filled</span>
+                    <span class="ant-description-content">{{ $data->position_filled ?? '0' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Requisition Type</span>
+                    <span class="ant-description-content">{{ $data->requisition_type ?? '-' }}</span>
+                </div>
+                @if(!empty($data->replacing_employee))
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Replacing Employee</span>
+                    <span class="ant-description-content">{{ $data->replacing_employee }}</span>
+                </div>
+                @endif
+            </div>
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>CTC Start Range:</strong> {{ $data->ctc_start_range ?? '-' }}</p>
-                            <p><strong>CTC End Range:</strong> {{ $data->ctc_end_range ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Education:</strong> {{ $data->jobDetail->education ?? '-' }}</p> 
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>experience:</strong> {{ $data->jobDetail->experience ?? '-' }}</p>
-                        </div>
-                    </div>
+            {{-- Compensation --}}
+            <div class="ant-description-row">
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Currency</span>
+                    <span class="ant-description-content">{{ $data->currency ?? '-' }}</span>
                 </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">CTC Type</span>
+                    <span class="ant-description-content">{{ config('dropdown.ctc_types')[$data->ctc_type] ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">CTC Range</span>
+                    <span class="ant-description-content">₹{{ $data->ctc_start_range }} - ₹{{ $data->ctc_end_range }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Target End Date</span>
+                    <span class="ant-description-content">{{ $data->target_by_when ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Work Location</span>
+                    <span class="ant-description-content">{{ $data->work_location ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Employment Type</span>
+                    <span class="ant-description-content">{{ $data->type_of_employment ?? '-' }}</span>
+                </div>
+            </div>
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Key Skills:</strong> {{ $data->jobDetail->key_skills ?? '-' }}</p> 
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>language Required:</strong> {{ $data->jobDetail->language_required ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Certifications:</strong> {{ $data->jobDetail->certifications ?? '-' }}</p>
-                        </div>
-                    </div>
+            {{-- Skills --}}
+            <div class="ant-description-row">
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Key Skills</span>
+                    <span class="ant-description-content">{{ $data->jobDetail->key_skills ?? '-' }}</span>
                 </div>
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Job Description:</strong> {{ $data->jobDetail->job_description ?? '-' }}</p> 
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Requition Type:</strong> {{ $data->requisition_type ?? '-' }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Justification Details:</strong> {{ $data->justification_details ?? '-' }}</p>
-                        </div>
-                    </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Certifications</span>
+                    <span class="ant-description-content">{{ $data->jobDetail->certifications ?? '-' }}</span>
                 </div>
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="p-3">
-                            <p><strong>Consequences of not Hiring:</strong> {{ $data->consequences_of_not_hiring ?? '-' }}</p> 
-                        </div>
-                    </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Languages Required</span>
+                    <span class="ant-description-content">{{ $data->jobDetail->language_required ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Education</span>
+                    <span class="ant-description-content">{{ $data->jobDetail->education ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Experience</span>
+                    <span class="ant-description-content">{{ $data->jobDetail->experience ?? '-' }}</span>
+                </div>
+            </div>
 
+            {{-- Justification --}}
+            <div class="ant-description-row">
+                <div class="ant-description-item" style="flex: 0 0 100%">
+                    <span class="ant-description-label">Justification</span>
+                    <span class="ant-description-content">{{ $data->justification_details ?? '-' }}</span>
                 </div>
-             
-             <!-- Buttons Row -->
-                @php
-                    use App\Models\RequestForm;
-                
-                    $display = 'd-none';
-                
-                    $userEmail = Auth::user()->email;
-                
-                    if (env('HR_MAIL') === $userEmail) {
-                        $display = 'd-flex';
-                    } else {
-                        if ($data->mail_status === RequestForm::MAIL_PENDING && env('CFO_MAIL') === $userEmail) {
-                            $display = 'd-flex';
-                        } elseif ($data->mail_status === RequestForm::CFO_Mail_APPROVAL && env('CTO_MAIL') === $userEmail) {
-                            $display = 'd-flex';
-                        }
-                    }
-                @endphp
+                <div class="ant-description-item" style="flex: 0 0 100%">
+                    <span class="ant-description-label">Consequences of Not Hiring</span>
+                    <span class="ant-description-content">{{ $data->consequences_of_not_hiring ?? '-' }}</span>
+                </div>
+                <div class="ant-description-item" style="flex: 0 0 100%">
+                    <span class="ant-description-label">Job Description</span>
+                    <span class="ant-description-content">{{ strip_tags($data->jobDetail->job_description ?? '-') }}</span>
+                </div>
+            </div>
+
+            {{-- Status --}}
+            <div class="ant-description-row">
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Form Status</span>
+                    <span class="ant-description-content badge badge-success">
+                        {{ \App\Models\RequestForm::STATUS_BY_ID[$data->status] ?? '-' }}
+                    </span>
+                </div>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Mail Status</span>
+                    <span class="ant-description-content badge badge-warning">
+                        {{ \App\Models\RequestForm::STATUS_BY_MAIL_ID[$data->mail_status] ?? '-' }}
+                    </span>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-11">
-                    <div class="justify-content-end approval_btn {{$display}}">
+                    <div class="justify-content-end approval_btn">
                         <button class="btn btn-success" onclick="confirmAction('{{$data->id}}')">Accept</button>
                         <span style="font-size: 30px; margin-left: 20px;"></span>
                         <button class="btn btn-danger" onclick="rejectAction('{{$data->id}}')">Reject</button>
@@ -200,18 +189,11 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @push('custome_js')
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <script type="text/javascript" src="{{ asset('custome_js/fte_list.js') }}"></script>
-  <script>
-       $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                },
-            });
-  </script>
 
 @endpush
-

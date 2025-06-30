@@ -1,6 +1,7 @@
 @extends('layouts.mainlayout')
 
 @section('content')
+
      <!-- Begin Page Content -->
                 <div class="container-fluid">
 
@@ -15,40 +16,20 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered" id="fte-table" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Request Id</th> 
+                                            <th>Request Id</th>
                                             <th>Department</th>
                                             <th>Department Function</th>
                                             <th>Manager</th>
                                             <th>Date of request</th>
-                                            <th >Action</th>
+                                            <th>Status</th>
+                                            <th>Mail Status</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        @foreach($data as $item)
-                                            <tr>
-                                                <td>{{ $item->request_uuid }}</td>
-                                                <td>{{ $item->department->name ?? 'N/A' }}</td>
-                                                <td>{{ $item->department_function ?? 'N/A' }}</td>
-                                                <td>{{ $item->manager_name ?? 'N/A' }}</td>
-                                                <td>{{ $item->created_at->format('d-m-Y') }}</td>
-                                                <td>
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-sm btn-primary dropdown-toggle bg-primary" type="button" id="actionDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                            Action
-                                                        </button>
-                                                        <div class="dropdown-menu" aria-labelledby="actionDropdown">
-                                                            <a class="dropdown-item" href="{{ route('fte_request.show', $item->id )}}">
-                                                                <i class="fas fa-eye mr-2"></i>View
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                         </div>
@@ -58,3 +39,34 @@
                 <!-- /.container-fluid -->
   
 @endsection
+
+@push('custome_js')
+
+<script>
+$(document).ready(function() {
+    $('#fte-table').DataTable({
+        processing: true,
+        serverSide: true,
+        dom: 'ftp',
+        ajax:{
+            url: "{{ route('fte_request.list.ajax') }}",
+            dataSrc: function(json){
+                console.log(json);
+                return json.data;
+            }
+        },
+        columns: [
+            { data: 'request_uuid', name: 'request_uuid' , orderable: true, searchable: true },
+            { data: 'department_name', name: 'department.name', orderable: true, searchable: true  },
+            { data: 'department_function', name: 'department_function', orderable: true, searchable: true  },
+            { data: 'manager_name', name: 'manager_name', orderable: true, searchable: true  },
+            { data: 'date_of_request', name: 'date_of_request' , orderable: false, searchable: false },
+            { data: 'status_label', name: 'status', orderable: false, searchable: false },
+            { data: 'mail_status_label', name: 'mail_status', orderable: false, searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false }
+        ]
+    });
+});
+</script>
+
+@endpush
