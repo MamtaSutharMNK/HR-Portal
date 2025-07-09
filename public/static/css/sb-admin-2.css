@@ -2357,34 +2357,35 @@ fieldset:disabled a.btn {
 
 .btn-primary {
   color: #fff;
-  background-color: #4e73df;
-  border-color: #4e73df;
+  background-color: #106073;
+  border-color: #106073;
 }
 
 .btn-primary:hover {
   color: #fff;
-  background-color: #2e59d9;
-  border-color: #2653d4;
+  background-color:#106073;
+  border-color: #106073;
 }
+
 
 .btn-primary:focus, .btn-primary.focus {
   color: #fff;
-  background-color: #2e59d9;
-  border-color: #2653d4;
+  background-color: #106073;
+  border-color: #106073;
   box-shadow: 0 0 0 0.2rem rgba(105, 136, 228, 0.5);
 }
 
 .btn-primary.disabled, .btn-primary:disabled {
   color: #fff;
-  background-color: #4e73df;
-  border-color: #4e73df;
+  background-color: #106073;
+  border-color: #106073;
 }
 
 .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active,
 .show > .btn-primary.dropdown-toggle {
   color: #fff;
-  background-color: #2653d4;
-  border-color: #244ec9;
+  background-color: #106073;
+  border-color: #106073;
 }
 
 .btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus,
@@ -9591,10 +9592,6 @@ button.bg-dark:focus {
   color: #fff !important;
 }
 
-.text-primary {
-  color: #4e73df !important;
-}
-
 a.text-primary:hover, a.text-primary:focus {
   color: #224abe !important;
 }
@@ -9665,6 +9662,15 @@ a.text-dark:hover, a.text-dark:focus {
 
 .text-black-50 {
   color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.text-blue-50 {
+  color: #106073 !important;
+}
+
+.button-blue-50 {
+  background-color: #106073 !important;
+  color: white  !important;
 }
 
 .text-white-50 {
@@ -9900,8 +9906,8 @@ a:focus {
 }
 
 .bg-gradient-primary {
-  background-color: #4e73df;
-  background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+  background-color: #106073;
+  background-image: linear-gradient(180deg, #106073 10%, #106073 100%);
   background-size: cover;
 }
 
@@ -10139,7 +10145,7 @@ a:focus {
   border: 0;
   font-weight: 900;
   content: '\f105';
-  font-family: 'Font Awesome 5 Free';
+  font-family: "Gotham", sans-serif;
 }
 
 .sidebar .nav-item.dropdown.show .dropdown-toggle::after,
@@ -10421,7 +10427,7 @@ a:focus {
 .sidebar #sidebarToggle::after {
   font-weight: 900;
   content: '\f104';
-  font-family: 'Font Awesome 5 Free';
+  font-family: "Gotham", sans-serif;
   margin-right: 0.1rem;
 }
 
@@ -10440,7 +10446,7 @@ a:focus {
 
 .sidebar.toggled #sidebarToggle::after {
   content: '\f105';
-  font-family: 'Font Awesome 5 Free';
+  font-family: "Gotham", sans-serif;
   margin-left: 0.25rem;
 }
 
@@ -10554,7 +10560,7 @@ a:focus {
     border: 0;
     font-weight: 900;
     content: '\f107';
-    font-family: 'Font Awesome 5 Free';
+    font-family: "Gotham", sans-serif;
   }
   .sidebar .nav-item .nav-link[data-toggle="collapse"].collapsed::after {
     content: '\f105';
@@ -10812,7 +10818,7 @@ a:focus {
   line-height: 51px;
   font-weight: 900;
   content: '\f107';
-  font-family: 'Font Awesome 5 Free';
+  font-family: "Gotham", sans-serif;
   color: #d1d3e2;
 }
 

@@ -27,7 +27,7 @@ class FteRequestClose extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'FTE Request Has Been Closeed',
+            subject: 'FTE Request Has Been Done',
         );
     }
 
@@ -36,9 +36,9 @@ class FteRequestClose extends Mailable
      */
     public function content(): Content
     {
-        return new Content(
-            markdown: 'emails\                                                                                                                                                                                                                                                                                                                                                                                                                                                      fte_RequestcloseMail',
-            with: [
+         return new Content(
+            markdown: 'emails.fte_RequestcloseMail',
+             with: [
                 'data' => $this->requestForm
             ],
         );

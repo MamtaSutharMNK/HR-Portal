@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_has_roles', function (Blueprint $table) {
-            $table->id();
-            $table->string('user_id')->nullable();
-            $table->boolean('role_id')->default(2);
-            $table->timestamps();
+        Schema::table('request_forms', function (Blueprint $table) {
+            $table->integer('position_filled')->nullable()->change();
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_has_roles');
+        Schema::table('request_forms', function (Blueprint $table) {
+            $table->string('position_filled')->nullable()->change();
+        });
     }
 };

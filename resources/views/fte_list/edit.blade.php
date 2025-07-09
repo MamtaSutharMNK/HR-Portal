@@ -1,10 +1,10 @@
 @extends('layouts.mainlayout')
 
 @section('content')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-center text-primary">Edit FTE Request</h1><form action="{{ route('fte_request.update', $data->id) }}" method="POST">
+    <h1 class="h3 mb-4 text-center text-blue-50">Edit FTE Request</h1>
+    <form action="{{ route('fte_request.update', $data->id) }}" method="POST">
     @csrf
     @method('PUT')
 
@@ -39,31 +39,40 @@
                     <input type="text" name="department_function" class="form-control" value="{{ $data->department_function }}">
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label><strong>Approving Manager Name</strong></label>
-                    <input type="text" name="manager_name" class="form-control" value="{{ $data->manager_name }}">
+                    <label><strong>Approal Level</strong></label>
+                    <input type="text" name="approval_level" class="form-control" value="{{ config('dropdown.approval_level')[$data->approval_level] ?? '-'  }}">
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-4 mb-3">
-                    <label><strong>Manager Email</strong></label>
-                    <input type="email" name="manager_email" class="form-control" value="{{ $data->manager_email }}">
+                    <label><strong>Manager Email (L1)</strong></label>
+                    <input type="email" name="manager_email_l1" class="form-control" value="{{ $data->manager_email_l1 }}">
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label><strong>HR Email</strong></label>
-                    <input type="email" name="hr_email" class="form-control" value="{{ $data->hr_email }}">
+                    <label><strong>HR Email (L1)</strong></label>
+                    <input type="email" name="hr_email_l1" class="form-control" value="{{ $data->hr_email_l1 }}">
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label><strong>Local Head Email</strong></label>
-                    <input type="email" name="level2_email" class="form-control" value="{{ $data->level2_email }}">
+                    <label><strong>Manager Email (L2)</strong></label>
+                    <input type="email" name="manager_email_l2" class="form-control" value="{{ $data->manager_email_l2 ?? 'NULL'}}">
                 </div>
+                <div class="col-md-4 mb-3">
+                    <label><strong>HR Email (L2)</strong></label>
+                    <input type="email" name="hr_email_l2" class="form-control" value="{{ $data->hr_email_l2 ?? 'NULL' }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label><strong>Manager Email (L3)</strong></label>
+                    <input type="email" name="manager_email_l3" class="form-control" value="{{ $data->manager_email_l3 ?? 'NULL' }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label><strong>HR Email (L3)</strong></label>
+                    <input type="email" name="hr_email_l3" class="form-control" value="{{ $data->hr_email_l3 ?? 'NULL' }}">
+                </div>
+                
             </div>
 
             <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label><strong>Global Head Email</strong></label>
-                    <input type="email" name="level3_email" class="form-control" value="{{ $data->level3_email }}">
-                </div>
                 <div class="col-md-4 mb-3">
                     <label><strong>Employee Level</strong></label>
                     <input type="text" name="employee_level" class="form-control" value="{{ $data->employeeLevel->title }}">
@@ -71,6 +80,10 @@
                 <div class="col-md-4 mb-3">
                     <label><strong>Job Title</strong></label>
                     <input type="text" name="job_title" class="form-control" value="{{ $data->jobDetail->job_title }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label><strong>Work Location</strong></label>
+                    <input type="text" name="work_location" class="form-control" value="{{ $data->work_location }}">
                 </div>
             </div>
 
@@ -145,7 +158,7 @@
                 </div>
                 <div class="col-md-4 mb-3">
                     <label><strong>Job Description</strong></label>
-                    <textarea name="job_description" class="form-control">{{ $data->jobDetail->job_description }}</textarea>
+                    <textarea name="job_description" class="form-control">{{strip_tags($data->jobDetail->job_description) }}</textarea>
                 </div>
             </div>
 

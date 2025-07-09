@@ -15,10 +15,12 @@ class RequestingBranchSeeder extends Seeder
     public function run(): void
     {
         DB::table('requesting_branches')->insert([
-        ['name' => 'SMGA UK', 'branch_code' => 'uk'],
-        ['name' => 'SMGA ITALY', 'branch_code' => 'it'],
-        ['name' => 'SMGA Texas', 'branch_code' => 'tx'],
-        ['name' => 'SMGA Africa & Middle East', 'branch_code' => 'AF'],
+        ['name' => 'MNK INTERNATIONAL', 'branch_code' => 'NULL'],
+        ['name' => 'SPECIALTY MGA', 'branch_code' => 'NULL'],
+        ['name' => 'MNK GCS', 'branch_code' => 'NULL'],
+        ['name' => 'MEKONG RE', 'branch_code' => 'NULL'],
+        ['name' => 'MNK SEGUROS', 'branch_code' => 'NULL'],
+        ['name' => 'FLORIDA RE', 'branch_code' => 'NULL']
     ]);
 
     }

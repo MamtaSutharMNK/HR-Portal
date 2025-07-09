@@ -11,12 +11,10 @@ $.ajaxSetup({
 
         text: "Do you really want to accept the request?",
 
-        icon: 'question',
+        icon: 'warning',
 
         showCancelButton: true,
-
         confirmButtonText: 'Yes',
-
         cancelButtonText: 'Cancel'
 
     }).then((result) => {
@@ -71,7 +69,7 @@ function rejectAction(id){
 $(document).on('submit', '#reject_form', function (e) {
     e.preventDefault();
      $(".saveReject").addClass('disabled');
-    // let bookinguuid = $('#business_uuid').val();
+
     let formData = new FormData(this);
     formData.append('_token', $('meta[name="csrf-token"]').attr('content'));  
     formData.append('action', 'reject'); 
@@ -81,8 +79,10 @@ $(document).on('submit', '#reject_form', function (e) {
         data: formData,
         contentType: false,
         processData: false,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
         beforeSend: function () {
-            // Add the loading spinner or any loading indication here
             $('#loadingIndicator').show();
         },
         success: function (response) {
@@ -101,7 +101,7 @@ $(document).on('submit', '#reject_form', function (e) {
                 confirmButtonText: 'ok'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    location.href = '/fte_request/create';
+                    location.href = "{{route('index')}}";
                 }
             })
         },

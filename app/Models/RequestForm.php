@@ -9,8 +9,8 @@ class RequestForm extends Model
 {
 
     const MAIL_PENDING = 0; 
-    const MANAGER_MAIL_APPROVAL = 1; 
-    const MANAGER_MAIL_REJECT = 2; 
+    const LEVEL1_MAIL_APPROVAL = 1; 
+    const LEVEL1_MAIL_REJECT = 2; 
     const LEVEL2_MAIL_APPROVAL = 3; 
     const LEVEL2_MAIL_REJECT = 4; 
     const LEVEL3_MAIL_APPROVAL = 5; 
@@ -18,16 +18,21 @@ class RequestForm extends Model
     const HR_MAIL_APPROVAL = 7;
     const HR_MAIL_REJECT = 8;
 
-    const TO_DO = 1; 
-    const IN_PROGRESS = 2; 
-    const DONE = 3;
-    const CLOSED = 4;
-    const EXPIRED = 5;
+
+    const IN_PROGRESS = 1;
+    const CLOSED = 2;
+    const  IN_SEARCH = 3;
+    const DONE = 4;
+
+    const SCREENING = 5;
+    const INTERVIEWING = 6;
+    const HIRING = 7;
+
 
     public const EMAIL_STATUS_LABELS = [
     0 => 'Mail Pending',
-    1 => 'Manager Approved',
-    2 => 'Manager Rejected',
+    1 => 'LEVEL 1 Approved',
+    2 => 'LEVEL 1 Rejected',
     3 => 'Level 2 Approved',
     4 => 'Level 2 Rejected',
     5 => 'Level 3 Approved',
@@ -46,11 +51,12 @@ class RequestForm extends Model
         'country',
         'requested_by',
         'approval_level',
-        'manager_name',
-        'manager_email',
-        'hr_email',
-        'level2_email',
-        'level3_email',
+        'manager_email_l1',
+        'hr_email_l1',
+        'manager_email_l2',
+        'hr_email_l2',
+        'manager_email_l3',
+        'hr_email_l3',
         'no_of_positions',
         'position_filled',
         'type_of_employment',
@@ -76,30 +82,35 @@ class RequestForm extends Model
 
     public const STATUS_BY_MAIL_ID = [
         '0' => 'MAIL PENDING',
-        '1' => 'MANAGER APPROVED',
-        '2' => 'MANAGER REJECTED',
-        '3' => 'LEVEL2 APPROVED',
-        '4' => 'LEVEL2 REJECTED',
-        '5' => 'LEVEL3 APPROVED',
-        '6' => 'LEVEL3 REJECTED',
+        '1' => 'LEVEL 1 APPROVED',
+        '2' => 'LEVEL 1 REJECTED',
+        '3' => 'LEVEL 2 APPROVED',
+        '4' => 'LEVEL 2 REJECTED',
+        '5' => 'LEVEL 3 APPROVED',
+        '6' => 'LEVEL 3 REJECTED',
         '7' => 'HR APPROVED',
         '8' => 'HR REJECTED'
     ];
 
     public const STATUS_BY_ID = [
-        '1' => 'TO DO',
-        '2' => 'IN PROGRESS',
-        '3' => 'DONE ',
-        '4' => 'CLOSED ',
-        '5' => 'EXPIRED',
+        '1' => 'IN PROGRESS',
+        '2' => 'CLOSED',
+        '3' => 'IN SEARCH ',
+        '4' => 'DONE',
+        '5' => 'SCREENING',
+        '6' => ' INTERVIEWING',
+        '7' => ' HIRING',
+
     ];
 
     public const STATUS_COLORS = [
         '1' => 'primary',
-        '2' => 'primary',
-        '3' => 'success ',
-        '4' => 'warning ',
-        '5' => 'danger',
+        '2' => 'success ',
+        '3' => 'primary',
+        '4' => 'success',
+        '5' => 'primary',
+        '6' => 'primary',
+        '7' => 'primary'
     ];
 
      public const MAIL_STATUS_COLORS = [

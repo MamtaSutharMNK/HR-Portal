@@ -3,7 +3,7 @@
 @component('mail::message')
 # FTE Request Closed
 
-Hello {{ $data->manager_name }},
+Hello Team,
 
 This is to inform you that the FTE request (ID: **{{ $data->id }}**) has been successfully **closed**.
 

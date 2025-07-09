@@ -1,5 +1,4 @@
 @extends('layouts.authlayout')
-
 @section('content')   
 <div class="container">
     <div class="card o-hidden border-0 shadow-lg my-5">
@@ -18,7 +17,7 @@
                 <div class="col-lg-6">
                     <div class="p-5">
                         <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4">Create an Account</h1>
+                                <h1 class="h4 text-gray-900 mb-4" style="font-family: 'Gotham', sans-serif;">Create an Account</h1>
                         </div>
                         <form class="user" method="POST" action="{{ route('register') }}" class="needs-validation" novalidate>
                             @csrf
@@ -37,7 +36,8 @@
                                 <label for="email">{{ __('Employee ID:') }}</label>
                                 <input id="emp_id" type="text" class="form-control form-control-user @error('emp_id') is-invalid @enderror" name="emp_id" placeholder="Employee ID" value="{{ old('emp_id') }}" 
                                 required autocomplete="emp_id"  pattern="^mnkgcs\d+$" title="Employee ID must start with 'mnkgcs' followed by numbers only">   
-                                <div id="errorFeedBack" style='color:#E23D3F;  font-weight:bold; font-size:small;'></div>
+                                <div id="errorFeedBack" style='color:#E74A4C;  font-weight:bold; font-size:small; font-family: "Gotham", sans-serif;'></div>
+                                
                                 @error('emp_id')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -81,7 +81,7 @@
                         </form>
                             <hr>
                             <div class="text-center">
-                                <a class="small" href={{route('login')}}>Already have an account? Login!</a>
+                                <a class="small" href="{{route('login')}}">Already have an account? Login!</a>
                             </div>
                             
                     </div>
@@ -90,19 +90,21 @@
         </div>
     </div>
 </div>
+ @endsection
 
+@push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const empInput = document.getElementById("emp_id");
 
     empInput.onchange = function () {
-        const pattern = /^mnkgcs\d+$/;
+        const pattern = /^mnkgcs\d+$/i;
         const value = empInput.value;
         const errorFeedback = empInput.nextElementSibling;
 
         if (!pattern.test(value)) {
             empInput.classList.add("is-invalid");
-            errorFeedback.innerHTML ="Enter correct Employee Id";
+            errorFeedback.innerHTML ="Enter correct employee Id";
         } else {
             empInput.classList.remove("is-invalid");
             errorFeedback.innerHTML = "";
@@ -110,5 +112,4 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 });
 </script>
-
- @endsection
+@endpush

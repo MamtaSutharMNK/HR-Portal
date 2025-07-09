@@ -20,9 +20,16 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->string('country');
             $table->string('requested_by');
-            $table->string('manager_name');
-            $table->string('manager_email');
+            $table->tinyInteger('approval_level')->unsigned()->nullable();
+            $table->string('manager_email_l1')->nullable();
+            $table->string('hr_email_l1')->nullable();
+            $table->string('manager_email_l2')->nullable();
+            $table->string('hr_email_l2')->nullable();
+            $table->string('manager_email_l3')->nullable();
+            $table->string('hr_email_l3')->nullable();
+            
             $table->integer('no_of_positions');
+            $table->string('position_filled')->nullable();
             $table->longtext('type_of_employment');
             $table->longtext('employment_category');
             $table->string('work_location', 255)->nullable();
@@ -39,6 +46,7 @@ return new class extends Migration
             $table->string('replacing_employee', 255)->nullable();
             $table->text('consequences_of_not_hiring')->nullable();
             $table->integer('status')->default(1);
+            $table->string('reason')->nullable();
             $table->integer('mail_status')->default(0);
             $table->timestamps();
 

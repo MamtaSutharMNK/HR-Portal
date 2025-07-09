@@ -73,7 +73,7 @@ protected function create(array $data)
         'name' => $data['name'],
         'email' => $data['email'],
         'password' => Hash::make($data['password']),
-        'emp_id' => $data['emp_id'],
+        'emp_id' => strtoupper($data['emp_id']),
     ]);
 
     UserHasRole::insert([

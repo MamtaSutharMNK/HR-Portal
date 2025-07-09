@@ -1,96 +1,20 @@
-@extends('layouts.authlayout')
+@extends('layouts.mainlayout')
 
 @section('content')   
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
-<script>
-    (function () {
-        'use strict';
-        window.addEventListener('load', function () {
-            const forms = document.getElementsByClassName('needs-validation');
-            Array.prototype.forEach.call(forms, function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        }, false);
-    })();
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const experienceInput = document.getElementById('experienceInput');
-        const errorDiv = document.getElementById('experienceError');
-
-        experienceInput.addEventListener('input', function () {
-            const value = experienceInput.value;
-            const isValid = /^\d*\.?\d*$/.test(value);
-
-            if (!isValid) {
-                experienceInput.classList.add('is-invalid');
-                errorDiv.style.display = 'block';
-            } else {
-                experienceInput.classList.remove('is-invalid');
-                errorDiv.style.display = 'none';
-            }
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const textFields = [
-            { inputId: 'educationInput', errorId: 'educationError' },
-            { inputId: 'jobDetailInput', errorId: 'jobDetailError' },
-            { inputId: 'locationInput', errorId: 'locationError' },
-            { inputId: 'skillsInput', errorId: 'skillsError' },
-            { inputId: 'languageInput', errorId: 'languageError' },
-            { inputId: 'certificationsInput', errorId: 'certificationsError' }
-        ];
-
-        textFields.forEach(field => {
-            const input = document.getElementById(field.inputId);
-            const error = document.getElementById(field.errorId);
-
-            input.addEventListener('input', function () {
-                const value = input.value;
-                const hasNumber = /\d/.test(value);
-
-                if (hasNumber) {
-                    input.classList.add('is-invalid');
-                    error.style.display = 'block';
-                } else {
-                    input.classList.remove('is-invalid');
-                    error.style.display = 'none';
-                }
-            });
-        });
-    });
-
-
-</script>
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-xl-10 col-lg-12 col-md-9">
-            <div class="card o-hidden border-0 shadow-lg my-5">
-                <div class="card-header" style="color: black;">
-                    <h2 class="text-center black-text">Full Time Employment Form</h2>
+            <div class="card o-hidden border-0 shadow-lg my-5 ">
+                <div class="card-header button-blue-50" >
+                    <h4 class="text-center black-text font-weight-bold ">Full Time Employment Form</h4>
                 </div>
-                <div class="card-body" style=" padding: 0px 50px 50px 50px;">
-                    @if(!session()->pull('hide_skip_once'))
-                    <div class="mt-4" style="text-align: right;">
-                        <p>Go to Dashboard!</p>
-                        <a href="{{ route('index') }}" class="btn btn-primary">Dashboard</a>  
-                    </div>
-                    @endif  
-                    <form method="POST" action="{{ route('fte_request.store') }}" class="needs-validation" novalidate>
+                <div class="card-body" style=" padding: 10px 50px 50px 50px;">
+                   
+                    <form method="POST" id="fteRequestForm" action="{{ route('fte_request.store') }}" class="needs-validation" novalidate>
                         @csrf
                         <!-- Section 1 -->
                         <div class="mb-4">
-                            <h5 class="text-primary fw-bold">1.Request Overview</h5>
+                            <h5 class="text-blue-50 fw-bold">Request Overview</h5>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -119,74 +43,56 @@
                                 <input type="text" name="requested_by" class="form-control form-control-custom" required>
                                 <div class="invalid-feedback">Enter the name.</div>
                             </div>
+
                             <div class="col-md-6">
                                 <label class="form-label-custom">Requesting Branch</label>
-                                <select name="branch_id" class="form-control form-control-custom" required>
-                                    <option value="">Select Requesting Branch</option>
-                                       @foreach($branches as $branch)
-                                           <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                                       @endforeach
-                                </select>
-                                <div class="invalid-feedback">Please select a department</div>
-                            </div>
-     
-                        </div> 
-                        <div class="row mb-3">     
-                            
-                            <div class="col-md-6">
-                                <label class="form-label-custom">Approving Manager Name</label>
-                                 <input type="text" name="manager_name" class="form-control form-control-custom" required>
-                                <div class="invalid-feedback">Enter the manager name.</div>
-                            </div>
-                            <div class="col-md-6">
-                                    <label class="form-label-custom">Approval Level</label>
-                                    <select name="approval_level" class="form-control form-control-custom" required>
-                                        <option value="">Select Approval level</option>
-                                        @foreach (config('dropdown.approval_level') as $key => $value)
-                                            <option value="{{ $key }}">{{ $value }}</option>
+                                <div class="d-flex gap-2">
+                                    <select name="branch_id" id="branch_id" class="form-control form-control-custom" required>
+                                        <option value="">Select Requesting Branch</option>
+                                        @foreach($branches as $branch)
+                                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                                         @endforeach
                                     </select>
-                                    <div class="invalid-feedback">Select approval level</div>
+                                    <button type="button" class="btn-outline form-control form-control-custom ms-2" id="openAddBranchModal" style="width: 50px;">+</button>
+                                </div>
+                                <div class="invalid-feedback">Please select a branch</div>
                             </div>
-                            
                         </div>
-                        <div class="row mb-3">   
-                            
-                            <div class="col-md-6">
-                                <label class="form-label-custom">Approving Manager Email</label>
-                                <input type="email" id="l1" name="manager_email" class="form-control form-control-custom" required>
-                                <div class="invalid-feedback">Enter a valid email.</div>
-                                <div style="margin-left:5px">Note:This email should be official</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label-custom">HR EMAIL</label>
-                                <input type="email" id="hr_email" name="hr_email" class="form-control form-control-custom" required>
-                                <div class="invalid-feedback" id="jobsDetailError">Enter a valid email.</div>
-                                <div style="margin-left:5px">Note:This email should be official</div>
-
-                            </div>
-                        </div>   
                         <div class="row mb-3">
-                            <div class="col-md-6 L2">
-                                <label class="form-label-custom">Local Head</label>
-                                <input type="email" id="l2" name="level2_email" class="form-control form-control-custom">
-                                <div class="invalid-feedback" id="jobsDetailError">Enter a valid email.</div>
-                                <div style="margin-left:5px">Note:This email should be official</div>
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Approval Level</label>
+                                @foreach (config('dropdown.approval_level') as $key => $value)
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input approval-checkbox" type="radio" name="approval_level"
+                                        value="{{ $key }}" id="approval_level_{{ $key }}" style="margin-left: 7px">
+                                    <label class="form-check-label">{{ $value }}</label>
+                                </div>
+                                @endforeach
+                                <div class="invalid-feedback">Select approval level</div>
                             </div>
-
-                               <div class="col-md-6 L3">
-                                <label class="form-label-custom">Global Head</label>
-                                <input type="email" id="l3" name="level3_email" class="form-control form-control-custom" >
-                                <div class="invalid-feedback" id="jobsDetailError">Enter a valid email.</div>
-                                <div style="margin-left:5px">Note:This email should be official</div>
-                            </div>
-
                         </div>
-                        <hr>
+
+                         @foreach (config('dropdown.approval_level') as $key => $value)
+                            <div class="row mb-3 d-none approval_level_l{{ $key }}">
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">APPROVING MANAGER EMAIL (Level {{ $key }})</label>
+                                    <input type="email" id="manager_email_l{{ $key }}" name="manager_email_l{{ $key }}"
+                                        class="form-control form-control-custom email-level" data-level="1">
+                                    <div class="invalid-feedback">Enter a valid official email.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-custom">HR EMAIL (Level {{ $key }})</label>
+                                    <input type="email" id="hr_email_l{{ $key }}" name="hr_email_l{{ $key }}"
+                                        class="form-control form-control-custom email-level" data-level="1">
+                                    <div class="invalid-feedback">Enter a valid official email.</div>
+                                </div>
+                            </div>
+                         @endforeach
+
+                      <hr>
                         <!-- Section 2: Position Details -->
                         <div class="mb-4">
-                          <h5 class="text-primary fw-bold">2. Position Details</h5>
+                          <h5 class="text-blue-50 fw-bold">Position Details</h5>
                         </div>
 
                         <div class="row mb-3">
@@ -244,17 +150,17 @@
                                 <input type="text" name="department_function" class="form-control form-control-custom" required >
                                 <div class="invalid-feedback">Please select department function</div>
                             </div>
-                            <div class="col-md-6 d-flex align-items-end">
-                                <div style="width:90%">
-                                    <label for="employee_level" class="form-label-custom">Employee Level</label>
-                                    <select id="employee_level" name="employee_level" class="form-control form-control-custom" required>
+                            <div class="col-md-6">
+                                <label class="form-label-custom">Employee Level</label>
+                                <div class="d-flex gap-2">
+                                    <select name="employee_level" id="employee_level" class="form-control form-control-custom" required>
                                         <option value="">-- Select Level --</option>
                                         @foreach($employeeLevels as $levels)
                                             <option value="{{ $levels->id }}">{{ $levels->title }}</option>
                                         @endforeach
                                     </select>
+                                    <button type="button" class="btn-outline form-control form-control-custom ms-2" id="openAddLevelModal" style="width: 50px;" data-bs-toggle="modal" data-bs-target="#multiEmployeeLevelModal">+</button>
                                 </div>
-                                <button type="button" class="btn-outline form-control form-control-custom ms-2" style="width: 50px;" data-bs-toggle="modal" data-bs-target="#multiEmployeeLevelModal" id="openAddLevelModal">+</button>
                                 <div class="invalid-feedback">Please select Employee Level</div>
                             </div>
                         </div>
@@ -290,7 +196,7 @@
                         <hr>    
                         <!-- Section3: Role Requirements -->
                         <div class="mb-4">
-                          <h5 class="text-primary fw-bold">3. Role Requirements</h5>
+                          <h5 class="text-blue-50 fw-bold">Role Requirements</h5>
                         </div>
 
                         <div class="row mb-3">
@@ -330,13 +236,14 @@
                             <div class="col-md-6">
                                 <label class="form-label-custom">Job Description (Brief Desc)</label>
                                 <textarea name="job_description" rows="1" class="form-control form-control-custom" id="editor" required></textarea>
-                                <div class="invalid-feedback">Enter the job description </div>
+                                <div id="char-count" style="font-size: 12px; margin-top: 5px; color: #555;"></div>
+                                <div class="invalid-feedback">Enter the job description</div>
                             </div>
                         </div>
                         <hr>    
                         <!-- Section4: Business Justification -->
                         <div class="mb-4">
-                            <h5 class="text-primary fw-bold">4. Business Justification</h5>
+                            <h5 class="text-blue-50 fw-bold">Business Justification</h5>
                         </div>
                         <div class="mb-3">
                             <label class="form-label-custom">Requisition Type</label>
@@ -372,7 +279,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label-custom">Consequences of Not Hiring</label>
+                            <label class="form-label-custom">Impact of Not Hiring</label>
                             <textarea name="consequences_of_not_hiring" rows="2" class="form-control form-control-custom" required></textarea>
                             <div class="invalid-feedback">Enter the consequences of not hiring  </div>
                             
@@ -420,7 +327,6 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Add Employee Levels</h5>
-          <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">Close</button> -->
         </div>
         <div class="modal-body" id="levelFieldsContainer">
           <div class="input-group mb-2">
@@ -437,228 +343,299 @@
 </div>
 
 
+<!-- Add Branch -->
+ <div class="modal fade" id="multiBranchModal" tabindex="-1" aria-labelledby="multiBranchModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="multiBranchForm">
+      @csrf
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Branches</h5>
+            </div>
+            <div class="modal-body" id="branchFieldsContainer">
+                <div class="input-group mb-2">
+                    <input type="text" name="branches[]" class="form-control" placeholder="Branch Name" required>
+                    <button type="button" class="btn btn-success add-branch-field">+</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save Branches</button>
+            </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+
+@endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    
-    fetch('https://restcountries.com/v3.1/all?fields=name')
-        .then(response => response.json())
-        .then(data => {
+$(document).ready(function () {
 
-          const datalist = document.getElementById("countries");
-          data.forEach(country => {
-            const option = document.createElement("option");
-            option.value = country.name.common;
-            datalist.appendChild(option);
-          });
-        })
-        .catch(error => console.error("Error fetching countries:", error));
+    //  Bootstrap Form Validation 
+    const form = document.getElementById('fteRequestForm');
+    form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
 
+    //  Experience Field Validation (Numeric only) 
+    $('#experienceInput').on('input', function () {
+        const value = $(this).val();
+        const isValid = /^\d*\.?\d*$/.test(value);
+        const errorDiv = $('#experienceError');
 
-        fetch('https://restcountries.com/v3.1/all?fields=currencies')
-        .then(response => response.json())
-        .then(data => {
-            const currencySet = new Set();
-            data.forEach(country => {
-            const currencies = country.currencies;
-            if (currencies) {
-                Object.entries(currencies).forEach(([code, details]) => {
-                currencySet.add(`${details.name} (${code})`);
-                });
+        if (!isValid) {
+            $(this).addClass('is-invalid');
+            errorDiv.show();
+        } else {
+            $(this).removeClass('is-invalid');
+            errorDiv.hide();
+        }
+    });
+
+    //  No Numbers in Text Fields 
+    const textFields = [
+        { id: '#educationInput', error: '#educationError' },
+        { id: '#jobDetailInput', error: '#jobDetailError' },
+        { id: '#locationInput', error: '#locationError' },
+        { id: '#skillsInput', error: '#skillsError' },
+        { id: '#languageInput', error: '#languageError' },
+        { id: '#certificationsInput', error: '#certificationsError' }
+    ];
+
+    textFields.forEach(field => {
+        $(field.id).on('input', function () {
+            if (/\d/.test($(this).val())) {
+                $(this).addClass('is-invalid');
+                $(field.error).show();
+            } else {
+                $(this).removeClass('is-invalid');
+                $(field.error).hide();
             }
+        });
+    });
+
+    // Email Validation for Approval Levels
+    function isEmailValid(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function getHighestLevelSelected() {
+        for (let i = 3; i >= 1; i--) {
+            if ($(`#approval_level_${i}`).is(':checked')) return i;
+        }
+        return 0;
+    }
+
+    form.addEventListener('submit', function (event) {
+        let isValid = true;
+        const highest = getHighestLevelSelected();
+
+        for (let i = 1; i <= highest; i++) {
+            ['manager_email_l' + i, 'hr_email_l' + i].forEach(id => {
+                const field = $(`#${id}`);
+                if (!isEmailValid(field.val())) {
+                    field.addClass('is-invalid');
+                    isValid = false;
+                } else {
+                    field.removeClass('is-invalid');
+                }
             });
+        }
 
-            const datalist = document.getElementById("currencies");
-            Array.from(currencySet).sort().forEach(currency => {
-            const option = document.createElement("option");
-            option.value = currency;
-            datalist.appendChild(option);
-            });
-        })
-        .catch(error => console.error("Error fetching currencies:", error));
+        if (!isValid) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    });
 
+    $('input[type="email"]').on('input', function () {
+        if (isEmailValid($(this).val())) {
+            $(this).removeClass('is-invalid');
+        }
+    });
 
-        // Add departments into database
-        $('#openAddDeptModal').on('click', function() {
-        $('#multiDepartmentModal').modal('show');
+    //  Toggle Replacing Employee Field 
+    function toggleReplacingField() {
+        let show = false;
+        $('input[name="requisition_type[]"]:checked').each(function () {
+            if ($(this).val() === 'Replacement') show = true;
         });
 
-        $(document).on('click', '.add-field', function() {
+        const group = $('#replacing-employee-group');
+        const input = group.find('input[name="replacing_employee"]');
+
+        if (show) {
+            group.show();
+            input.prop('required', true);
+        } else {
+            group.hide();
+            input.prop('required', false).val('');
+        }
+    }
+
+    toggleReplacingField();
+    $('input[name="requisition_type[]"]').on('change', toggleReplacingField);
+
+    //  Show/Hide Approval Level Fields 
+    $(document).ready(function () {
+        $('.approval-checkbox').on('change', function () {
+            // Get the selected level (1, 2, or 3)
+            const selected = parseInt($('input[name="approval_level"]:checked').val());
+
+            // Hide all level blocks
+            $('.approval_level_l1, .approval_level_l2, .approval_level_l3').addClass('d-none');
+
+            // Show levels up to selected
+            for (let i = 1; i <= selected; i++) {
+                $(`.approval_level_l${i}`).removeClass('d-none');
+            }
+
+            // Clear email fields ABOVE selected level
+            for (let i = selected + 1; i <= 3; i++) {
+                $(`#manager_email_l${i}`).val('');
+                $(`#hr_email_l${i}`).val('');
+            }
+        });
+    });
+
+
+    //  Fetch Countries 
+    fetch('https://restcountries.com/v3.1/all?fields=name')
+        .then(res => res.json())
+        .then(data => {
+            const list = $('#countries');
+            data.forEach(country => {
+                list.append(`<option value="${country.name.common}">`);
+            });
+        });
+
+    //  Fetch Currencies 
+    fetch('https://restcountries.com/v3.1/all?fields=currencies')
+        .then(res => res.json())
+        .then(data => {
+            const set = new Set();
+            data.forEach(country => {
+                const currencies = country.currencies;
+                if (currencies) {
+                    Object.entries(currencies).forEach(([code, details]) => {
+                        set.add(`${details.name} (${code})`);
+                    });
+                }
+            });
+
+            const list = $('#currencies');
+            Array.from(set).sort().forEach(currency => {
+                list.append(`<option value="${currency}">`);
+            });
+        });
+
+    //  Department Modal 
+    $('#openAddDeptModal').on('click', () => $('#multiDepartmentModal').modal('show'));
+
+    $(document).on('click', '.add-field', function () {
         $('#deptFieldsContainer').append(`
             <div class="input-group mb-2">
-            <input type="text" name="departments[]" class="form-control" placeholder="Department Name" required>
-            <button type="button" class="btn btn-danger remove-field">−</button>
+                <input type="text" name="departments[]" class="form-control" placeholder="Department Name" required>
+                <button type="button" class="btn btn-danger remove-field">−</button>
             </div>
         `);
-        });
+    });
 
-        $(document).on('click', '.remove-field', function() {
+    $(document).on('click', '.remove-field', function () {
         $(this).closest('.input-group').remove();
-        });
+    });
 
-
-        $('#multiDepartmentForm').submit(function(e) {
-            e.preventDefault();
-            
-            let formData = $(this).serialize();
-
-            $.post('/departments/batch', formData, function(response) {
-                response.forEach(function(dept) {
-                let newOption = new Option(dept.name, dept.id);
-                $('#department_id').append(newOption);
-                });
-                
-                $('#multiDepartmentModal').modal('hide');
-                $('#deptFieldsContainer').html(`
+    $('#multiDepartmentForm').submit(function (e) {
+        e.preventDefault();
+        $.post('/departments/batch', $(this).serialize(), function (res) {
+            res.forEach(dept => $('#department_id').append(new Option(dept.name, dept.id)));
+            $('#multiDepartmentModal').modal('hide');
+            $('#deptFieldsContainer').html(`
                 <div class="input-group mb-2">
                     <input type="text" name="departments[]" class="form-control" placeholder="Department Name" required>
                     <button type="button" class="btn btn-success add-field">+</button>
                 </div>
-                `);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: 'Departments added successfully.'
-                });
-
-
-            }).fail(function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong while saving.'
-                });
-            });
-        });
-
-        // Add Employee levels
-        $('#openAddLevelModal').on('click', function() {
-            $('#multiEmployeeLevelModal').modal('show');
-        });
-
-        
-        $(document).on('click', '.add-level-field', function() {
-            $('#levelFieldsContainer').append(`
-                <div class="input-group mb-2">
-                    <input type="text" name="levels[]" class="form-control" placeholder="Employee Level Title" required>
-                    <button type="button" class="btn btn-danger remove-level-field">−</button>
-                </div>
             `);
+            Swal.fire('Success!', 'Departments added successfully.', 'success');
+        }).fail(() => {
+            Swal.fire('Oops...', 'Something went wrong while saving.', 'error');
         });
-
-        
-        $(document).on('click', '.remove-level-field', function() {
-            $(this).closest('.input-group').remove();
-        });
-
-        // Submit form
-        $('#multiEmployeeLevelForm').submit(function(e) {
-            e.preventDefault();
-
-            let formData = $(this).serialize();
-
-            $.post('employee-levels', formData, function(response) {
-                response.forEach(function(level) {
-                    let newOption = new Option(level.title, level.id);
-                    $('#employee_level').append(newOption);
-                });
-                $('#multiEmployeeLevelModal').modal('hide');
-                $('#levelFieldsContainer').html(`
-                    <div class="input-group mb-2">
-                        <input type="text" name="levels[]" class="form-control" placeholder="Employee Level Title" required>
-                        <button type="button" class="btn btn-success add-level-field">+</button>
-                    </div>
-                `);
-                 Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: 'Employee Level added successfully.'
-                });
-            }).fail(function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong while saving.'
-                });
-            });
-        });
-
-    $(document).ready(function () {
-            // Toggle Replacing Employee field
-            function toggleReplacingField() {
-                let showField = false;
-
-                $('input[name="requisition_type[]"]:checked').each(function () {
-                    if ($(this).val() === 'Replacement') {
-                        showField = true;
-                    }
-                });
-
-                const replacingGroup = $('#replacing-employee-group');
-                const replacingInput = replacingGroup.find('input[name="replacing_employee"]');
-
-                if (showField) {
-                    replacingGroup.show();
-                    replacingInput.prop('required', true);
-                } else {
-                    replacingInput.prop('required', false);
-                    replacingGroup.hide();
-                    replacingInput.val('');
-                }
-            }
-
-            toggleReplacingField(); // Initial check on page load
-            $('input[name="requisition_type[]"]').on('change', toggleReplacingField);
-        });
-
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const approvalLevel = document.querySelector('select[name="approval_level"]');
-        const localHead = document.querySelector('.L2');
-        const globalHead = document.querySelector('.L3');
-        const l2Input = document.querySelector('input[name="level2_email"]');
-        const l3Input = document.querySelector('input[name="level3_email"]');
-
-        function toggleFields(value) {
-            if (value === '2' || value === '3') {
-                localHead.style.display = 'block';
-                if (l2Input) l2Input.setAttribute('required', true);
-            } else {
-                localHead.style.display = 'none';
-                if (l2Input) {
-                    l2Input.removeAttribute('required');
-                    l2Input.value = '';
-                }
-            }
-
-            if (value === '3') {
-                globalHead.style.display = 'block';
-                if (l3Input) l3Input.setAttribute('required', true);
-            } else {
-                globalHead.style.display = 'none';
-                if (l3Input) {
-                    l3Input.removeAttribute('required');
-                    l3Input.value = '';
-                }
-            }
-        }
-
-        // Run on dropdown change
-        approvalLevel.addEventListener('change', function () {
-            toggleFields(this.value);
-        });
-
-        // Initial run on page load
-        toggleFields(approvalLevel.value);
     });
 
+    //  Employee Level Modal 
+    $('#openAddLevelModal').on('click', () => $('#multiEmployeeLevelModal').modal('show'));
 
+    $(document).on('click', '.add-level-field', function () {
+        $('#levelFieldsContainer').append(`
+            <div class="input-group mb-2">
+                <input type="text" name="levels[]" class="form-control" placeholder="Employee Level Title" required>
+                <button type="button" class="btn btn-danger remove-level-field">−</button>
+            </div>
+        `);
+    });
 
+    $(document).on('click', '.remove-level-field', function () {
+        $(this).closest('.input-group').remove();
+    });
 
- 
+    $('#multiEmployeeLevelForm').submit(function (e) {
+        e.preventDefault();
+        $.post('/employee-levels', $(this).serialize(), function (res) {
+            res.forEach(level => $('#employee_level').append(new Option(level.title, level.id)));
+            $('#multiEmployeeLevelModal').modal('hide');
+            $('#levelFieldsContainer').html(`
+                <div class="input-group mb-2">
+                    <input type="text" name="levels[]" class="form-control" placeholder="Employee Level Title" required>
+                    <button type="button" class="btn btn-success add-level-field">+</button>
+                </div>
+            `);
+            Swal.fire('Success!', 'Employee Levels added successfully.', 'success');
+        }).fail(() => {
+            Swal.fire('Oops...', 'Something went wrong while saving.', 'error');
+        });
+    });
+
+    //  Branch Modal 
+    $('#openAddBranchModal').on('click', () => $('#multiBranchModal').modal('show'));
+
+    $(document).on('click', '.add-branch-field', function () {
+        $('#branchFieldsContainer').append(`
+            <div class="input-group mb-2">
+                <input type="text" name="branches[]" class="form-control" placeholder="Branch Name" required>
+                <button type="button" class="btn btn-danger remove-branch-field">−</button>
+            </div>
+        `);
+    });
+
+    $(document).on('click', '.remove-branch-field', function () {
+        $(this).closest('.input-group').remove();
+    });
+
+    $('#multiBranchForm').submit(function (e) {
+        e.preventDefault();
+        $.post('/requesting-branches', $(this).serialize(), function (res) {
+            res.forEach(branch => $('#branch_id').append(new Option(branch.name, branch.id)));
+            $('#multiBranchModal').modal('hide');
+            $('#branchFieldsContainer').html(`
+                <div class="input-group mb-2">
+                    <input type="text" name="branches[]" class="form-control" placeholder="Branch Name" required>
+                    <button type="button" class="btn btn-success add-branch-field">+</button>
+                </div>
+            `);
+            Swal.fire('Success!', 'Branches added successfully.', 'success');
+        }).fail(() => {
+            Swal.fire('Oops...', 'Something went wrong while saving branches.', 'error');
+        });
+    });
+
+});
 </script>
-
-  
-
-
-
-@endsection
+@endpush
