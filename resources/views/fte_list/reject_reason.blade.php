@@ -14,7 +14,7 @@
                     </div>
                     <div class=" modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn dropdown-color saveReject">Send</button>
+                        <button type="submit" class="btn btn-primary saveReject">Send</button>
                     </div>
                 </div>    
             </form>

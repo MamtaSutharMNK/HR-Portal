@@ -83,6 +83,10 @@
 
             </div>
             {{-- End of Main Content --}}
+            
+            <!-- {{-- Custom footer includes --}}
+            @include('components.footer') -->
+
         </div>
         {{-- End of Content Wrapper --}}
     </div>
@@ -126,6 +130,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
     <script src="{{asset('static/js/fte.js')}}"></script>
     <script src="{{asset('static/js/sb-admin-2.min.js')}}"></script>
+    
 
 
     <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>

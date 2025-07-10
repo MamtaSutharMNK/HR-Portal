@@ -18,16 +18,13 @@ class RequestForm extends Model
     const HR_MAIL_APPROVAL = 7;
     const HR_MAIL_REJECT = 8;
 
-
     const IN_PROGRESS = 1;
     const CLOSED = 2;
-    const  IN_SEARCH = 3;
+    const IN_SEARCH = 3;
     const DONE = 4;
-
     const SCREENING = 5;
     const INTERVIEWING = 6;
     const HIRING = 7;
-
 
     public const EMAIL_STATUS_LABELS = [
     0 => 'Mail Pending',
@@ -81,7 +78,7 @@ class RequestForm extends Model
     ];
 
     public const STATUS_BY_MAIL_ID = [
-        '0' => 'MAIL PENDING',
+        '0' => 'LEVEL 1 MAIL PENDING',
         '1' => 'LEVEL 1 APPROVED',
         '2' => 'LEVEL 1 REJECTED',
         '3' => 'LEVEL 2 APPROVED',
@@ -95,11 +92,11 @@ class RequestForm extends Model
     public const STATUS_BY_ID = [
         '1' => 'IN PROGRESS',
         '2' => 'CLOSED',
-        '3' => 'IN SEARCH ',
+        '3' => 'IN SEARCH',
         '4' => 'DONE',
         '5' => 'SCREENING',
-        '6' => ' INTERVIEWING',
-        '7' => ' HIRING',
+        '6' => 'INTERVIEWING',
+        '7' => 'HIRING',
 
     ];
 

@@ -101,7 +101,7 @@ $(document).on('submit', '#reject_form', function (e) {
                 confirmButtonText: 'ok'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    location.href = "{{route('index')}}";
+                    location.href = '/';
                 }
             })
         },

@@ -48,7 +48,7 @@ class FteRequestFormController extends Controller
         $role = UserHasRole::where('user_id', Auth::user()->id)->first();
         $departments = Department::where('status',1)->get();
         
-        $query = RequestForm:: query();
+        $query = RequestForm::query();
         if ($role->role_id !== User::ADMIN) {
             $query->where('user_id', Auth::id());
         }
@@ -153,13 +153,6 @@ class FteRequestFormController extends Controller
      */
     public function edit(string $id)
     {
-        $data = RequestForm::where('id', $id)->with('department','jobDetail','requestingBranch','employeeLevel')->first();
-
-        $departments = Department::where('status', 1)->get();
-        $branches = RequestingBranch::where('status', 1)->get();
-        $employeeLevels = EmployeeLevel::all();
-
-        return view('fte_list.edit', ['data' => $data,'departments' => $departments,'branches' => $branches,'employeeLevels' => $employeeLevels]);
     }
 
     /**
@@ -167,56 +160,7 @@ class FteRequestFormController extends Controller
      */
     public function update(RequestFormRequest $request, string $id)
     {
-        $fte = RequestForm::findOrFail($id);
-        $fte->update([
-            'date_of_request' => $request->date_of_request,
-            'requested_by' => $request->requested_by,
-            'department_id' => $request->department_id,
-            'branch_id' => $request->branch_id,
-            'approval_level' =>$request->approval_lvel,
-            'manager_email_l1' => $request->manager_email_l1,
-            'hr_email_l1' => $request->hr_email_l1,
-            'manager_email_l2' => $request->manager_email_l2,
-            'hr_email_l2' => $request->hr_email_l2 ,
-            'manager_email_l3' => $request->manager_email_l3,
-            'hr_email_l3' => $request->hr_email_l3,
-            'no_of_positions' => $request->no_of_positions,
-            'position_filled' => $request->position_filled,
-            'type_of_employment' => is_array($request->type_of_employment) ? implode(',', $request->type_of_employment) : $request->type_of_employment,
-            'employment_category' => is_array($request->employment_category) ? implode(',', $request->employment_category) : $request->employment_category,
-            'work_location' => $request->work_location,
-            'target_by_when' => $request->target_by_when,
-            'department_function' => $request->department_function,
-            'employee_level' => $request->employee_level,
-            'currency' => $request->currency,
-            'ctc_type' => $request->ctc_type,
-            'ctc_start_range' => $request->ctc_start_range,
-            'ctc_end_range' => $request->ctc_end_range,
-            'justification_details' => $request->justification_details,
-            'replacing_employee' => $request->replacing_employee,
-            'consequences_of_not_hiring' => $request->consequences_of_not_hiring,
-            'requisition_type' => is_array($request->requisition_type) ? implode(',', $request->requisition_type) : $request->requisition_type
-        ]);
-        if ($fte->jobDetail) {
-            $fte->jobDetail->update([
-                'job_title' => $request->job_title,
-                'education' => $request->education,
-                'experience' => $request->experience,
-                'key_skills' => $request->key_skills,
-                'language_required' => $request->language_required,
-                'certifications' => $request->certifications,
-                'job_description' => $request->job_description
-            ]);
-        }
-
-        ActionLog::create([
-            'fte_request_id' => $id,
-            'action_by'      => Auth::user()->id,
-            'description'    => 'Update FTE Form'
-        ]);
-
-        return redirect()->route('fte_request.create')->with('success', 'FTE Request updated successfully.');
-
+        //
     }
 
     /**
@@ -232,164 +176,131 @@ class FteRequestFormController extends Controller
         try {
             $requestForm = RequestForm::findOrFail($request->id);
             $currentUser = Auth::user()->email;
-
-            if ($request->action === 'accept') {
-            $message = '';
-            $mail = null;
-
+            $mail = Auth::user()->email;
+            $hrMail = Auth::user()->email;
             $currentStatus = $requestForm->status;
             $currentMailStatus = $requestForm->mail_status;
+            $message = '';
 
-            if ($currentMailStatus === RequestForm::MAIL_PENDING) {
-                $mail = $requestForm->manager_email_l1;
-                $requestForm->mail_status = RequestForm::LEVEL1_MAIL_APPROVAL;
-                $message = 'Approved By Level1';
+            if ($request->action === 'accept') {
+
+                if ($currentMailStatus === RequestForm::MAIL_PENDING) {
+                    $mail = $requestForm->manager_email_l1;
+                    $hrMail = $requestForm->hr_email_l1;
+                    $requestForm->mail_status = RequestForm::LEVEL1_MAIL_APPROVAL;
+                    $message = 'Approved By Level1';
+                    
+                    if ($requestForm->approval_level == 1) {
+                        $requestForm->status = RequestForm::CLOSED;
+                        $mail = $requestForm->hr_email_l1;
+                    }
+                } 
+                elseif ($currentMailStatus === RequestForm::LEVEL1_MAIL_APPROVAL) {
+                    $mail = $requestForm->manager_email_l2;
+                    $hrMail = $requestForm->hr_email_l2;
+                    $requestForm->mail_status = RequestForm::LEVEL2_MAIL_APPROVAL;
+                    $message = 'Approved By Level 2';
+                    
+                    if ($requestForm->approval_level == 2) {
+                        $requestForm->status = RequestForm::CLOSED;
+                        $mail = $requestForm->hr_email_l2;
+                    }
+                } 
+                elseif ($currentMailStatus === RequestForm::LEVEL2_MAIL_APPROVAL) {
+                    $mail = $requestForm->manager_email_l3;
+                    $hrMail = $requestForm->hr_email_l3;
+                    $requestForm->mail_status = RequestForm::LEVEL3_MAIL_APPROVAL;
+                    $message = 'Approved By Level 3';
                 
-                if ($requestForm->approval_level == 1) {
                     $requestForm->status = RequestForm::CLOSED;
-                    $mail = $requestForm->hr_email_l1;
+                    $mail = $requestForm->hr_email_l3;
                 }
-            } 
-            elseif ($currentMailStatus === RequestForm::LEVEL1_MAIL_APPROVAL) {
-                $mail = $requestForm->manager_email_l2;
-                $requestForm->mail_status = RequestForm::LEVEL2_MAIL_APPROVAL;
-                $message = 'Approved By Level 2';
-                
-                if ($requestForm->approval_level == 2) {
-                    $requestForm->status = RequestForm::CLOSED;
-                    $mail = $requestForm->hr_email_l1;
-                }
-            } 
-            elseif ($currentMailStatus === RequestForm::LEVEL2_MAIL_APPROVAL) {
-                $mail = $requestForm->manager_email_l3;
-                $requestForm->mail_status = RequestForm::LEVEL3_MAIL_APPROVAL;
-                $message = 'Approved By Level 3';
-            
-                $requestForm->status = RequestForm::CLOSED;
-                $mail = $requestForm->hr_email_l1;
+
             }
 
-            $requestForm->save();
+            if ($request->action === 'reject') {
+                        
+                if ($requestForm->mail_status === RequestForm::MAIL_PENDING) {
+                    $requestForm->mail_status = RequestForm::LEVEL1_MAIL_REJECT;
+                    $requestForm->status = RequestForm:: CLOSED;
+                    $message = 'Rejected By Level 1 Manager';
+                } 
+                elseif ($requestForm->mail_status === RequestForm::LEVEL1_MAIL_APPROVAL) {
+                    $requestForm->mail_status = RequestForm::LEVEL2_MAIL_REJECT;
+                    $requestForm->status = RequestForm:: CLOSED;
+                    $message = 'Rejected By Level 2 Manager';
+                } 
+                elseif ($requestForm->mail_status === RequestForm::LEVEL2_MAIL_APPROVAL) {
+                    $requestForm->mail_status = RequestForm::LEVEL3_MAIL_REJECT;
+                    $requestForm->status = RequestForm:: CLOSED;
+                    $message = 'Rejected By Level 3 Manager';
+                }
 
-            Mail::to($mail)
-                ->cc($requestForm->hr_email_l1)
-                ->send(new FteRequestMail($requestForm));
+                $requestForm->reason = $request->reason;
 
-            ActionLog::create([
-                'fte_request_id' => $request->id,
-                'status' => $requestForm->status,
-                'mail_status' => $requestForm->mail_status,
-                'action_by' => Auth::id(),
-                'description' => $message
-            ]);
+            }
+
+            if ($request->action != 'status-change') {
+                $requestForm->save();
+
+                if ($request->action === 'accept') {
+                    Mail::to($mail)
+                    ->cc($hrMail)
+                    ->send(new FteRequestMail($requestForm));
+                } elseif ($request->action === 'reject') {
+                    Mail::to($mail)
+                    ->cc($hrMail)
+                    ->send(new FteRejectionMail($requestForm));
+                } 
+                    
+                ActionLog::create([
+                    'fte_request_id' => $request->id,
+                    'status'         => $requestForm->status,
+                    'action_by'      => Auth::user()->id,
+                    'reason'         => $request->reason ?? NULL,
+                    'description'    => $message
+                ]);
+            }
+    
+            if ($request->action === 'status-change') {
+                    $statusMap = [
+                        'screening'    => RequestForm::SCREENING,
+                        'interviewing' => RequestForm::INTERVIEWING,
+                        'hiring'       => RequestForm::HIRING,
+                        'done'         => RequestForm::DONE,
+                    ];
+                
+                    $mappedStatus = $statusMap[$request->status];
+                    $requestForm->status = $mappedStatus;
+                    $requestForm->save();
+
+                    // Mail::to($mail)
+                    // ->cc($hrMail)
+                    // ->send(new FteRequestMail($requestForm));
+                    
+                    ActionLog::create([
+                        'fte_request_id' => $request->id,
+                        'status'         => $request->status,
+                        'action_by'      => Auth::user()->id,
+                        'reason'         => $request->reason,     
+                        'description'    => $request->status,      
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => ucfirst($request->status) . ' status updated successfully.'
+                    ]);
+            }
 
             return response()->json([
                 'success' => true,
                 'message' => $message
             ]);
-        }
-
-        if ($request->action === 'reject') {
-
-            $mail = $requestForm->hr_email_l1; 
-            $message = 'Rejected';
-                    
-            if ($requestForm->mail_status === RequestForm::MAIL_PENDING) {
-                $requestForm->mail_status = RequestForm::LEVEL1_MAIL_REJECT;
-                $requestForm->status = RequestForm:: CLOSED;
-                $message = 'Rejected By Level 1 Manager';
-            } 
-            elseif ($requestForm->mail_status === RequestForm::LEVEL1_MAIL_APPROVAL) {
-                $requestForm->mail_status = RequestForm::LEVEL2_MAIL_REJECT;
-                $requestForm->status = RequestForm:: CLOSED;
-                $message = 'Rejected By Level 2 Manager';
-            } 
-            elseif ($requestForm->mail_status === RequestForm::LEVEL2_MAIL_APPROVAL) {
-                $requestForm->mail_status = RequestForm::LEVEL3_MAIL_REJECT;
-                $requestForm->status = RequestForm:: CLOSED;
-                $message = 'Rejected By Level 3 Manager';
-            }
-
-            $requestForm->reason = $request->reason;
-            $requestForm->save();
-
-
-            Mail::to($mail)
-                ->cc($requestForm->hr_email_l1)
-                ->send(new FteRejectionMail($requestForm));
-            ActionLog::create([
-                'fte_request_id' => $request->id,
-                'status'         => $requestForm->status,
-                'action_by'      => Auth::user()->id,
-                'reason'         => $request->reason,
-                'description'    => $message
-            ]);
-            return response()->json(['success' => true, 'message' => 'Request rejected. User notified.']);
-            }
-
-            if ($request->action === 'status-change') {
-                $statusMap = [
-                    'screening'    => RequestForm::SCREENING,
-                    'interviewing' => RequestForm::INTERVIEWING,
-                    'hiring'       => RequestForm::HIRING,
-                ];
-
-              
-                $mappedStatus = $statusMap[$request->status];
-                $requestForm->status = $mappedStatus;
-                $requestForm->save();
-
-
-                ActionLog::create([
-                    'fte_request_id' => $request->id,
-                    'status'         => $request->status,
-                    'action_by'      => Auth::user()->id,
-                    'reason'         => $request->reason,     
-                    'description'    => $request->status,      
-                ]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => ucfirst($request->status) . ' status updated successfully.'
-                ]);
-            }
-
-            return response()->json(['success' => false, 'message' => 'Invalid action.'], 400);
 
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
-
-
-    public function changeStatus(Request $request)
-    {
-        
-        try {
-            $requestForm = RequestForm::findOrFail($request->id);
-            if($request->action == 'Done'){
-                $requestForm->status = RequestForm::DONE;
-                $desc = 'FTE Done';
-            }
-            $requestForm->save();
-
-            Mail::to($requestForm->manager_email_l1)
-            ->cc($requestForm->hr_email_l1)
-            ->send(new FteRequestClose($requestForm));
-
-            // ActionLog::create([
-            //     'fte_request_id' => $request->id,
-            //     'action_by'      => Auth::user()->id,
-            //     'description'    => $desc,
-            //     'status'        => $requestForm->status,
-            // ]);
-            return response()->json(['success' => true, 'message' => 'Request Closed.']);
-
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
-    }
-
 
     public function upload(Request $request)
     {
@@ -402,8 +313,7 @@ class FteRequestFormController extends Controller
             $url = Storage::url($path);
 
             $mime = $file->getMimeType();
-
-            // Check if the file is an image        
+       
             if (Str::startsWith($mime, 'image/')) {
                 return response()->json([
                     'url' => $url 
@@ -477,7 +387,7 @@ class FteRequestFormController extends Controller
                                 <i class="fas fa-eye mr-2 text-muted"></i>View
                             </a>';
 
-                if ($view !== 'manager') {
+                if ($view === 'hr' && (Auth::user()->id == $row->hr_email_l1 || Auth::user()->id == $row->hr_email_l2 || Auth::user()->id == $row->hr_email_l3)) {
                     $actionHtml .= '
                             <a class="dropdown-item edit-request-btn" href="#" data-id="' . $row->id . '">
                                 <i class="fas fa-edit mr-2 text-info"></i>Modify
@@ -488,7 +398,7 @@ class FteRequestFormController extends Controller
                         </div>
                     </div>';
 
-                if ($view === 'hr') {
+                if ($view === 'hr' && (Auth::user()->id == $row->hr_email_l1 || Auth::user()->id == $row->hr_email_l2 || Auth::user()->id == $row->hr_email_l3)) {
                     $actionHtml .= '
                     <!-- Update Status Dropdown -->
                     <div class="dropdown">
@@ -510,6 +420,11 @@ class FteRequestFormController extends Controller
                             data-status="hiring" data-id="' . $row->id . '"
                             data-toggle="modal" data-target="#statusUpdateModal">
                                 <i class="fas fa-user-check mr-2 text-success"></i>Hiring
+                            </a>
+                            <a class="dropdown-item update-status-btn" href="#"
+                            data-status="done" data-id="' . $row->id . '"
+                            data-toggle="modal" data-target="#statusUpdateModal">
+                                <i class="fas fa-user-check mr-2 text-success"></i>Done
                             </a>
                         </div>
                     </div>';

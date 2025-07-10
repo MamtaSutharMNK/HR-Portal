@@ -6,7 +6,7 @@
     <!-- DataTales Example -->
     <div class="card o-hidden border-0 shadow-lg my-5 ">
         <div class="card-header py-3 button-blue-50 text-center">
-            <h4 class="m-0 font-weight-bold">FTE Request List</h4>
+            <h4 class="m-0 font-weight-bold">HR FTE Request List</h4>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -23,7 +23,7 @@
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody class="text-center"></tbody>
                 </table>
             </div>
         </div>

@@ -4,9 +4,9 @@
     <!-- Sidebar - Brand -->  
         <a class="sidebar-brand d-flex align-items-center justify-content-right" href="{{route('index')}}">
             <div class="sidebar-brand-icon ml-2">
-                 <img src="{{ asset('static/img/MNK group Logo.svg') }}" alt="MNK Group Logo" style="height: 20px; width: 50px; background-color:white; border-radius:2px; ">
+                 <img src="{{ asset('static/img/MNK group Logo white.svg') }}" alt="MNK Group Logo" style="height: 20px; width: 50px; border-radius:2px; ">
             </div>
-            <div class="sidebar-brand-text ml-2" style="text-transform: none;">{{  str_replace('_', ' ', config('app.name')) }} </div>
+            <div class="sidebar-brand-text ml-2" style="text-transform: none;">{{  str_replace('-', ' ', config('app.name')) }} </div>
         </a>
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
@@ -46,19 +46,17 @@
     <hr class="sidebar-divider">
 
     <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{route('support_tickets.index') }}">
             <i class="fas fa-ticket-alt fa-fw"></i>
             <span>Support Tickets</span></a>
     </li>
     <hr class="sidebar-divider">
-
-    <!-- Sidebar Toggler (Sidebar) -->
-    <!-- <div class="text-center d-none d-md-inline">
-        <button class="rounded-circle border-0" id="sidebarToggle" aria-label="Toggle sidebar" ></button>
-    </div> -->
+    
     <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
-  <button class="rounded-circle border-0" id="sidebarToggle" aria-label="Toggle sidebar"></i>
-</button>
+
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
 </div>
 </ul>
 </div>

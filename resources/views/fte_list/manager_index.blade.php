@@ -6,7 +6,7 @@
     <!-- DataTales Example -->
     <div class="card o-hidden border-0 shadow-lg my-5 ">
         <div class="card-header py-3 button-blue-50 text-center">
-            <h4 class="m-0 font-weight-bold">FTE Request List</h4>
+            <h4 class="m-0 font-weight-bold">Manager FTE Request List</h4>
         </div>
         <div class="card-body">
             <div class="table-responsive">
