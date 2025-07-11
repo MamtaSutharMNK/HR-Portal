@@ -1,6 +1,6 @@
 <x-mail::message>
  
-    Hello CFO Team,
+    Hello Team,
     <br>
     <br>
     There is a new request awaiting your approval.

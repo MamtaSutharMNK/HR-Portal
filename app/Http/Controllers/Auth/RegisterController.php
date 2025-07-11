@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
-
+use App\Models\UserHasRole;
 
 
 class RegisterController extends Controller
@@ -32,7 +32,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/fte_request';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -66,24 +66,29 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\Models\User
      */
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'emp_id' => $data['emp_id']
-        ]);
-           
-    }
 
+protected function create(array $data)
+{
+    $user = User::create([
+        'name' => $data['name'],
+        'email' => $data['email'],
+        'password' => Hash::make($data['password']),
+        'emp_id' => strtoupper($data['emp_id']),
+    ]);
 
+    UserHasRole::insert([
+        'user_id' => $user->id,
+        'role_id' => 2,
+    ]);
+
+    return $user;
+}
 
 protected function registered(Request $request, $user)
 {
     
     Session::put('hide_skip_once', true);
-    return redirect('/fte_request');
+    return redirect('/');
 }
 
 }
