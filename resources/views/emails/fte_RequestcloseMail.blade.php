@@ -13,12 +13,6 @@ This is to inform you that the FTE request (ID: **{{ $data->id }}**) has been su
 - **Requested By:** {{ $data->requested_by }}
 - **Closure Date:** {{ \Carbon\Carbon::now()->format('d M Y') }}
 
-<!--You can view the closed request using the button below.
-
- @component('mail::button', ['url' => route('fte_request.show', $data->id)])
-View Request
-@endcomponent -->
-
 If you have any questions, feel free to reach out to the HR team.
 
 Thank You,<br>

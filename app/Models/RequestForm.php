@@ -105,7 +105,7 @@ class RequestForm extends Model
         '2' => 'success ',
         '3' => 'primary',
         '4' => 'success',
-        '5' => 'primary',
+        '5' => 'info',
         '6' => 'primary',
         '7' => 'primary'
     ];
@@ -117,7 +117,7 @@ class RequestForm extends Model
         '3' => 'success',
         '4' => 'danger',
         '5' => 'success',
-        '6' => 'danger',
+        '6' => 'success',
         '7' => 'success',
         '8' => 'danger'
     ];

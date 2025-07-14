@@ -21,7 +21,7 @@
                                 <label class="form-label-custom">Business Unit</label>
                                 <div class="d-flex gap-2">
                                     <select name="department_id" id="department_id" class="form-control form-control-custom" required>
-                                        <option value="">-- Select Department --</option>
+                                        <option value="">Select Department</option>
                                         @foreach($departments as $department)
                                             <option value="{{ $department->id }}">{{ $department->name }}</option>
                                         @endforeach
@@ -154,7 +154,7 @@
                                 <label class="form-label-custom">Employee Level</label>
                                 <div class="d-flex gap-2">
                                     <select name="employee_level" id="employee_level" class="form-control form-control-custom" required>
-                                        <option value="">-- Select Level --</option>
+                                        <option value="">Select Level</option>
                                         @foreach($employeeLevels as $levels)
                                             <option value="{{ $levels->id }}">{{ $levels->title }}</option>
                                         @endforeach
@@ -187,9 +187,9 @@
                             <div class="col-md-4" id="ctcRangeWrapper">
                                 <label class="form-label-custom">CTC Range</label>
                                 <div class="d-flex align-items-center" >
-                                    <input type="number" step="0.1" name="ctc_start_range" placeholder="Start Range" class="form-control form-control-custom" style="width: 185px;" required>
+                                    <input type="number" step="0.1" name="ctc_start_range" placeholder="Min Range" class="form-control form-control-custom" style="width: 185px;" required>
                                     <span style="font-size: 20px; margin-left: 4px;">-</span>
-                                    <input type="number" step="0.1" name="ctc_end_range" placeholder="End Range" class="form-control form-control-custom" style="width: 185px;" required>
+                                    <input type="number" step="0.1" name="ctc_end_range" placeholder="Max Range" class="form-control form-control-custom" style="width: 185px;" required>
                                 </div>
                             </div>
                         </div>

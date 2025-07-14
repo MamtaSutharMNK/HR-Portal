@@ -3,7 +3,7 @@
 
 Hello Team,
 
-Your request has been reviewed and **has been rejected**.
+The request has been reviewed and **has been rejected**.
 
 **Reason:** {{ $data->reason }}
 

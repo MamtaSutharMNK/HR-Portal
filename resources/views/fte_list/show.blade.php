@@ -265,7 +265,7 @@
                                 <tr>
                                     <td class="text-black uppercase center aligned">
                                         <span class="badge badge-{{ \App\Models\RequestForm::STATUS_COLORS[$log->status]}} ">
-                                            {{ \App\Models\RequestForm::STATUS_BY_ID[$log->status] }} 
+                                            {{ \App\Models\RequestForm::STATUS_BY_ID[$log->status] ?? '-' }} 
                                         </span>
                                     </td>
                                     <td class="text-black uppercase center aligned" colspan="3">

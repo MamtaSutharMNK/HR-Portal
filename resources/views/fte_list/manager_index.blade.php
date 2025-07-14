@@ -53,11 +53,11 @@ $(document).ready(function() {
             { data: 'department_name', name: 'department.name', orderable: true, searchable: true  },
             { data: 'department_function', name: 'department_function', orderable: true, searchable: true  },
             { data: 'date_of_request', name: 'date_of_request' , orderable: true, searchable: true },
-            { data: 'status_label', name: 'status', orderable: false, searchable: false },
+            { data: 'status_label', name: 'status', orderable: false, searchable: true },
             { data: 'mail_status_label', name: 'mail_status', orderable: false, searchable: false },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
-         order: [[1, 'asc']] 
+         order: [[0, 'desc']] 
     });
 });
 </script>

@@ -50,17 +50,22 @@ class FteRequestFormController extends Controller
         
         $query = RequestForm::query();
         if ($role->role_id !== User::ADMIN) {
-            $query->where('user_id', Auth::id());
+            $query->where('user_id', Auth::id())->orwhere('manager_email_l1', Auth::user()->email)
+            ->orwhere('manager_email_l2', Auth::user()->email)
+            ->orwhere('manager_email_l3', Auth::user()->email)
+            ->orwhere('hr_email_l1', Auth::user()->email)
+            ->orwhere('hr_email_l2', Auth::user()->email)
+            ->orwhere('hr_email_l3', Auth::user()->email);
         }
-    
+
         if ($viewType === 'manager') {
-            $managerStatus = [RequestForm::IN_PROGRESS, RequestForm::CLOSED];
+            $managerStatus = [RequestForm::IN_PROGRESS];
             $data = (clone $query)->whereIn('status', $managerStatus)->orderBy('created_at', 'desc')->get();
             return view('fte_list.manager_index', compact('data'));
         }
     
         if ($viewType === 'hr') {
-            $hrStatus = [RequestForm::CLOSED, RequestForm::DONE];
+            $hrStatus = [RequestForm::CLOSED, RequestForm::DONE,RequestForm::SCREENING,RequestForm::INTERVIEWING,RequestForm::HIRING];
             $data = (clone $query)->whereIn('status', $hrStatus)->orderBy('created_at', 'desc')->get();
             return view('fte_list.hr_Index', compact('data'));
         }
@@ -144,7 +149,7 @@ class FteRequestFormController extends Controller
      */
     public function show(string $id)
     {
-        $data = RequestForm::where('id', $id)->with(['department','jobDetail','requestingBranch','employeeLevel','actionLog.user:id,name'])->first();
+        $data = RequestForm::where('id', $id)->with(['department','jobDetail','requestingBranch','employeeLevel','actionLog.user:id,name','actionLog.requestForm'])->first();
         return view('fte_list.show',['data'=>$data]);
     }
 
@@ -277,10 +282,10 @@ class FteRequestFormController extends Controller
                     // Mail::to($mail)
                     // ->cc($hrMail)
                     // ->send(new FteRequestMail($requestForm));
-                    
+               
                     ActionLog::create([
                         'fte_request_id' => $request->id,
-                        'status'         => $request->status,
+                        'status'         => $mappedStatus,
                         'action_by'      => Auth::user()->id,
                         'reason'         => $request->reason,     
                         'description'    => $request->status,      
@@ -328,7 +333,7 @@ class FteRequestFormController extends Controller
         return response()->json(['error' => 'No file uploaded.'], 400);
     }
 
-  
+
     public function ajaxList(Request $request)
     {
         $view = $request->get('view');
@@ -337,30 +342,39 @@ class FteRequestFormController extends Controller
 
         $role = UserHasRole::where('user_id', Auth::id())->first();
         if ($role->role_id !== User::ADMIN) {
-            $query->where('user_id', Auth::id());
+            $query->where('user_id', Auth::id())
+                ->orWhere('manager_email_l1', Auth::user()->email)
+                ->orWhere('manager_email_l2', Auth::user()->email)
+                ->orWhere('manager_email_l3', Auth::user()->email)
+                ->orWhere('hr_email_l1', Auth::user()->email)
+                ->orWhere('hr_email_l2', Auth::user()->email)
+                ->orWhere('hr_email_l3', Auth::user()->email);
         }
 
         if ($view === 'manager') {
-            $query->whereIn('status', [RequestForm::IN_PROGRESS, RequestForm::CLOSED]);
+            $query->whereIn('status', [RequestForm::IN_PROGRESS]);
         } elseif ($view === 'hr') {
-            $query->whereIn('status', [RequestForm::CLOSED, RequestForm::DONE,RequestForm::SCREENING,RequestForm::INTERVIEWING,RequestForm::HIRING]);
+            $query->whereIn('status', [
+                RequestForm::CLOSED,
+                RequestForm::DONE,
+                RequestForm::SCREENING,
+                RequestForm::INTERVIEWING,
+                RequestForm::HIRING
+            ]);
         }
 
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('department_name', fn($row) => $row->department->name ?? 'N/A')
-            ->addColumn('status_label', function ($row) use ($view){
-                if($view === 'manager'){
-                    $forcedStatus = 1;
-                    $color = RequestForm::STATUS_COLORS[$forcedStatus] ?? 'primary';
+            ->addColumn('status_label', function ($row) use ($view) {
+                if ($view === 'manager') {
+                    $color = RequestForm::STATUS_COLORS[RequestForm::IN_PROGRESS] ?? 'primary';
                     return '<span class="badge badge-' . $color . '">IN PROGRESS</span>';
                 }
+
                 $color = RequestForm::STATUS_COLORS[$row->status] ?? 'secondary';
                 $label = RequestForm::STATUS_BY_ID[$row->status] ?? 'UNKNOWN';
-
                 return '<span class="badge badge-' . $color . '">' . strtoupper($label) . '</span>';
-
-        
             })
             ->addColumn('mail_status_label', fn($row) =>
                 '<span class="badge badge-' . RequestForm::MAIL_STATUS_COLORS[$row->mail_status] . '">' .
@@ -368,73 +382,79 @@ class FteRequestFormController extends Controller
             )
             ->addColumn('action', function ($row) use ($view) {
                 $viewUrl = route('fte_request.show', $row->id);
+                $currentEmail = Auth::user()->email;
+                $hrEmails = [$row->hr_email_l1, $row->hr_email_l2, $row->hr_email_l3];
+                
+                $rejectedStatuses = [
+                    RequestForm::LEVEL1_MAIL_REJECT,
+                    RequestForm::LEVEL2_MAIL_REJECT,
+                    RequestForm::LEVEL3_MAIL_REJECT,
+                    RequestForm::HR_MAIL_REJECT,
+                ];
+
+                $isRejected = in_array($row->mail_status, $rejectedStatuses);
+                $isCurrentHR = in_array($currentEmail, $hrEmails);
 
                 $actionHtml = '
-                <style>
-                    .drop-menu { width: 10%; }
-                    .btn-group .dropdown { margin-right: 5px; }
-                </style>
+                    <style>
+                        .drop-menu { width: 10%; }
+                        .btn-group .dropdown { margin-right: 5px; }
+                    </style>
 
-                <div class="btn-group" role="group">
+                    <div class="btn-group" role="group">
+                        <div class="dropdown">
+                            <button class="btn btn-sm dropdown-color dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-cog mr-1"></i> Action
+                            </button>
+                            <div class="dropdown-menu drop-menu">
+                                <a class="dropdown-item" href="' . $viewUrl . '">
+                                    <i class="fas fa-eye mr-2 text-muted"></i>View
+                                </a>';
 
-                    <!-- Action Dropdown -->
-                    <div class="dropdown">
-                        <button class="btn btn-sm dropdown-color dropdown-toggle" data-toggle="dropdown">
-                            <i class="fas fa-cog mr-1"></i> Action
-                        </button>
-                        <div class="dropdown-menu drop-menu">
-                            <a class="dropdown-item" href="' . $viewUrl . '">
-                                <i class="fas fa-eye mr-2 text-muted"></i>View
-                            </a>';
-
-                if ($view === 'hr' && (Auth::user()->id == $row->hr_email_l1 || Auth::user()->id == $row->hr_email_l2 || Auth::user()->id == $row->hr_email_l3)) {
+                if ($view === 'hr' && $isCurrentHR && !$isRejected) {
                     $actionHtml .= '
-                            <a class="dropdown-item edit-request-btn" href="#" data-id="' . $row->id . '">
-                                <i class="fas fa-edit mr-2 text-info"></i>Modify
-                            </a>';
+                        <a class="dropdown-item edit-request-btn" href="#" data-id="' . $row->id . '">
+                            <i class="fas fa-edit mr-2 text-info"></i>Modify
+                        </a>';
                 }
 
-                $actionHtml .= '
-                        </div>
-                    </div>';
+                $actionHtml .= '</div></div>';
 
-                if ($view === 'hr' && (Auth::user()->id == $row->hr_email_l1 || Auth::user()->id == $row->hr_email_l2 || Auth::user()->id == $row->hr_email_l3)) {
+                if ($view === 'hr' && $isCurrentHR && !$isRejected) {
                     $actionHtml .= '
-                    <!-- Update Status Dropdown -->
                     <div class="dropdown">
                         <button class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
                             <i class="fas fa-sync mr-2"></i>Update Status
                         </button>
                         <div class="dropdown-menu drop-menu">
                             <a class="dropdown-item update-status-btn" href="#"
-                            data-status="screening" data-id="' . $row->id . '"
-                            data-toggle="modal" data-target="#statusUpdateModal">
+                                data-status="screening" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
                                 <i class="fas fa-search mr-2 text-info"></i>Screening
                             </a>
                             <a class="dropdown-item update-status-btn" href="#"
-                            data-status="interviewing" data-id="' . $row->id . '"
-                            data-toggle="modal" data-target="#statusUpdateModal">
+                                data-status="interviewing" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
                                 <i class="fas fa-comments mr-2 text-primary"></i>Interviewing
                             </a>
                             <a class="dropdown-item update-status-btn" href="#"
-                            data-status="hiring" data-id="' . $row->id . '"
-                            data-toggle="modal" data-target="#statusUpdateModal">
-                                <i class="fas fa-user-check mr-2 text-success"></i>Hiring
+                                data-status="hiring" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
+                                <i class="fas fa-user-check mr-2 text-primary"></i>Hiring
                             </a>
                             <a class="dropdown-item update-status-btn" href="#"
-                            data-status="done" data-id="' . $row->id . '"
-                            data-toggle="modal" data-target="#statusUpdateModal">
-                                <i class="fas fa-user-check mr-2 text-success"></i>Done
+                                data-status="done" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
+                                <i class="fas fa-clipboard-check mr-2 text-success"></i>Done
                             </a>
                         </div>
                     </div>';
                 }
-                $actionHtml .= '</div>'; 
+
+                $actionHtml .= '</div>'; // end .btn-group
                 return $actionHtml;
             })
             ->rawColumns(['status_label', 'mail_status_label', 'action'])
             ->make(true);
     }
+    
+
 
 
     public function fetchData($id){
