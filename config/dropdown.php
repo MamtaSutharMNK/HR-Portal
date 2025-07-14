@@ -33,6 +33,18 @@ return [
     'ctc_types'=>[
         0 => 'Monthly',
         1 => 'Yearly'
+    ],
+
+    'approval_level'=>[
+        1 => 'Level 1',
+        2 => 'Level 2',
+        3 => 'Level 3'
+    ],
+
+    'department_list'=>[
+        1 => 'ADMIN',
+        2 => 'HR',
+        3 => 'IT'
     ]
 
 ];

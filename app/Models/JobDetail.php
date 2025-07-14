@@ -20,6 +20,8 @@ class JobDetail extends Model
 
     public function requestForms()
     {
-        return $this->hasMany(RequestForm::class, 'job_detail_id');
+        // return $this->hasMany(RequestForm::class, 'job_detail_id');
+        return $this->belongsTo(RequestForm::class, 'fte_request_id','request_uuid');
+
     }
 }

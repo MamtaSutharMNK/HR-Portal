@@ -27,7 +27,7 @@ class FteRequestMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Fte Request Mail',
+            subject: 'FTE Request Mail',
         );
     }
 

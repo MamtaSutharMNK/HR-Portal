@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class RequestingBranch extends Model
 {
     use hasFactory;
+    protected $fillable = ['name','branch_code'];
+
     
     public function requestForms()
     {
