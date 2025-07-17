@@ -223,15 +223,6 @@
                                 $display_Accept = '';
                             }
                         }
-                    
-                        // Optional: HR Approval button (no reject)
-                        if (
-                            ($currentUserEmail == $hrL1 && $status == \App\Models\RequestForm::LEVEL3_MAIL_APPROVAL) ||
-                            ($currentUserEmail == $hrL2 && $status == \App\Models\RequestForm::LEVEL3_MAIL_APPROVAL) ||
-                            ($currentUserEmail == $hrL3 && $status == \App\Models\RequestForm::LEVEL3_MAIL_APPROVAL)
-                        ) {
-                            $display_Accept = '';
-                        }
                     @endphp
 
                     <div class="d-flex gap-2">

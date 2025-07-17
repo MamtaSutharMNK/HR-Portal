@@ -284,7 +284,7 @@
                             <div class="invalid-feedback">Enter the consequences of not hiring  </div>
                             
                         </div>
-                        <hr>    
+                        <hr>  
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-primary btn-lg w-50">Submit</button>
                         </div>
@@ -302,7 +302,8 @@
       @csrf
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Add Departments</h5>
+            <h5 class="modal-title">Add Departments</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
         </div>
         <div class="modal-body" id="deptFieldsContainer">
           <div class="input-group mb-2">
@@ -311,7 +312,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Save All</button>
+          <button type="submit" class="btn btn-primary">Save</button>
         </div>
       </div>
     </form>
@@ -326,7 +327,8 @@
       @csrf
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Add Employee Levels</h5>
+            <h5 class="modal-title">Add Employee Levels</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
         </div>
         <div class="modal-body" id="levelFieldsContainer">
           <div class="input-group mb-2">
@@ -335,7 +337,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Save Levels</button>
+          <button type="submit" class="btn btn-primary">Save</button>
         </div>
       </div>
     </form>
@@ -351,6 +353,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Add Branches</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
             </div>
             <div class="modal-body" id="branchFieldsContainer">
                 <div class="input-group mb-2">
@@ -359,7 +364,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Save Branches</button>
+                <button type="submit" class="btn btn-primary">Save</button>
             </div>
         </div>
     </form>

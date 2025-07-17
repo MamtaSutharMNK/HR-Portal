@@ -408,7 +408,7 @@ class FteRequestFormController extends Controller
                             </button>
                             <div class="dropdown-menu drop-menu">
                                 <a class="dropdown-item" href="' . $viewUrl . '">
-                                    <i class="fas fa-eye mr-2 text-muted"></i>View
+                                    <i class="fas fa-eye mr-2 text-primary"></i>View
                                 </a>';
 
                 if ($view === 'hr' && $isCurrentHR && !$isRejected) {
@@ -447,7 +447,7 @@ class FteRequestFormController extends Controller
                     </div>';
                 }
 
-                $actionHtml .= '</div>'; // end .btn-group
+                $actionHtml .= '</div>'; 
                 return $actionHtml;
             })
             ->rawColumns(['status_label', 'mail_status_label', 'action'])

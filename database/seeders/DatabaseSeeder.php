@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\UserHasRole;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Seeders\IssueCategorySeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
             EmployeeLevelSeeder::class,
             RoleSeeder::class,
             DepartmentSeeder::class,
-            RequestingBranchSeeder::class
+            RequestingBranchSeeder::class,
+            IssueCategorySeeder::class
         ]);
        
     }

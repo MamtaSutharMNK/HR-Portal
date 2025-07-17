@@ -56,4 +56,8 @@ class User extends Authenticatable
         return $this->hasMany(ActionLog::class, 'action_by');
     }
 
+    public function isAdmin(): bool{
+        return $this->rold_id == self:: ADMIN;
+    }
+
 }

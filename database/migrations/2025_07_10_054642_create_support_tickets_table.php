@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->text('department_id');
-            $table->string('status')->default(0)->comments('0 => Pending, 1 => In-Progress, 2 => Done');
+            $table->string('status')->default(0)->comments('0 => Pending, 1 => In-Progress, 2 => Done,3 => closed');
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });

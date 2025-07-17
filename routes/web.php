@@ -8,6 +8,8 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeLevelController;
 use App\Http\Controllers\RequestingBranchController;
 use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\SupportDropdownController;
+
 
 Auth::routes();
 
@@ -37,6 +39,12 @@ Route::get('/fte_request/list/ajax', [FteRequestFormController::class, 'ajaxList
 Route::get('/fte_request/by-status', [FteRequestFormController::class, 'getByStatus'])->name('requests.byStatus');
 
 Route::resource('support_tickets', SupportTicketController::class)->middleware('auth');
+
+Route::get('/support/categories/{departmentId}', [SupportDropdownController::class, 'getCategories']);
+Route::get('/support/types/{categoryId}', [SupportDropdownController::class, 'getTypes']);
+
+Route::post('/support/category/store', [SupportDropdownController::class, 'storeCategory']);
+Route::post('/support/type/store', [SupportDropdownController::class, 'storeType']);
 
 
 
