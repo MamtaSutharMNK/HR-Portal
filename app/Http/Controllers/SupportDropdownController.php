@@ -24,12 +24,13 @@ class SupportDropdownController extends Controller
     }
     public function storeCategory(Request $request)
     {
+       
         $validated = $request->validate([
             'department_id' => 'required|integer',
             'name' => 'required|string|max:255',
         ]);
-
-        if (Auth::user()->isAdmin()) {
+            
+        if (auth()->user()->isAdmin()) {
             $category = IssueCategory::create($validated);
             return response()->json(['id' => $category->id, 'name' => $category->name]);
         }
@@ -44,7 +45,7 @@ class SupportDropdownController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        if (Auth::user()->isAdmin()) {
+        if (auth()->user()->isAdmin()) {
             $type = IssueType::create($validated);
             return response()->json(['id' => $type->id, 'name' => $type->name]);
         }

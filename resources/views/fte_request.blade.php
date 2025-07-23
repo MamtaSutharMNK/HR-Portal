@@ -26,7 +26,10 @@
                                             <option value="{{ $department->id }}">{{ $department->name }}</option>
                                         @endforeach
                                     </select>
+                                  
+                                    @if (auth()->user()->isAdmin())
                                     <button type="button" class="btn-outline form-control form-control-custom ms-2" id="openAddDeptModal" style="width: 50px;">+</button>
+                                    @endif
                                 </div>
                                 <div class="invalid-feedback">Please select a department</div>
                             </div>
@@ -53,7 +56,9 @@
                                             <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                                         @endforeach
                                     </select>
-                                    <button type="button" class="btn-outline form-control form-control-custom ms-2" id="openAddBranchModal" style="width: 50px;">+</button>
+                                    @if (auth()->user()->isAdmin())
+                                        <button type="button" class="btn-outline form-control form-control-custom ms-2" id="openAddBranchModal" style="width: 50px;">+</button>
+                                    @endif
                                 </div>
                                 <div class="invalid-feedback">Please select a branch</div>
                             </div>
@@ -64,7 +69,7 @@
                                 @foreach (config('dropdown.approval_level') as $key => $value)
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input approval-checkbox" type="radio" name="approval_level"
-                                        value="{{ $key }}" id="approval_level_{{ $key }}" style="margin-left: 7px">
+                                        value="{{ $key }}" id="approval_level_{{ $key }}" style="margin-left: 7px" required>
                                     <label class="form-check-label">{{ $value }}</label>
                                 </div>
                                 @endforeach
@@ -154,12 +159,14 @@
                                 <label class="form-label-custom">Employee Level</label>
                                 <div class="d-flex gap-2">
                                     <select name="employee_level" id="employee_level" class="form-control form-control-custom" required>
-                                        <option value="">Select Level</option>
+                                        <option value="">Select Employee Level</option>
                                         @foreach($employeeLevels as $levels)
                                             <option value="{{ $levels->id }}">{{ $levels->title }}</option>
                                         @endforeach
                                     </select>
-                                    <button type="button" class="btn-outline form-control form-control-custom ms-2" id="openAddLevelModal" style="width: 50px;" data-bs-toggle="modal" data-bs-target="#multiEmployeeLevelModal">+</button>
+                                    @if (auth()->user()->isAdmin())
+                                        <button type="button" class="btn-outline form-control form-control-custom ms-2" id="openAddLevelModal" style="width: 50px;" data-bs-toggle="modal" data-bs-target="#multiEmployeeLevelModal">+</button>
+                                    @endif    
                                 </div>
                                 <div class="invalid-feedback">Please select Employee Level</div>
                             </div>
@@ -169,6 +176,7 @@
                             <label class="form-label-custom">Budgeted Currency</label>
                                 <input list="currencies" id="currency" name="currency" class="form-control form-control-custom" required>
                                 <datalist id="currencies"></datalist>
+                                <input type="hidden" name="currency_symbol" id="currencySymbol">
                                 <div class="invalid-feedback">Please select currency</div>
                             </div>   
 
@@ -187,9 +195,9 @@
                             <div class="col-md-4" id="ctcRangeWrapper">
                                 <label class="form-label-custom">CTC Range</label>
                                 <div class="d-flex align-items-center" >
-                                    <input type="number" step="0.1" name="ctc_start_range" placeholder="Min Range" class="form-control form-control-custom" style="width: 185px;" required>
+                                    <input type="number" step="0.1" min="0" name="ctc_start_range" placeholder="Min Range" class="form-control form-control-custom" style="width: 185px;" required>
                                     <span style="font-size: 20px; margin-left: 4px;">-</span>
-                                    <input type="number" step="0.1" name="ctc_end_range" placeholder="Max Range" class="form-control form-control-custom" style="width: 185px;" required>
+                                    <input type="number" step="0.1" min="0" name="ctc_end_range" placeholder="Max Range" class="form-control form-control-custom" style="width: 185px;" required>
                                 </div>
                             </div>
                         </div>
@@ -409,7 +417,7 @@ $(document).ready(function () {
     const textFields = [
         { id: '#educationInput', error: '#educationError' },
         { id: '#jobDetailInput', error: '#jobDetailError' },
-        { id: '#locationInput', error: '#locationError' },
+        // { id: '#locationInput', error: '#locationError' },
         { id: '#skillsInput', error: '#skillsError' },
         { id: '#languageInput', error: '#languageError' },
         { id: '#certificationsInput', error: '#certificationsError' }
@@ -523,15 +531,23 @@ $(document).ready(function () {
         });
 
     //  Fetch Currencies 
+    const currencySymbolMap = new Map();
+
     fetch('https://restcountries.com/v3.1/all?fields=currencies')
         .then(res => res.json())
         .then(data => {
             const set = new Set();
+
             data.forEach(country => {
                 const currencies = country.currencies;
                 if (currencies) {
                     Object.entries(currencies).forEach(([code, details]) => {
-                        set.add(`${details.name} (${code})`);
+                        const label = `${details.name} (${code})`;
+                        set.add(label);
+
+                        if (details.symbol) {
+                            currencySymbolMap.set(code, details.symbol);
+                        }
                     });
                 }
             });
@@ -541,6 +557,16 @@ $(document).ready(function () {
                 list.append(`<option value="${currency}">`);
             });
         });
+
+        $('#currencyInput').on('change', function () {
+            const selected = $(this).val(); // e.g. "Euro (EUR)"
+            const match = selected.match(/\(([^)]+)\)/); // Extract "EUR"
+            const code = match ? match[1] : null;
+
+            const symbol = currencySymbolMap.get(code) || '';
+            console.log('Currency symbol:', symbol);
+        });
+
 
     //  Department Modal 
     $('#openAddDeptModal').on('click', () => $('#multiDepartmentModal').modal('show'));

@@ -6,11 +6,11 @@
     <!-- DataTales Example -->
     <div class="card o-hidden border-0 shadow-lg my-5 ">
         <div class="card-header py-3 button-blue-50 text-center">
-            <h4 class="m-0 font-weight-bold">HR FTE Request List</h4>
+            <h4 class="m-0 font-weight-bold">HR-FTE Requested List</h4>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="fte-table" width="100%" cellspacing="0">
+                <table class="table table-bordered nowrap" id="fte-table" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th class="text-center">SL.No</th>
@@ -38,6 +38,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title font-bold" style="color:#545454;">Update Status</h5>
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
         </div>
         <div class="modal-body">
             <input type="hidden" name="id" id="statusRequestId">
@@ -89,8 +92,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Update</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update</button>
             </div>
         </div>
     </form>
@@ -108,12 +111,13 @@
         $('#fte-table').DataTable({
             processing: true,
             serverSide: true,
-            dom: 'ftp',
+            scrollX: true,
+            dom:'<"top"f>rt<"bottom"ip><"clear">',
             ajax:{
                 url: "{{ route('fte_request.list.ajax') }}",
                 data : { view: "{{ request('view') }}"},
                 dataSrc: function(json){
-                    console.log(json);
+                    // console.log(json);
                     return json.data;
                 }
             },

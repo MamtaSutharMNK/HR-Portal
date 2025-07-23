@@ -9,7 +9,7 @@
     </div>    
     <div class="row">
         @foreach($status as $key => $label)
-            <div class="col-xl-3 col-md-6 mb-4">
+            <div class="col-md-4 mb-4">
                 <div class="card border-left-info shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center clickable_card" data-status="{{ $label }}" style="cursor: pointer;">
@@ -34,13 +34,13 @@
     <div class="row">
         <!-- Pie Chart -->
         <div class="col-xl-6 col-lg-6 mb-4">
-            <div class="card shadow h-100">
+            <div class="card shadow h-100 w-100">
                 <div class="card-header py-3 button-blue-50">
                     <h6 class="m-0 font-weight-bold ">Request Status Distribution</h6>
                 </div>
                 <div class="card-body mt-3" style="margin-top: 50px;">
                     <div class="chart-pie pt-4 pb-2 d-flex justify-content-center" >
-                        <canvas id="statusPieChart" style="height: 300px; max-width: 100%;"></canvas>
+                        <canvas id="statusPieChart" style="height: 245px; max-width: 100%;"></canvas>
                     </div>
                 </div>
             
@@ -48,7 +48,7 @@
         </div>
 
         <div class="col-xl-6 col-lg-6 mb-4">
-            <div class="card shadow h-100">
+            <div class="card shadow h-100 w-100">
                 <div class="card-header py-3 button-blue-50">
                     <h6 class="m-0 font-weight-bold ">Email Status Summary</h6>
                 </div>

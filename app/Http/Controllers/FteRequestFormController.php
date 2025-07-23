@@ -22,53 +22,82 @@ use App\Mail\FteRequestClose;
 use App\Models\ActionLog;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
+use App\Mail\FteUserNotificationMail;
+use App\Mail\FteUserNotificationRejectMail;
+use App\Mail\PositionFilledMail;
+use App\Mail\PositionStatusMail;
+
+
 
 
 class FteRequestFormController extends Controller
 {
+       /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $departments = Department::where('status',1)->get();
-        $branches = RequestingBranch::where('status',1)->get();
-        $employeeLevels = EmployeeLevel::all();
+        try{
+            $viewType = $request->query('view');
 
-        return view('fte_request',['branches'=>$branches, 'departments'=>$departments,'employeeLevels'=>$employeeLevels]);
+            $role = UserHasRole::where('user_id', Auth::user()->id)->first();
+            $departments = Department::where('status',1)->get();
+            
+            $query = RequestForm::query();
+            if ($role->role_id !== User::ADMIN) {
+                $query->where(function ($q) {
+                    $q->where('user_id', Auth::id())
+                    ->orWhere('manager_email_l1', Auth::user()->email)
+                    ->orWhere('manager_email_l2', Auth::user()->email)
+                    ->orWhere('manager_email_l3', Auth::user()->email)
+                    ->orWhere('hr_email_l1', Auth::user()->email)
+                    ->orWhere('hr_email_l2', Auth::user()->email)
+                    ->orWhere('hr_email_l3', Auth::user()->email);
+                });
+            }
+
+
+            if ($viewType === 'manager') {
+                $managerStatus = [RequestForm::IN_PROGRESS];
+                $data = (clone $query)->whereIn('status', $managerStatus)->orderBy('created_at', 'desc')->get();
+                return view('fte_list.manager_index', compact('data'));
+            }
+        
+            if ($viewType === 'hr') {
+                $excludedStatus = [RequestForm::IN_PROGRESS];
+                $data = (clone $query)->whereNotIn('status', $excludedStatus)->orderBy('created_at', 'desc')->get();
+                return view('fte_list.hr_Index', compact('data'));
+            }
+        } catch (Exception $e) {
+            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
+        }
+       
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create()
     {
-        $viewType = $request->query('view');
+        try{
+            $departments = Department::where('status',1)->get();
+            $branches = RequestingBranch::where('status',1)->get();
+            $employeeLevels = EmployeeLevel::all();
 
-        $role = UserHasRole::where('user_id', Auth::user()->id)->first();
-        $departments = Department::where('status',1)->get();
-        
-        $query = RequestForm::query();
-        if ($role->role_id !== User::ADMIN) {
-            $query->where('user_id', Auth::id())->orwhere('manager_email_l1', Auth::user()->email)
-            ->orwhere('manager_email_l2', Auth::user()->email)
-            ->orwhere('manager_email_l3', Auth::user()->email)
-            ->orwhere('hr_email_l1', Auth::user()->email)
-            ->orwhere('hr_email_l2', Auth::user()->email)
-            ->orwhere('hr_email_l3', Auth::user()->email);
-        }
+            return view('fte_request',['branches'=>$branches, 'departments'=>$departments,'employeeLevels'=>$employeeLevels]);
+        }catch (\Exception $e) {
+        return response()->json(['message' => 'Something went wrong', 'error' => $e->getMessage()], 500);
+    }
 
-        if ($viewType === 'manager') {
-            $managerStatus = [RequestForm::IN_PROGRESS];
-            $data = (clone $query)->whereIn('status', $managerStatus)->orderBy('created_at', 'desc')->get();
-            return view('fte_list.manager_index', compact('data'));
-        }
-    
-        if ($viewType === 'hr') {
-            $hrStatus = [RequestForm::CLOSED, RequestForm::DONE,RequestForm::SCREENING,RequestForm::INTERVIEWING,RequestForm::HIRING];
-            $data = (clone $query)->whereIn('status', $hrStatus)->orderBy('created_at', 'desc')->get();
-            return view('fte_list.hr_Index', compact('data'));
-        }
     }
 
     /**
@@ -76,6 +105,7 @@ class FteRequestFormController extends Controller
      */
     public function store(RequestFormRequest $request)
     {
+         
         try {
             $validated = $request->validated();
 
@@ -139,7 +169,6 @@ class FteRequestFormController extends Controller
             return redirect()->route('index')->with('success', 'Form submitted successfully.');
         } catch (Exception $e) {
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
-            dd($e->getMessage());
         }
         
     }
@@ -197,7 +226,7 @@ class FteRequestFormController extends Controller
                     
                     if ($requestForm->approval_level == 1) {
                         $requestForm->status = RequestForm::CLOSED;
-                        $mail = $requestForm->hr_email_l1;
+                        $hrmail1 = $requestForm->hr_email_l1;
                     }
                 } 
                 elseif ($currentMailStatus === RequestForm::LEVEL1_MAIL_APPROVAL) {
@@ -208,7 +237,7 @@ class FteRequestFormController extends Controller
                     
                     if ($requestForm->approval_level == 2) {
                         $requestForm->status = RequestForm::CLOSED;
-                        $mail = $requestForm->hr_email_l2;
+                        $hrmail1 = $requestForm->hr_email_l2;
                     }
                 } 
                 elseif ($currentMailStatus === RequestForm::LEVEL2_MAIL_APPROVAL) {
@@ -218,7 +247,7 @@ class FteRequestFormController extends Controller
                     $message = 'Approved By Level 3';
                 
                     $requestForm->status = RequestForm::CLOSED;
-                    $mail = $requestForm->hr_email_l3;
+                    $hrmail1 = $requestForm->hr_email_l3;
                 }
 
             }
@@ -247,13 +276,20 @@ class FteRequestFormController extends Controller
 
             if ($request->action != 'status-change') {
                 $requestForm->save();
-
+                $creatorEmail = $requestForm->user->email;
+              
                 if ($request->action === 'accept') {
+                    Mail::to($creatorEmail)
+                    ->cc($hrMail)
+                    ->send(new FteUserNotificationMail($requestForm));
+
                     Mail::to($mail)
                     ->cc($hrMail)
                     ->send(new FteRequestMail($requestForm));
-                } elseif ($request->action === 'reject') {
-                    Mail::to($mail)
+
+                } 
+                elseif ($request->action === 'reject') {
+                    Mail::to($creatorEmail)
                     ->cc($hrMail)
                     ->send(new FteRejectionMail($requestForm));
                 } 
@@ -278,10 +314,6 @@ class FteRequestFormController extends Controller
                     $mappedStatus = $statusMap[$request->status];
                     $requestForm->status = $mappedStatus;
                     $requestForm->save();
-
-                    // Mail::to($mail)
-                    // ->cc($hrMail)
-                    // ->send(new FteRequestMail($requestForm));
                
                     ActionLog::create([
                         'fte_request_id' => $request->id,
@@ -290,6 +322,11 @@ class FteRequestFormController extends Controller
                         'reason'         => $request->reason,     
                         'description'    => $request->status,      
                     ]);
+                    $userEmail = $requestForm->user->email;
+
+                    Mail::to($userEmail)
+                        ->cc($hrMail)
+                        ->send(new PositionStatusMail($requestForm));
 
                     return response()->json([
                         'success' => true,
@@ -297,11 +334,7 @@ class FteRequestFormController extends Controller
                     ]);
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => $message
-            ]);
-
+            return response()->json(['success' => true,'message' => $message]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -309,155 +342,159 @@ class FteRequestFormController extends Controller
 
     public function upload(Request $request)
     {
-        if ($request->hasFile('upload')) {
-            $file = $request->file('upload');
-            $extension = $file->getClientOriginalExtension();
-            $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $extension;
+        try{
+            if ($request->hasFile('upload')) {
+                $file = $request->file('upload');
+                $extension = $file->getClientOriginalExtension();
+                $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $extension;
 
-            $path = $file->storeAs('public/uploads', $filename);
-            $url = Storage::url($path);
+                $path = $file->storeAs('public/uploads', $filename);
+                $url = Storage::url($path);
 
-            $mime = $file->getMimeType();
-       
-            if (Str::startsWith($mime, 'image/')) {
-                return response()->json([
-                    'url' => $url 
-                ]);
-            } else {
-                return response()->json([
-                    'default' => "<p><a href='$url' target='_blank' rel='noopener'>Download File</a></p>"
-                ]);
+                $mime = $file->getMimeType();
+        
+                if (Str::startsWith($mime, 'image/')) {
+                    return response()->json([
+                        'url' => $url 
+                    ]);
+                } else {
+                    return response()->json([
+                        'default' => "<p><a href='$url' target='_blank' rel='noopener'>Download File</a></p>"
+                    ]);
+                }
             }
-        }
 
-        return response()->json(['error' => 'No file uploaded.'], 400);
+            return response()->json(['error' => 'No file uploaded.'], 400);
+        }catch(\Exception $e){
+            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
+        }
     }
 
 
     public function ajaxList(Request $request)
     {
-        $view = $request->get('view');
+        try{
+            $view = $request->get('view');
 
-        $query = RequestForm::with('department');
+            $query = RequestForm::with('department');
 
-        $role = UserHasRole::where('user_id', Auth::id())->first();
-        if ($role->role_id !== User::ADMIN) {
-            $query->where('user_id', Auth::id())
-                ->orWhere('manager_email_l1', Auth::user()->email)
-                ->orWhere('manager_email_l2', Auth::user()->email)
-                ->orWhere('manager_email_l3', Auth::user()->email)
-                ->orWhere('hr_email_l1', Auth::user()->email)
-                ->orWhere('hr_email_l2', Auth::user()->email)
-                ->orWhere('hr_email_l3', Auth::user()->email);
-        }
+            $role = UserHasRole::where('user_id', Auth::id())->first();
+            
+            if ($role->role_id !== User::ADMIN) {
+                $query->where(function ($q) {
+                    $q->where('user_id', Auth::id())
+                    ->orWhere('manager_email_l1', Auth::user()->email)
+                    ->orWhere('manager_email_l2', Auth::user()->email)
+                    ->orWhere('manager_email_l3', Auth::user()->email)
+                    ->orWhere('hr_email_l1', Auth::user()->email)
+                    ->orWhere('hr_email_l2', Auth::user()->email)
+                    ->orWhere('hr_email_l3', Auth::user()->email);
+                });
+            }
 
-        if ($view === 'manager') {
-            $query->whereIn('status', [RequestForm::IN_PROGRESS]);
-        } elseif ($view === 'hr') {
-            $query->whereIn('status', [
-                RequestForm::CLOSED,
-                RequestForm::DONE,
-                RequestForm::SCREENING,
-                RequestForm::INTERVIEWING,
-                RequestForm::HIRING
-            ]);
-        }
 
-        return DataTables::of($query)
-            ->addIndexColumn()
-            ->addColumn('department_name', fn($row) => $row->department->name ?? 'N/A')
-            ->addColumn('status_label', function ($row) use ($view) {
-                if ($view === 'manager') {
-                    $color = RequestForm::STATUS_COLORS[RequestForm::IN_PROGRESS] ?? 'primary';
-                    return '<span class="badge badge-' . $color . '">IN PROGRESS</span>';
-                }
+            if ($view === 'manager') {
+                $query->whereIn('status', [RequestForm::IN_PROGRESS]);
+            } elseif ($view === 'hr') {
+                $query->whereNotIn('status', [RequestForm::IN_PROGRESS]);
+            }
 
-                $color = RequestForm::STATUS_COLORS[$row->status] ?? 'secondary';
-                $label = RequestForm::STATUS_BY_ID[$row->status] ?? 'UNKNOWN';
-                return '<span class="badge badge-' . $color . '">' . strtoupper($label) . '</span>';
-            })
-            ->addColumn('mail_status_label', fn($row) =>
-                '<span class="badge badge-' . RequestForm::MAIL_STATUS_COLORS[$row->mail_status] . '">' .
-                RequestForm::STATUS_BY_MAIL_ID[$row->mail_status] . '</span>'
-            )
-            ->addColumn('action', function ($row) use ($view) {
-                $viewUrl = route('fte_request.show', $row->id);
-                $currentEmail = Auth::user()->email;
-                $hrEmails = [$row->hr_email_l1, $row->hr_email_l2, $row->hr_email_l3];
-                
-                $rejectedStatuses = [
-                    RequestForm::LEVEL1_MAIL_REJECT,
-                    RequestForm::LEVEL2_MAIL_REJECT,
-                    RequestForm::LEVEL3_MAIL_REJECT,
-                    RequestForm::HR_MAIL_REJECT,
-                ];
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->addColumn('department_name', fn($row) => $row->department->name ?? 'N/A')
+                ->addColumn('status_label', function ($row) use ($view) {
+                    if ($view === 'manager') {
+                        $color = RequestForm::STATUS_COLORS[RequestForm::IN_PROGRESS] ?? 'primary';
+                        return '<span class="badge badge-' . $color . '">IN PROGRESS</span>';
+                    }
 
-                $isRejected = in_array($row->mail_status, $rejectedStatuses);
-                $isCurrentHR = in_array($currentEmail, $hrEmails);
+                    $color = RequestForm::STATUS_COLORS[$row->status] ?? 'secondary';
+                    $label = RequestForm::STATUS_BY_ID[$row->status] ?? 'UNKNOWN';
+                    return '<span class="badge badge-' . $color . '">' . strtoupper($label) . '</span>';
+                })
+                ->addColumn('mail_status_label', fn($row) =>
+                    '<span class="badge badge-' . RequestForm::MAIL_STATUS_COLORS[$row->mail_status] . '">' .
+                    RequestForm::STATUS_BY_MAIL_ID[$row->mail_status] . '</span>'
+                )
+                ->addColumn('action', function ($row) use ($view) {
+                    $viewUrl = route('fte_request.show', $row->id);
+                    $currentEmail = Auth::user()->email;
+                    $hrEmails = [$row->hr_email_l1, $row->hr_email_l2, $row->hr_email_l3];
+                    
+                    $rejectedStatuses = [
+                        RequestForm::LEVEL1_MAIL_REJECT,
+                        RequestForm::LEVEL2_MAIL_REJECT,
+                        RequestForm::LEVEL3_MAIL_REJECT,
+                        RequestForm::HR_MAIL_REJECT,
+                    ];
 
-                $actionHtml = '
-                    <style>
-                        .drop-menu { width: 10%; }
-                        .btn-group .dropdown { margin-right: 5px; }
-                    </style>
+                    $isRejected = in_array($row->mail_status, $rejectedStatuses);
+                    $isCurrentHR = in_array($currentEmail, $hrEmails);
 
-                    <div class="btn-group" role="group">
+                    $actionHtml = '
+                        <style>
+                            .drop-menu { width: 10%; }
+                            .btn-group .dropdown { margin-right: 5px; }
+                        </style>
+
+                        <div class="btn-group" role="group">
+                            <div class="dropdown">
+                                <button class="btn btn-sm dropdown-color dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fas fa-cog mr-1"></i> Action
+                                </button>
+                                <div class="dropdown-menu drop-menu">
+                                    <a class="dropdown-item" href="' . $viewUrl . '">
+                                        <i class="fas fa-eye mr-2 text-primary"></i>View
+                                    </a>';
+
+                    if ($view === 'hr' && $isCurrentHR && !$isRejected) {
+                        $actionHtml .= '
+                            <a class="dropdown-item edit-request-btn" href="#" data-id="' . $row->id . '">
+                                <i class="fas fa-edit mr-2 text-info"></i>Modify
+                            </a>';
+                    }
+
+                    $actionHtml .= '</div></div>';
+
+                    if ($view === 'hr' && $isCurrentHR && !$isRejected) {
+                        $actionHtml .= '
                         <div class="dropdown">
-                            <button class="btn btn-sm dropdown-color dropdown-toggle" data-toggle="dropdown">
-                                <i class="fas fa-cog mr-1"></i> Action
+                            <button class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-sync mr-2"></i>Update Status
                             </button>
                             <div class="dropdown-menu drop-menu">
-                                <a class="dropdown-item" href="' . $viewUrl . '">
-                                    <i class="fas fa-eye mr-2 text-primary"></i>View
-                                </a>';
+                                <a class="dropdown-item update-status-btn" href="#"
+                                    data-status="screening" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
+                                    <i class="fas fa-search mr-2 text-info"></i>Screening
+                                </a>
+                                <a class="dropdown-item update-status-btn" href="#"
+                                    data-status="interviewing" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
+                                    <i class="fas fa-comments mr-2 text-primary"></i>Interviewing
+                                </a>
+                                <a class="dropdown-item update-status-btn" href="#"
+                                    data-status="hiring" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
+                                    <i class="fas fa-user-check mr-2 text-primary"></i>Hiring
+                                </a>
+                                <a class="dropdown-item update-status-btn" href="#"
+                                    data-status="done" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
+                                    <i class="fas fa-clipboard-check mr-2 text-success"></i>Done
+                                </a>
+                            </div>
+                        </div>';
+                    }
 
-                if ($view === 'hr' && $isCurrentHR && !$isRejected) {
-                    $actionHtml .= '
-                        <a class="dropdown-item edit-request-btn" href="#" data-id="' . $row->id . '">
-                            <i class="fas fa-edit mr-2 text-info"></i>Modify
-                        </a>';
-                }
-
-                $actionHtml .= '</div></div>';
-
-                if ($view === 'hr' && $isCurrentHR && !$isRejected) {
-                    $actionHtml .= '
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
-                            <i class="fas fa-sync mr-2"></i>Update Status
-                        </button>
-                        <div class="dropdown-menu drop-menu">
-                            <a class="dropdown-item update-status-btn" href="#"
-                                data-status="screening" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
-                                <i class="fas fa-search mr-2 text-info"></i>Screening
-                            </a>
-                            <a class="dropdown-item update-status-btn" href="#"
-                                data-status="interviewing" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
-                                <i class="fas fa-comments mr-2 text-primary"></i>Interviewing
-                            </a>
-                            <a class="dropdown-item update-status-btn" href="#"
-                                data-status="hiring" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
-                                <i class="fas fa-user-check mr-2 text-primary"></i>Hiring
-                            </a>
-                            <a class="dropdown-item update-status-btn" href="#"
-                                data-status="done" data-id="' . $row->id . '" data-toggle="modal" data-target="#statusUpdateModal">
-                                <i class="fas fa-clipboard-check mr-2 text-success"></i>Done
-                            </a>
-                        </div>
-                    </div>';
-                }
-
-                $actionHtml .= '</div>'; 
-                return $actionHtml;
-            })
-            ->rawColumns(['status_label', 'mail_status_label', 'action'])
-            ->make(true);
+                    $actionHtml .= '</div>'; 
+                    return $actionHtml;
+                })
+                ->rawColumns(['status_label', 'mail_status_label', 'action'])
+                ->make(true);
+        } catch (Exception $e) {
+            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
+        }
     }
     
-
-
-
-    public function fetchData($id){
+    public function fetchData($id)
+    {
         $form = RequestForm::select('id','no_of_positions','position_filled')->findOrFail($id);
 
         return response()->json($form);
@@ -465,23 +502,34 @@ class FteRequestFormController extends Controller
 
     public function updatePosition(Request $request, $id)
     {
-        $request->validate(['position_filled' => 'required|integer|min:0']);
+        try{
+            $request->validate(['position_filled' => 'required|integer|min:0']);
 
-        $form = RequestForm::select('id', 'no_of_positions', 'position_filled')->findOrFail($id);
+            $form = RequestForm::findOrFail($id);
+            $UserEmail = $form->user->email;
+            $hrmail = $form->hr_email_l1;
 
-        $updatedCount = $form->position_filled + $request->position_filled;
+            $updatedCount = $form->position_filled + $request->position_filled;
 
-        if ($updatedCount > $form->no_of_positions) {
-            return response()->json(['message' => 'Filled position cannot exceed total.'], 422);
+            if ($updatedCount > $form->no_of_positions) {
+                return response()->json(['message' => 'Filled position cannot exceed total.'], 422);
+            }
+
+            $form->update(['position_filled' => $updatedCount]);
+
+            if ($updatedCount === $form->no_of_positions) {
+                $form->update(['status' => RequestForm::DONE]);
+            }
+
+            Mail::to($UserEmail)
+                        ->cc($hrmail)
+                        ->send(new PositionFilledMail($form));
+
+            return response()->json(['message' => 'Updated successfully']);
         }
-
-        $form->update(['position_filled' => $updatedCount]);
-
-        if ($updatedCount === $form->no_of_positions) {
-            $form->update(['status' => RequestForm::DONE]);
+        catch (\Exception $e) {
+            return response()->json(['message' => 'Something went wrong', 'error' => $e->getMessage()], 500);
         }
-
-        return response()->json(['message' => 'Updated successfully']);
     }
 
     // Card status

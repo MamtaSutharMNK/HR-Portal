@@ -92,11 +92,11 @@ class RequestForm extends Model
     public const STATUS_BY_ID = [
         '1' => 'IN PROGRESS',
         '2' => 'CLOSED',
-        '3' => 'IN SEARCH',
-        '4' => 'DONE',
+        // '3' => 'IN SEARCH',
         '5' => 'SCREENING',
         '6' => 'INTERVIEWING',
         '7' => 'HIRING',
+         '4' => 'DONE',
 
     ];
 

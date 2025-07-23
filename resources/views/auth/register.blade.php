@@ -69,9 +69,9 @@
                                     @enderror
                                 </div>
                                 <div class="col-sm-6">
-                                <label for="email">{{ __('Repeat Password:') }}</label>
+                                <label for="email">{{ __('Confirm Password:') }}</label>
                                     <input type="password" class="form-control form-control-user" name="password_confirmation"
-                                        id="password-confirm" placeholder="Repeat Password" required autocomplete="new-password">
+                                        id="password-confirm" placeholder="Confirm Password" required autocomplete="new-password">
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary btn-user btn-block">

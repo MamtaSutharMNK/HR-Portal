@@ -34,8 +34,7 @@
             <div class="ant-description-row">
                 <div class="ant-description-item">
                     <span class="ant-description-label">Department:</span>
-                    <span class="ant-description-content">{{ config('dropdown.department_list')[$ticket->department_id] ?? '-' }}
-</span>
+                    <span class="ant-description-content">{{ config('dropdown.department_list')[$ticket->department_id] ?? '-' }}</span>
                 </div>
                 <div class="ant-description-item">
                     <span class="ant-description-label">Issue Category:</span>
@@ -43,7 +42,7 @@
                         @if ($ticket->issueCategory)
                             {{ $ticket->issueCategory->name }}
                         @elseif ($ticket->temp_issue_cat)
-                            <em>Temporary:</em> {{ $ticket->temp_issue_cat }}
+                            {{ $ticket->temp_issue_cat }}
                         @else
                             -
                         @endif
@@ -55,7 +54,7 @@
                         @if ($ticket->issueType)
                             {{ $ticket->issueType->name }}
                         @elseif ($ticket->temp_issue_type)
-                            <em>Temporary:</em> {{ $ticket->temp_issue_type }}
+                            {{ $ticket->temp_issue_type }}
                         @else
                             -
                         @endif
@@ -91,19 +90,13 @@
                     </div>
                 </div>
             @endif
-          
-
-         
-
               <div class="container-fluid">
                 <div class="d-flex justify-content-end">
                     <a href="{{ route('support_tickets.index')}}" class="btn btn-secondary btn-sm">
                         ← Go Back
                     </a>
-
                 </div>
             </div>
-
         </div>
     </div>
 </div>

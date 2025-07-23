@@ -117,7 +117,7 @@
                 </div>
                 <div class="ant-description-item">
                     <span class="ant-description-label">CTC Range</span>
-                    <span class="ant-description-content">₹{{ $data->ctc_start_range }} - ₹{{ $data->ctc_end_range }}</span>
+                    <span class="ant-description-content">{{ $data->currency_symbol ?? '' }}{{ $data->ctc_start_range }} - {{ $data->currency_symbol ?? '' }}{{ $data->ctc_end_range }}</span>
                 </div>
                 <div class="ant-description-item">
                     <span class="ant-description-label">Target End Date</span>

@@ -10,66 +10,72 @@
                     <h1 class="h4 mb-0 text-center">Create Support Ticket</h1>
                 </div>
                 <div class="card-body">
-                    @if($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                    <form action="{{ route('support_tickets.store') }}" method="post" enctype="multipart/form-data">
+                    <form action="{{ route('support_tickets.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                         @csrf
+
+                        <!-- Department -->
                         <div class="mb-3">
-                            <label for="department_id" class="form-label text-black font-medium">Department</label>
-                            <select name="department_id" id="department_id" required class="form-select form-control text-black border-gray-300 rounded">
+                            <label for="department_id" class="form-label-custom text-black font-medium">Department</label>
+                            <select name="department_id" id="department_id" required class="form-select form-control form-control-custom text-black border-gray-300 rounded">
                                 <option value="" selected disabled>Please Select Department</option>
                                 @foreach(config('dropdown.department_list') as $key => $department)
                                     <option value="{{ $key }}" @selected(old('department_id') == $key)>{{ $department }}</option>
                                 @endforeach
                             </select>
-                            <div id="department_email_display" class="mt-2 text-muted font-italic">
+                            <div id="department_email_display" class="mt-2 text-muted font-italic"></div>
+                            @error('department_id')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
                         </div>
-                        </div>
-                        
 
-
+                        <!-- Issue Category -->
                         <div class="mb-3">
-                            <label for="issue_category_id" class="form-label text-black font-medium">Issue Category</label>
+                            <label for="issue_category_id" class="form-label-custom text-black font-medium">Issue Category</label>
                             <select name="issue_category_id" id="issue_category_id" required class="form-select form-control text-black border-gray-300 rounded">
                                 <option value="" selected disabled>Select Issue Category</option>
                             </select>
+                            @error('issue_category_id')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
                         </div>
 
+                        <!-- Issue Type -->
                         <div class="mb-3">
-                            <label for="issue_type" class="form-label text-black font-medium">Issue Type</label>
+                            <label for="issue_type" class="form-label-custom text-black font-medium">Issue Type</label>
                             <select name="issue_type" id="issue_type" required class="form-select form-control text-black border-gray-300 rounded">
                                 <option value="" selected disabled>Select Issue Type</option>
                             </select>
+                            @error('issue_type')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
                         </div>
 
+                        <!-- Description -->
                         <div class="mb-3">
-                            <label for="description" class="form-label text-black font-medium">Detailed Description</label>
+                            <label for="description" class="form-label-custom text-black font-medium">Detailed Description</label>
                             <textarea name="description" id="description" class="form-control" rows="6">{{ old('description') }}</textarea>
                         </div>
 
+                        <!-- Attachments -->
                         <div class="mb-3">
-                            <label for="attachments" class="form-label text-black font-medium">Attachments</label>
+                            <label for="attachments" class="form-label-custom text-black font-medium exclude">Attachments</label>
                             <input type="file" class="filepond form-control" name="attachments[]" multiple>
                         </div>
+
                         <input type="hidden" name="newCategoryName" id="hiddenCategoryName">
                         <input type="hidden" name="newTypeName" id="hiddenTypeName">
 
+                        <!-- Submit Button -->
                         <div class="d-flex justify-content-center mt-4">
                             <button type="submit" class="btn btn-primary btn-lg w-50">Submit</button>
                         </div>
+
+                        <!-- Go Back -->
                         <div class="container-fluid">
                             <div class="d-flex justify-content-end">
                                 <a href="{{ route('support_tickets.index')}}" class="btn btn-secondary btn-sm">
                                     ← Go Back
                                 </a>
-
                             </div>
                         </div>
                     </form>
@@ -143,6 +149,7 @@
     const isAdmin = @json(Auth::user()->isAdmin());
 </script>
 <script>
+  
     document.addEventListener('DOMContentLoaded', function () {
         const deptSelect = document.getElementById('department_id');
         const categorySelect = document.getElementById('issue_category_id');
@@ -205,6 +212,8 @@
             if (categoryModalInstance) categoryModalInstance.hide();
 
             if (!name || !deptId) return alert('Please enter category name.');
+            const isAdmin = @json(Auth::user()->isAdmin());
+            console.log(isAdmin);
 
             if (isAdmin) {
                 fetch('/support/categories/store', {
@@ -217,6 +226,14 @@
                 })
                 .then(res => res.json())
                 .then(data => {
+                      Swal.fire({
+                            icon: 'success',
+                            title: 'Category Added',
+                            text: `New category "${data.name}" created successfully!`,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
                     categorySelect.innerHTML += `<option value="${data.id}" selected>${data.name}</option>`;
 
                     resetDropdown(typeSelect, 'Select Issue Type');
@@ -244,7 +261,6 @@
                 typeModal.show();
             }
 
-            // Clear input
             document.getElementById('newCategoryName').value = '';
         });
 
@@ -256,6 +272,7 @@
             if (typeModalInstance) typeModalInstance.hide();
 
             if (!name || !categoryId) return alert('Please enter issue type name.');
+            const isAdmin = @json(Auth::user()->isAdmin());
 
             if (isAdmin) {
                 fetch('/support/types/store', {
@@ -268,6 +285,13 @@
                 })
                 .then(res => res.json())
                 .then(data => {
+                     Swal.fire({
+                            icon: 'success',
+                            title: 'CategoryType Added',
+                            text: `New categoryType "${data.name}" created successfully!`,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
                     typeSelect.innerHTML += `<option value="${data.id}" selected>${data.name}</option>`;
                 });
             } else {

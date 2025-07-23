@@ -6,11 +6,11 @@
     <!-- DataTales Example -->
     <div class="card o-hidden border-0 shadow-lg my-5 ">
         <div class="card-header py-3 button-blue-50 text-center">
-            <h4 class="m-0 font-weight-bold">Manager FTE Request List</h4>
+            <h4 class="m-0 font-weight-bold">Manager-FTE Requested List</h4>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="fte-table" width="100%" cellspacing="0">
+                <table class="table table-bordered nowrap" id="fte-table" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th class="text-center">SL.No</th>
@@ -38,7 +38,8 @@ $(document).ready(function() {
     $('#fte-table').DataTable({
         processing: true,
         serverSide: true,
-        dom: 'ftp',
+        scrollX: true,
+        dom: '<"top"f>rt<"bottom"ip><"clear">',
         ajax:{
             url: "{{ route('fte_request.list.ajax') }}",
             data : { view: "{{ request('view') }}"},

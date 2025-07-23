@@ -56,8 +56,13 @@ class User extends Authenticatable
         return $this->hasMany(ActionLog::class, 'action_by');
     }
 
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_has_roles');
+    }
+
     public function isAdmin(): bool{
-        return $this->rold_id == self:: ADMIN;
+        return $this->roles->contains('id', self::ADMIN);
     }
 
 }

@@ -16,7 +16,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered nowrap" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th class="text-center">SL.No</th>
@@ -39,7 +39,7 @@
                             <td class="text-center">  @if ($ticket->issueCategory)
                                     {{ $ticket->issueCategory->name }}
                                 @elseif ($ticket->temp_issue_cat)
-                                    <em>Temporary:</em> {{ $ticket->temp_issue_cat }}
+                                    {{ $ticket->temp_issue_cat }}
                                 @else
                                     <span class="text-muted">N/A</span>
                                 @endif
@@ -47,7 +47,7 @@
                               <td class="text-center">  @if ($ticket->issueType)
                                     {{ $ticket->issueType->name }}
                                 @elseif ($ticket->temp_issue_type)
-                                    <em>Temporary:</em> {{ $ticket->temp_issue_type }}
+                                    {{ $ticket->temp_issue_type }}
                                 @else
                                     <span class="text-muted">N/A</span>
                                 @endif
