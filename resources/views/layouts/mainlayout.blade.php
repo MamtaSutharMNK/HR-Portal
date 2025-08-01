@@ -35,14 +35,13 @@
         .dropdown-color.active{
                 background-color:white;
         }
-
         .sidebar-sticky-wrapper {
             position: sticky;
             top: 0;
             height: 100vh; 
             overflow-y: auto;
             }
-          .ck-editor__editable_inline {
+        .ck-editor__editable_inline {
                 min-height: 10px;     
                 max-height: 70px;     
                 overflow-y: auto;      
@@ -50,12 +49,11 @@
                 width: 100%; 
                 max-width: 100%;     
           
-            }
-
-            .ck-editor__editable {
+        }
+        .ck-editor__editable {
                 box-sizing: border-box;
                 padding: 0.75rem;
-            }
+        }
     </style>
 
 </head>
@@ -127,7 +125,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
     <script src="{{asset('static/js/fte.js')}}"></script>
     <script src="{{asset('static/js/sb-admin-2.min.js')}}"></script>
     

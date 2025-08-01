@@ -179,6 +179,7 @@ class FteRequestFormController extends Controller
     public function show(string $id)
     {
         $data = RequestForm::where('id', $id)->with(['department','jobDetail','requestingBranch','employeeLevel','actionLog.user:id,name','actionLog.requestForm'])->first();
+
         return view('fte_list.show',['data'=>$data]);
     }
 
@@ -435,6 +436,14 @@ class FteRequestFormController extends Controller
                         <style>
                             .drop-menu { width: 10%; }
                             .btn-group .dropdown { margin-right: 5px; }
+                              .dropdown-menu {
+                                    position: absolute !important;
+                                    will-change: transform;
+                                    z-index: 1060 !important;
+                                }
+                                    .drop-menu {
+                                    min-width: 140px !important; 
+                                }
                         </style>
 
                         <div class="btn-group" role="group">

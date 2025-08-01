@@ -112,12 +112,12 @@
             processing: true,
             serverSide: true,
             scrollX: true,
-            dom:'<"top"f>rt<"bottom"ip><"clear">',
+            dom: '<"top"lf>rt<"bottom"ip><"clear">',
+            pageLength: 10,
             ajax:{
                 url: "{{ route('fte_request.list.ajax') }}",
                 data : { view: "{{ request('view') }}"},
                 dataSrc: function(json){
-                    // console.log(json);
                     return json.data;
                 }
             },

@@ -5,8 +5,9 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class PendingTicketReminderMail extends Mailable
+class PendingTicketReminderMail extends Mailable 
 {
     use Queueable, SerializesModels;
 
@@ -21,6 +22,8 @@ class PendingTicketReminderMail extends Mailable
     {
         return $this->subject('Reminder: Pending Ticket')
                     ->markdown('emails.pending_ticket_reminder')
-                    ->with(['ticket' => $this->ticket]);
+                    ->with([
+                        'ticket' => $this->ticket,
+                        'url' => route('support_tickets.show', $this->ticket->id)]);
     }
 }

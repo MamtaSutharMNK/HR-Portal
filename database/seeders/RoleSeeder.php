@@ -18,7 +18,7 @@ class RoleSeeder extends Seeder
         User::insert([
             'name'   => 'Admin',
             'email'  => 'SupportAdmin@mnkgcs.com',
-            'emp_id' => 1,
+            'emp_id' => "MNKGCS001",
             'password' => '$2y$10$QvI2q9405VHKNyN2ZfCeeOPhMhGz2m/8OipUgassSvZu5W7DGCIjC'
         ]);
 

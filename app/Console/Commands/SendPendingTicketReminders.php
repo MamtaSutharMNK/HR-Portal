@@ -14,11 +14,15 @@ class SendPendingTicketReminders extends Command
     public function handle()
     {
         $cutoff = now()->subHours(48);
-
-        $tickets = SupportTicket::where('status', 1)
-            ->where('created_at', '<=', $cutoff)
-            ->with('department')
-            ->get();
+        
+        $tickets = SupportTicket::where('status', '1')
+        ->where(function ($query) {
+            $query->whereNull('reminder_sent_at')
+                ->orWhere('reminder_sent_at', '<=', now()->subHours(48)); 
+        })
+        ->where('created_at', '<=', $cutoff)
+        ->with('department')
+        ->get();
 
         $departmentEmails = [
             '1' => env('ADMIN_SUPPORT_EMAIL'),
@@ -29,6 +33,8 @@ class SendPendingTicketReminders extends Command
         foreach ($tickets as $ticket) {
             $recipientEmail = $departmentEmails[$ticket->department_id] ?? env('DEFAULT_DEPARTMENT_EMAIL');
             Mail::to($recipientEmail)->send(new PendingTicketReminderMail($ticket));
+
+            $ticket->update(['reminder_sent_at' => now()]);
         }
 
         $this->info("Reminder emails sent: {$tickets->count()}");

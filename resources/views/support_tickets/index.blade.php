@@ -16,7 +16,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered nowrap" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered nowrap " id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th class="text-center">SL.No</th>
@@ -87,10 +87,7 @@
                                     ];
 
                                     $ticketDeptEmail = $departmentEmails[$ticket->department_id] ?? null;
-
-
                             @endphp
-
                             <div class="dropdown">
                                 <button class="btn btn-sm dropdown-color dropdown-toggle" type="button" data-toggle="dropdown">
                                      <i class="fas fa-cog mr-1"></i> Actions
@@ -101,7 +98,7 @@
                                     </a>
                                     @if(auth()->id() === $ticket->user_id && $ticket->status != 2)
                                         <a class="dropdown-item" href="javascript:void(0);" onclick="handleTicketAction({{ $ticket->id }}, 'close')">
-                                            <i class="fas fa-times-circle mr-1 text-danger"></i> Close
+                                            <i class="fas fa-times-circle mr-1 text-danger"></i> Close 
                                         </a>
                                     @endif
 
@@ -128,13 +125,12 @@
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function() {
-    $('#dataTable').DataTable({
-        "order": [[4, "desc"]] 
-    });
-});
-
+        $('#dataTable').DataTable({
+            "scrollX": true,
+            "order": [[4, "desc"]] 
+        });
+    });    
 </script>
-
 
 @if (session('success'))
     <script>
@@ -207,5 +203,7 @@
         }
     });
 }
+
+
 </script>
 @endpush

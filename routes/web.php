@@ -21,7 +21,7 @@ Route::post('/fte_request/updatePosition/{id}', [FteRequestFormController::class
 
 Route::resource('fte_request', FteRequestFormController::class)->middleware('auth');
 
-Route::post('/fte_request/upload', [FteRequestFormController::class, 'upload'])->name('fte.upload')->middleware('auth');
+Route::post('/fte_req  uest/upload', [FteRequestFormController::class, 'upload'])->name('fte.upload')->middleware('auth');
 Route::post('/fte_request/status-update', [FteRequestFormController::class, 'updateStatus'])->name('fte_request.status_update');
 
 Route::post('/departments/batch', [DepartmentController::class, 'storeMultiple']);
@@ -36,12 +36,13 @@ Route::get('/fte_request/by-status', [FteRequestFormController::class, 'getBySta
 
 Route::resource('support_tickets', SupportTicketController::class)->middleware('auth');
 
-Route::get('/support/categories/{departmentId}', [SupportDropdownController::class, 'getCategories']);
-Route::get('/support/types/{categoryId}', [SupportDropdownController::class, 'getTypes']);
+Route::prefix('support')->middleware('auth')->group(function () {
+    Route::get('categories/{departmentId}', [SupportDropdownController::class, 'getCategories']);
+    Route::get('types/{categoryId}', [SupportDropdownController::class, 'getTypes']);
 
-Route::post('/support/categories/store', [SupportDropdownController::class, 'storeCategory']);
-Route::post('/support/types/store', [SupportDropdownController::class, 'storeType']);
-
+    Route::post('categories/store', [SupportDropdownController::class, 'storeCategory']);
+    Route::post('types/store', [SupportDropdownController::class, 'storeType']);
+});
 
 
 

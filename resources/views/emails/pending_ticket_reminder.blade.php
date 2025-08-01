@@ -1,11 +1,11 @@
 @component('mail::message')
 # Reminder: Ticket Still Pending
 
-Ticket **{{ $ticket->ticket_no }}** is still unresolved after 48 hours.
+Ticket **{{ $ticket->ticket_no }}** is still unresolved after 48 hours.Please do resolve it immediatley.
 
-**Reason:** {{ $ticket->reason ?? 'N/A' }}
+**Reason:** {!! nl2br(e(strip_tags($ticket->description))) !!} 
 
-@component('mail::button', ['url' => route('support_tickets.show', $ticket->id)])
+@component('mail::button', ['url' => $url])
 View Ticket
 @endcomponent
 

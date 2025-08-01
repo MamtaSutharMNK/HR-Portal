@@ -28,7 +28,6 @@
             </div>
         </div>
     </div>
-
 </div>
 @endsection
 
@@ -39,7 +38,7 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         scrollX: true,
-        dom: '<"top"f>rt<"bottom"ip><"clear">',
+        dom: '<"top"lf>rt<"bottom"ip><"clear">',
         ajax:{
             url: "{{ route('fte_request.list.ajax') }}",
             data : { view: "{{ request('view') }}"},
@@ -58,7 +57,7 @@ $(document).ready(function() {
             { data: 'mail_status_label', name: 'mail_status', orderable: false, searchable: false },
             { data: 'action', name: 'action', orderable: false, searchable: false }
         ],
-         order: [[0, 'desc']] 
+         order: [[0, 'desc']] ,
     });
 });
 </script>

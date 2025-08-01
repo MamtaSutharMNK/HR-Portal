@@ -11,17 +11,14 @@ class SupportDropdownController extends Controller
 {
     public function getCategories($departmentId)
     {
-        return IssueCategory::where('department_id', $departmentId)
-            ->select('id', 'name')
-            ->get();
+        return IssueCategory::where('department_id', $departmentId)->select('id', 'name')->get();
     }
 
     public function getTypes($categoryId)
     {
-        return IssueType::where('issue_category_id', $categoryId)
-            ->select('id', 'name')
-            ->get();
+        return IssueType::where('issue_category_id', $categoryId)->select('id', 'name')->get();
     }
+    
     public function storeCategory(Request $request)
     {
        

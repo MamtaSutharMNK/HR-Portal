@@ -386,287 +386,283 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-$(document).ready(function () {
+    $(document).ready(function () {
 
-    //  Bootstrap Form Validation 
-    const form = document.getElementById('fteRequestForm');
-    form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-    }, false);
+        //  Bootstrap Form Validation 
+        const form = document.getElementById('fteRequestForm');
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
 
-    //  Experience Field Validation (Numeric only) 
-    $('#experienceInput').on('input', function () {
-        const value = $(this).val();
-        const isValid = /^\d*\.?\d*$/.test(value);
-        const errorDiv = $('#experienceError');
+        //  Experience Field Validation (Numeric only) 
+        $('#experienceInput').on('input', function () {
+            const value = $(this).val();
+            const isValid = /^\d*\.?\d*$/.test(value);
+            const errorDiv = $('#experienceError');
 
-        if (!isValid) {
-            $(this).addClass('is-invalid');
-            errorDiv.show();
-        } else {
-            $(this).removeClass('is-invalid');
-            errorDiv.hide();
-        }
-    });
-
-    //  No Numbers in Text Fields 
-    const textFields = [
-        { id: '#educationInput', error: '#educationError' },
-        { id: '#jobDetailInput', error: '#jobDetailError' },
-        // { id: '#locationInput', error: '#locationError' },
-        { id: '#skillsInput', error: '#skillsError' },
-        { id: '#languageInput', error: '#languageError' },
-        { id: '#certificationsInput', error: '#certificationsError' }
-    ];
-
-    textFields.forEach(field => {
-        $(field.id).on('input', function () {
-            if (/\d/.test($(this).val())) {
+            if (!isValid) {
                 $(this).addClass('is-invalid');
-                $(field.error).show();
+                errorDiv.show();
             } else {
                 $(this).removeClass('is-invalid');
-                $(field.error).hide();
+                errorDiv.hide();
             }
         });
-    });
 
-    // Email Validation for Approval Levels
-    function isEmailValid(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
+        const textFields = [
+            { id: '#educationInput', error: '#educationError' },
+            { id: '#jobDetailInput', error: '#jobDetailError' },
+            // { id: '#locationInput', error: '#locationError' },
+            { id: '#skillsInput', error: '#skillsError' },
+            { id: '#languageInput', error: '#languageError' },
+            { id: '#certificationsInput', error: '#certificationsError' }
+        ];
 
-    function getHighestLevelSelected() {
-        for (let i = 3; i >= 1; i--) {
-            if ($(`#approval_level_${i}`).is(':checked')) return i;
-        }
-        return 0;
-    }
-
-    form.addEventListener('submit', function (event) {
-        let isValid = true;
-        const highest = getHighestLevelSelected();
-
-        for (let i = 1; i <= highest; i++) {
-            ['manager_email_l' + i, 'hr_email_l' + i].forEach(id => {
-                const field = $(`#${id}`);
-                if (!isEmailValid(field.val())) {
-                    field.addClass('is-invalid');
-                    isValid = false;
+        textFields.forEach(field => {
+            $(field.id).on('input', function () {
+                if (/\d/.test($(this).val())) {
+                    $(this).addClass('is-invalid');
+                    $(field.error).show();
                 } else {
-                    field.removeClass('is-invalid');
+                    $(this).removeClass('is-invalid');
+                    $(field.error).hide();
                 }
             });
-        }
-
-        if (!isValid) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-    });
-
-    $('input[type="email"]').on('input', function () {
-        if (isEmailValid($(this).val())) {
-            $(this).removeClass('is-invalid');
-        }
-    });
-
-    //  Toggle Replacing Employee Field 
-    function toggleReplacingField() {
-        let show = false;
-        $('input[name="requisition_type[]"]:checked').each(function () {
-            if ($(this).val() === 'Replacement') show = true;
         });
 
-        const group = $('#replacing-employee-group');
-        const input = group.find('input[name="replacing_employee"]');
-
-        if (show) {
-            group.show();
-            input.prop('required', true);
-        } else {
-            group.hide();
-            input.prop('required', false).val('');
+        // Email Validation for Approval Levels
+        function isEmailValid(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
-    }
 
-    toggleReplacingField();
-    $('input[name="requisition_type[]"]').on('change', toggleReplacingField);
+        function getHighestLevelSelected() {
+            for (let i = 3; i >= 1; i--) {
+                if ($(`#approval_level_${i}`).is(':checked')) return i;
+            }
+            return 0;
+        }
 
-    //  Show/Hide Approval Level Fields 
-    $(document).ready(function () {
-        $('.approval-checkbox').on('change', function () {
-            // Get the selected level (1, 2, or 3)
-            const selected = parseInt($('input[name="approval_level"]:checked').val());
+        form.addEventListener('submit', function (event) {
+            let isValid = true;
+            const highest = getHighestLevelSelected();
 
-            // Hide all level blocks
-            $('.approval_level_l1, .approval_level_l2, .approval_level_l3').addClass('d-none');
-
-            // Show levels up to selected
-            for (let i = 1; i <= selected; i++) {
-                $(`.approval_level_l${i}`).removeClass('d-none');
+            for (let i = 1; i <= highest; i++) {
+                ['manager_email_l' + i, 'hr_email_l' + i].forEach(id => {
+                    const field = $(`#${id}`);
+                    if (!isEmailValid(field.val())) {
+                        field.addClass('is-invalid');
+                        isValid = false;
+                    } else {
+                        field.removeClass('is-invalid');
+                    }
+                });
             }
 
-            // Clear email fields ABOVE selected level
-            for (let i = selected + 1; i <= 3; i++) {
-                $(`#manager_email_l${i}`).val('');
-                $(`#hr_email_l${i}`).val('');
+            if (!isValid) {
+                event.preventDefault();
+                event.stopPropagation();
             }
         });
-    });
 
+        $('input[type="email"]').on('input', function () {
+            if (isEmailValid($(this).val())) {
+                $(this).removeClass('is-invalid');
+            }
+        });
 
-    //  Fetch Countries 
-    fetch('https://restcountries.com/v3.1/all?fields=name')
-        .then(res => res.json())
-        .then(data => {
-            const list = $('#countries');
-            data.forEach(country => {
-                list.append(`<option value="${country.name.common}">`);
+        //  Toggle Replacing Employee Field 
+        function toggleReplacingField() {
+            let show = false;
+            $('input[name="requisition_type[]"]:checked').each(function () {
+                if ($(this).val() === 'Replacement') show = true;
             });
-        });
 
-    //  Fetch Currencies 
-    const currencySymbolMap = new Map();
+            const group = $('#replacing-employee-group');
+            const input = group.find('input[name="replacing_employee"]');
 
-    fetch('https://restcountries.com/v3.1/all?fields=currencies')
-        .then(res => res.json())
-        .then(data => {
-            const set = new Set();
+            if (show) {
+                group.show();
+                input.prop('required', true);
+            } else {
+                group.hide();
+                input.prop('required', false).val('');
+            }
+        }
 
-            data.forEach(country => {
-                const currencies = country.currencies;
-                if (currencies) {
-                    Object.entries(currencies).forEach(([code, details]) => {
-                        const label = `${details.name} (${code})`;
-                        set.add(label);
+        toggleReplacingField();
+        $('input[name="requisition_type[]"]').on('change', toggleReplacingField);
 
-                        if (details.symbol) {
-                            currencySymbolMap.set(code, details.symbol);
-                        }
-                    });
+        //  Show/Hide Approval Level Fields 
+        $(document).ready(function () {
+            $('.approval-checkbox').on('change', function () {
+                
+                const selected = parseInt($('input[name="approval_level"]:checked').val());
+
+                $('.approval_level_l1, .approval_level_l2, .approval_level_l3').addClass('d-none');
+
+                for (let i = 1; i <= selected; i++) {
+                    $(`.approval_level_l${i}`).removeClass('d-none');
+                }
+
+                for (let i = selected + 1; i <= 3; i++) {
+                    $(`#manager_email_l${i}`).val('');
+                    $(`#hr_email_l${i}`).val('');
                 }
             });
+        });
 
-            const list = $('#currencies');
-            Array.from(set).sort().forEach(currency => {
-                list.append(`<option value="${currency}">`);
+
+        //  Fetch Countries 
+        fetch('https://restcountries.com/v3.1/all?fields=name')
+            .then(res => res.json())
+            .then(data => {
+                const list = $('#countries');
+                data.forEach(country => {
+                    list.append(`<option value="${country.name.common}">`);
+                });
             });
-        });
 
-        $('#currencyInput').on('change', function () {
-            const selected = $(this).val(); // e.g. "Euro (EUR)"
-            const match = selected.match(/\(([^)]+)\)/); // Extract "EUR"
-            const code = match ? match[1] : null;
+        //  Fetch Currencies 
+        const currencySymbolMap = new Map();
 
-            const symbol = currencySymbolMap.get(code) || '';
-            console.log('Currency symbol:', symbol);
-        });
+        fetch('https://restcountries.com/v3.1/all?fields=currencies')
+            .then(res => res.json())
+            .then(data => {
+                const set = new Set();
+
+                data.forEach(country => {
+                    const currencies = country.currencies;
+                    if (currencies) {
+                        Object.entries(currencies).forEach(([code, details]) => {
+                            const label = `${details.name} (${code})`;
+                            set.add(label);
+
+                            if (details.symbol) {
+                                currencySymbolMap.set(code, details.symbol);
+                            }
+                        });
+                    }
+                });
+
+                const list = $('#currencies');
+                Array.from(set).sort().forEach(currency => {
+                    list.append(`<option value="${currency}">`);
+                });
+            });
+
+            $('#currencyInput').on('change', function () {
+                const selected = $(this).val(); // e.g. "Euro (EUR)"
+                const match = selected.match(/\(([^)]+)\)/); // Extract "EUR"
+                const code = match ? match[1] : null;
+
+                const symbol = currencySymbolMap.get(code) || '';
+                console.log('Currency symbol:', symbol);
+            });
 
 
-    //  Department Modal 
-    $('#openAddDeptModal').on('click', () => $('#multiDepartmentModal').modal('show'));
+        //  Department Modal 
+        $('#openAddDeptModal').on('click', () => $('#multiDepartmentModal').modal('show'));
 
-    $(document).on('click', '.add-field', function () {
-        $('#deptFieldsContainer').append(`
-            <div class="input-group mb-2">
-                <input type="text" name="departments[]" class="form-control" placeholder="Department Name" required>
-                <button type="button" class="btn btn-danger remove-field">−</button>
-            </div>
-        `);
-    });
-
-    $(document).on('click', '.remove-field', function () {
-        $(this).closest('.input-group').remove();
-    });
-
-    $('#multiDepartmentForm').submit(function (e) {
-        e.preventDefault();
-        $.post('/departments/batch', $(this).serialize(), function (res) {
-            res.forEach(dept => $('#department_id').append(new Option(dept.name, dept.id)));
-            $('#multiDepartmentModal').modal('hide');
-            $('#deptFieldsContainer').html(`
+        $(document).on('click', '.add-field', function () {
+            $('#deptFieldsContainer').append(`
                 <div class="input-group mb-2">
                     <input type="text" name="departments[]" class="form-control" placeholder="Department Name" required>
-                    <button type="button" class="btn btn-success add-field">+</button>
+                    <button type="button" class="btn btn-danger remove-field">−</button>
                 </div>
             `);
-            Swal.fire('Success!', 'Departments added successfully.', 'success');
-        }).fail(() => {
-            Swal.fire('Oops...', 'Something went wrong while saving.', 'error');
         });
-    });
 
-    //  Employee Level Modal 
-    $('#openAddLevelModal').on('click', () => $('#multiEmployeeLevelModal').modal('show'));
+        $(document).on('click', '.remove-field', function () {
+            $(this).closest('.input-group').remove();
+        });
 
-    $(document).on('click', '.add-level-field', function () {
-        $('#levelFieldsContainer').append(`
-            <div class="input-group mb-2">
-                <input type="text" name="levels[]" class="form-control" placeholder="Employee Level Title" required>
-                <button type="button" class="btn btn-danger remove-level-field">−</button>
-            </div>
-        `);
-    });
+        $('#multiDepartmentForm').submit(function (e) {
+            e.preventDefault();
+            $.post('/departments/batch', $(this).serialize(), function (res) {
+                res.forEach(dept => $('#department_id').append(new Option(dept.name, dept.id)));
+                $('#multiDepartmentModal').modal('hide');
+                $('#deptFieldsContainer').html(`
+                    <div class="input-group mb-2">
+                        <input type="text" name="departments[]" class="form-control" placeholder="Department Name" required>
+                        <button type="button" class="btn btn-success add-field">+</button>
+                    </div>
+                `);
+                Swal.fire('Success!', 'Departments added successfully.', 'success');
+            }).fail(() => {
+                Swal.fire('Oops...', 'Something went wrong while saving.', 'error');
+            });
+        });
 
-    $(document).on('click', '.remove-level-field', function () {
-        $(this).closest('.input-group').remove();
-    });
+        //  Employee Level Modal 
+        $('#openAddLevelModal').on('click', () => $('#multiEmployeeLevelModal').modal('show'));
 
-    $('#multiEmployeeLevelForm').submit(function (e) {
-        e.preventDefault();
-        $.post('/employee-levels', $(this).serialize(), function (res) {
-            res.forEach(level => $('#employee_level').append(new Option(level.title, level.id)));
-            $('#multiEmployeeLevelModal').modal('hide');
-            $('#levelFieldsContainer').html(`
+        $(document).on('click', '.add-level-field', function () {
+            $('#levelFieldsContainer').append(`
                 <div class="input-group mb-2">
                     <input type="text" name="levels[]" class="form-control" placeholder="Employee Level Title" required>
-                    <button type="button" class="btn btn-success add-level-field">+</button>
+                    <button type="button" class="btn btn-danger remove-level-field">−</button>
                 </div>
             `);
-            Swal.fire('Success!', 'Employee Levels added successfully.', 'success');
-        }).fail(() => {
-            Swal.fire('Oops...', 'Something went wrong while saving.', 'error');
         });
-    });
 
-    //  Branch Modal 
-    $('#openAddBranchModal').on('click', () => $('#multiBranchModal').modal('show'));
+        $(document).on('click', '.remove-level-field', function () {
+            $(this).closest('.input-group').remove();
+        });
 
-    $(document).on('click', '.add-branch-field', function () {
-        $('#branchFieldsContainer').append(`
-            <div class="input-group mb-2">
-                <input type="text" name="branches[]" class="form-control" placeholder="Branch Name" required>
-                <button type="button" class="btn btn-danger remove-branch-field">−</button>
-            </div>
-        `);
-    });
+        $('#multiEmployeeLevelForm').submit(function (e) {
+            e.preventDefault();
+            $.post('/employee-levels', $(this).serialize(), function (res) {
+                res.forEach(level => $('#employee_level').append(new Option(level.title, level.id)));
+                $('#multiEmployeeLevelModal').modal('hide');
+                $('#levelFieldsContainer').html(`
+                    <div class="input-group mb-2">
+                        <input type="text" name="levels[]" class="form-control" placeholder="Employee Level Title" required>
+                        <button type="button" class="btn btn-success add-level-field">+</button>
+                    </div>
+                `);
+                Swal.fire('Success!', 'Employee Levels added successfully.', 'success');
+            }).fail(() => {
+                Swal.fire('Oops...', 'Something went wrong while saving.', 'error');
+            });
+        });
 
-    $(document).on('click', '.remove-branch-field', function () {
-        $(this).closest('.input-group').remove();
-    });
+        //  Branch Modal 
+        $('#openAddBranchModal').on('click', () => $('#multiBranchModal').modal('show'));
 
-    $('#multiBranchForm').submit(function (e) {
-        e.preventDefault();
-        $.post('/requesting-branches', $(this).serialize(), function (res) {
-            res.forEach(branch => $('#branch_id').append(new Option(branch.name, branch.id)));
-            $('#multiBranchModal').modal('hide');
-            $('#branchFieldsContainer').html(`
+        $(document).on('click', '.add-branch-field', function () {
+            $('#branchFieldsContainer').append(`
                 <div class="input-group mb-2">
                     <input type="text" name="branches[]" class="form-control" placeholder="Branch Name" required>
-                    <button type="button" class="btn btn-success add-branch-field">+</button>
+                    <button type="button" class="btn btn-danger remove-branch-field">−</button>
                 </div>
             `);
-            Swal.fire('Success!', 'Branches added successfully.', 'success');
-        }).fail(() => {
-            Swal.fire('Oops...', 'Something went wrong while saving branches.', 'error');
         });
-    });
 
-});
+        $(document).on('click', '.remove-branch-field', function () {
+            $(this).closest('.input-group').remove();
+        });
+
+        $('#multiBranchForm').submit(function (e) {
+            e.preventDefault();
+            $.post('/requesting-branches', $(this).serialize(), function (res) {
+                res.forEach(branch => $('#branch_id').append(new Option(branch.name, branch.id)));
+                $('#multiBranchModal').modal('hide');
+                $('#branchFieldsContainer').html(`
+                    <div class="input-group mb-2">
+                        <input type="text" name="branches[]" class="form-control" placeholder="Branch Name" required>
+                        <button type="button" class="btn btn-success add-branch-field">+</button>
+                    </div>
+                `);
+                Swal.fire('Success!', 'Branches added successfully.', 'success');
+            }).fail(() => {
+                Swal.fire('Oops...', 'Something went wrong while saving branches.', 'error');
+            });
+        });
+
+    });
 </script>
 @endpush

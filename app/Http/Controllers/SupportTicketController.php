@@ -18,9 +18,6 @@ use App\Mail\TicketClosedMail;
 use App\Models\UserHasRole;
 use App\Models\User;
 
-
-
-
 class SupportTicketController extends Controller
 {
     public function index()
@@ -61,8 +58,6 @@ class SupportTicketController extends Controller
         }
 
     }
-
-
     /**
      * Show the form for creating a new resource.
      */
@@ -88,7 +83,6 @@ class SupportTicketController extends Controller
                 'reason'=>'nullable|string'
             ]);
 
-
             $uuid = substr(md5(uniqid()), 0, 8);
             $lastTicket = SupportTicket::orderByDesc('id')->first();
             $nextId = $lastTicket ? $lastTicket->id + 1 : 1;
@@ -100,7 +94,7 @@ class SupportTicketController extends Controller
             $ticket->department_id = $validated['department_id'];
             $ticket->description = $validated['description'];
             $ticket->user_id = Auth::id();
-            $ticket->status = '0';
+            $ticket->status = '1';
 
             if (str_starts_with($validated['issue_category_id'], 'temp-cat-')) {
                 $ticket->temp_issue_cat = $validated['newCategoryName'];
@@ -151,8 +145,6 @@ class SupportTicketController extends Controller
                 return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
-
-
 
     /**
      * Display the specified resource.
