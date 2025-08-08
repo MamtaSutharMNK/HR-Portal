@@ -102,7 +102,7 @@ class RequestForm extends Model
 
     public const STATUS_COLORS = [
         '1' => 'primary',
-        '2' => 'success ',
+        '2' => 'warning',
         '3' => 'primary',
         '4' => 'success',
         '5' => 'info',

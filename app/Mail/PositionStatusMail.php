@@ -12,13 +12,17 @@ use Illuminate\Queue\SerializesModels;
 class PositionStatusMail extends Mailable
 {
     use Queueable, SerializesModels;
+    public string $firstName;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public $requestData)
+    public function __construct(public $requestData,  public $toEmail)
     {
-        //
+        $localPart = explode('@', $toEmail)[0];
+        preg_match('/^[a-zA-Z]+/', $localPart, $matches);
+        $this->firstName = ucfirst($matches[0] ?? 'User');
+
     }
 
     /**
@@ -40,6 +44,7 @@ class PositionStatusMail extends Mailable
             markdown: 'emails.position_update_mail',
              with: [
                 'data' => $this->requestData,
+                'firstName' => $this->firstName,
                 'url' => route('fte_request.show', $this->requestData->id),
             ],
         );

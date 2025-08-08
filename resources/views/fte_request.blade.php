@@ -78,21 +78,41 @@
                         </div>
 
                          @foreach (config('dropdown.approval_level') as $key => $value)
-                            <div class="row mb-3 d-none approval_level_l{{ $key }}">
-                                <div class="col-md-6">
-                                    <label class="form-label-custom">APPROVING MANAGER EMAIL (Level {{ $key }})</label>
-                                    <input type="email" id="manager_email_l{{ $key }}" name="manager_email_l{{ $key }}"
-                                        class="form-control form-control-custom email-level" data-level="1">
-                                    <div class="invalid-feedback">Enter a valid official email.</div>
+                            @if ($key == 1)
+                                <div class="row mb-3 d-none approval_level_l1">
+                                    <div class="col-md-6">
+                                        <label class="form-label-custom">APPROVING MANAGER EMAIL (Level 1)</label>
+                                        <input type="email" id="manager_email_l1" name="manager_email_l1"
+                                            class="form-control form-control-custom email-level" data-level="1">
+                                        <div class="invalid-feedback">Enter a valid official email.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label-custom">HIRING HR EMAIL (Level 1)</label>
+                                        <input type="email" id="hr_email_l1" name="hr_email_l1"
+                                            class="form-control form-control-custom email-level" data-level="1">
+                                        <div class="invalid-feedback">Enter a valid official email.</div>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label-custom">HR EMAIL (Level {{ $key }})</label>
-                                    <input type="email" id="hr_email_l{{ $key }}" name="hr_email_l{{ $key }}"
-                                        class="form-control form-control-custom email-level" data-level="1">
-                                    <div class="invalid-feedback">Enter a valid official email.</div>
-                                </div>
+                            @endif
+                        @endforeach
+
+                        <div class="row mb-3">
+                            {{-- Manager Email for Level 2 --}}
+                            <div class="col-md-6 d-none approval_level_l2">
+                                <label class="form-label-custom">APPROVING MANAGER EMAIL (Level 2)</label>
+                                <input type="email" id="manager_email_l2" name="manager_email_l2"
+                                    class="form-control form-control-custom email-level" data-level="2">
+                                <div class="invalid-feedback">Enter a valid official email.</div>
                             </div>
-                         @endforeach
+
+                            {{-- Manager Email for Level 3 --}}
+                            <div class="col-md-6 d-none approval_level_l3">
+                                <label class="form-label-custom">APPROVING MANAGER EMAIL (Level 3)</label>
+                                <input type="email" id="manager_email_l3" name="manager_email_l3"
+                                    class="form-control form-control-custom email-level" data-level="3">
+                                <div class="invalid-feedback">Enter a valid official email.</div>
+                            </div>
+                        </div>
 
                       <hr>
                         <!-- Section 2: Position Details -->
@@ -215,7 +235,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-custom">Experience</label>
-                                <input type="text" id="experienceInput" name="experience" class="form-control form-control-custom" required>
+                                <input type="number" id="experienceInput" name="experience" class="form-control form-control-custom" required>
                                 <div class="invalid-feedback" id="experinceError">Enter a numberic value</div>
                             </div>
                         </div>
@@ -439,40 +459,73 @@
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
+        // function getHighestLevelSelected() {
+        //     for (let i = 3; i >= 1; i--) {
+        //         if ($(`#approval_level_${i}`).is(':checked')) return i;
+        //     }
+        //     return 0;
+        // }
+
+        // form.addEventListener('submit', function (event) {
+        //     let isValid = true;
+        //     const highest = getHighestLevelSelected();
+
+        //     for (let i = 1; i <= highest; i++) {
+        //         ['manager_email_l' + i, 'hr_email_l' + i].forEach(id => {
+        //             const field = $(`#${id}`);
+        //             if (!isEmailValid(field.val())) {
+        //                 field.addClass('is-invalid');
+        //                 isValid = false;
+        //             } else {
+        //                 field.removeClass('is-invalid');
+        //             }
+        //         });
+        //     }
+
+        //     if (!isValid) {
+        //         event.preventDefault();
+        //         event.stopPropagation();
+        //     }
+        // });
+
+        // $('input[type="email"]').on('input', function () {
+        //     if (isEmailValid($(this).val())) {
+        //         $(this).removeClass('is-invalid');
+        //     }
+        // });
         function getHighestLevelSelected() {
-            for (let i = 3; i >= 1; i--) {
-                if ($(`#approval_level_${i}`).is(':checked')) return i;
-            }
-            return 0;
+    for (let i = 3; i >= 1; i--) {
+        if ($(`#approval_level_${i}`).is(':checked')) return i;
+    }
+    return 0;
+}
+
+function toggleFieldVisibility() {
+    const level = getHighestLevelSelected();
+
+    // Show selected approval level sections
+    [1, 2, 3].forEach(i => {
+        if (i <= level) {
+            $(`.approval_level_l${i}`).removeClass('d-none');
+        } else {
+            $(`.approval_level_l${i}`).addClass('d-none');
         }
+    });
 
-        form.addEventListener('submit', function (event) {
-            let isValid = true;
-            const highest = getHighestLevelSelected();
+    // Show & enable hr_email_l1 always
+    $('#hr_email_l1').closest('.col-md-6').show().find('input').prop('disabled', false);
 
-            for (let i = 1; i <= highest; i++) {
-                ['manager_email_l' + i, 'hr_email_l' + i].forEach(id => {
-                    const field = $(`#${id}`);
-                    if (!isEmailValid(field.val())) {
-                        field.addClass('is-invalid');
-                        isValid = false;
-                    } else {
-                        field.removeClass('is-invalid');
-                    }
-                });
-            }
+    // Hide & disable hr_email_l2, l3
+    ['#hr_email_l2', '#hr_email_l3'].forEach(selector => {
+        $(selector).closest('.col-md-6').hide();
+        $(selector).prop('disabled', true);
+    });
+}
 
-            if (!isValid) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        });
-
-        $('input[type="email"]').on('input', function () {
-            if (isEmailValid($(this).val())) {
-                $(this).removeClass('is-invalid');
-            }
-        });
+// Initial render + rebind on level change
+toggleFieldVisibility();
+$('.approval-checkbox').on('change', toggleFieldVisibility);
+        
 
         //  Toggle Replacing Employee Field 
         function toggleReplacingField() {

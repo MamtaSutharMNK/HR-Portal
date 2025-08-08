@@ -1,6 +1,13 @@
 <x-mail::message>
  
-    Hello Team,
+    @php
+        $email = $data->user->email ?? 'User';
+        $name = explode('.', $email)[0];
+        preg_match('/^[a-zA-Z]+/', $name, $matches);
+        $firstName = $matches[0] ?? 'User';
+    @endphp
+
+    Hi {{$firstName}},
     <br>
     <br>
     There is a new request awaiting your approval.

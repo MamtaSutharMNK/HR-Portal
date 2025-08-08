@@ -1,6 +1,7 @@
 @extends('layouts.mainlayout')
 
 @section('content')
+
 <!-- Begin Page Content -->
 <div class="container-fluid">
     <!-- DataTales Example -->
@@ -68,11 +69,13 @@
                                 @if($ticket->status == '0')
                                     <span class="badge bg-primary text-white">Pending</span>
                                 @elseif($ticket->status == '1')
-                                    <span class="badge bg-info text-white">In Progress</span>
+                                    <span class="badge bg-primary text-white">In Progress</span>
                                 @elseif($ticket->status == '3')
-                                    <span class="badge bg-danger text-white">Closed</span>
+                                    <span class="badge bg-danger text-white">Cancelled</span>
+                                @elseif($ticket->status == '4')
+                                    <span class="badge bg-info text-white">Reviewing</span>
                                 @else
-                                    <span class="badge bg-success text-white">Done</span>
+                                    <span class="badge bg-success text-white">Resolved</span>
                                 @endif
                                   </span>
 
@@ -97,15 +100,19 @@
                                         <i class="fas fa-eye mr-1 text-primary"></i> View
                                     </a>
                                     @if(auth()->id() === $ticket->user_id && $ticket->status != 2)
-                                        <a class="dropdown-item" href="javascript:void(0);" onclick="handleTicketAction({{ $ticket->id }}, 'close')">
-                                            <i class="fas fa-times-circle mr-1 text-danger"></i> Close 
+                                        <a class="dropdown-item" href="javascript:void(0);" onclick="handleTicketAction({{ $ticket->id }}, 'cancel')">
+                                            <i class="fas fa-times-circle mr-1 text-danger"></i> Cancel Ticket
                                         </a>
                                     @endif
 
                                     @if($ticket->status != 3 && auth()->user()->email === $ticketDeptEmail)
-                                    <a class="dropdown-item" href="javascript:void(0);" onclick="handleTicketAction({{ $ticket->id }}, 'done')">
-                                        <i class="fas fa-check-circle mr-1 text-success"></i> Done
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="handleTicketAction({{ $ticket->id }}, 'reviewed')">
+                                        <i class="fas fa-check-circle mr-1 text-info"></i> Update Ticket
                                     </a>
+                                    <a class="dropdown-item" href="javascript:void(0);" onclick="handleTicketAction({{ $ticket->id }}, 'resolved')">
+                                        <i class="fas fa-check-circle mr-1 text-success"></i> Resolved
+                                    </a>
+                                    
                                     @endif
                                 </div>
                             </div>
@@ -122,14 +129,30 @@
 
 @push('custome_js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script>
+   
     $(document).ready(function() {
-        $('#dataTable').DataTable({
-            "scrollX": true,
-            "order": [[4, "desc"]] 
-        });
-    });    
+    $('#dataTable').DataTable({
+        processing: true,
+        serverSide: false,
+        scrollX: true,
+        pageLength: 10,
+        columns: [
+            { data: 'DT_RowIndex', orderable: false, searchable: false, className: 'text-center' },          
+            { data: 'ticket_no', orderable: true, searchable: true, className: 'text-center' },     
+            { data: 'issue_category', orderable: false, searchable: true, className: 'text-center' },
+            { data: 'issue_type', orderable: false, searchable: true, className: 'text-center' },   
+            { data: 'description', orderable: false, searchable: true },                            
+            { data: 'department', orderable: false, searchable: true, className: 'text-center' },  
+            { data: 'created_at', orderable: true, searchable: true, className: 'text-center' },    
+            { data: 'requested_by', orderable: false, searchable: true, className: 'text-center' },
+            { data: 'status', orderable: true, searchable: true, className: 'text-center' },        
+            { data: 'action', orderable: false, searchable: false, className: 'text-center' }       
+        ],
+        order: [[1, 'desc']],
+    });
+});
+
 </script>
 
 @if (session('success'))
@@ -187,14 +210,18 @@
             .then(data => {
                const statusSpan = document.querySelector(`#ticket-status-${ticketId}`);
                 if (statusSpan) {
-                    const newStatus = actionType === 'close' 
-                        ? '<span class="badge bg-danger text-white">Closed</span>' 
-                        : '<span class="badge bg-success text-white">Done</span>';
+                    let newStatus = '';
+
+                    if (actionType === 'cancel') {
+                        newStatus = '<span class="badge bg-danger text-white">Cancelled</span>';
+                    } else if (actionType === 'resolved') {
+                        newStatus = '<span class="badge bg-success text-white">Resolved</span>';
+                    } else if (actionType === 'reviewed') {
+                        newStatus = '<span class="badge bg-warning text-dark">Reviewing</span>';
+                    }
 
                     statusSpan.innerHTML = newStatus;
                 }
-
-
                 Swal.fire('Success', 'Ticket updated.', 'success');
             })
             .catch(() => {

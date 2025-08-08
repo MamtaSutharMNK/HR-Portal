@@ -22,7 +22,8 @@
                 </div>
                 <div class="ant-description-item">
                     <span class="ant-description-label">Date of Request</span>
-                    <span class="ant-description-content">{{ $data->date_of_request ?? '-' }}</span>
+                    <span class="ant-description-content">{{ $data->date_of_request ? \Carbon\Carbon::parse($data->date_of_request)->format('d-m-Y') : '-' }}
+</span>
                 </div>
                 <div class="ant-description-item">
                     <span class="ant-description-label">Requested By</span>
@@ -121,7 +122,7 @@
                 </div>
                 <div class="ant-description-item">
                     <span class="ant-description-label">Target End Date</span>
-                    <span class="ant-description-content">{{ $data->target_by_when ?? '-' }}</span>
+                    <span class="ant-description-content">{{ $data->target_by_when ? \Carbon\Carbon::parse($data->target_by_when)->format('d-m-Y') : '-' }}</span>
                 </div>
                 <div class="ant-description-item">
                     <span class="ant-description-label">Work Location</span>
@@ -189,7 +190,7 @@
                 </div>
             </div>
             <br>
-
+            
             <div class="row">
                 <div class="col-md-11 d-flex justify-content-between align-items-center">
                     @php
@@ -232,10 +233,18 @@
 
                 </div>
             </div>
+            @php
+                $backUrl = route('fte_request.index') . ($view ? '?view=' . $view : '');
+            @endphp
+            <div class="container-fluid">
+                <div class="d-flex justify-content-end">
+                    <a href="{{ $backUrl}}" class="btn btn-secondary btn-sm">
+                        ← Go Back
+                    </a>
+                </div>
+            </div>
             <br>
-
-             <!-- Action Log -->
-
+            <!-- Action Log -->
             @if(isset($data->actionLog) && $data->actionLog->count() > 0)
                 <div class="panel mt-2">
                     <div class="flex justify-between panel-subheading text-2xl font-bold uppercase">
@@ -278,15 +287,7 @@
                     </div>
                 </div>
             @endif  
-            <!-- <div class="container-fluid">
-                <div class="d-flex justify-content-end">
-                    <a href="{{ route('fte_request.create')}}" class="btn btn-secondary btn-sm">
-                        ← Go Back
-                    </a>
-
-                </div>
-            </div> -->
-   
+ 
         </div>
     </div>
     

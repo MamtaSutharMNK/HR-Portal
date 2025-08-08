@@ -175,12 +175,14 @@ class SupportTicketController extends Controller
 
             if ($request->has('action')) {
                 switch ($request->action) {
-                    case 'close':
+                    case 'cancel':
                         $ticket->status ='3';
                         break;
-                    case 'done':
+                    case 'resolved':
                         $ticket->status = '2';
                         break;
+                    case 'reviewed':
+                        $ticket->status = '4';    
                 }
 
                 $ticket->reason = $request->reason;
@@ -191,14 +193,14 @@ class SupportTicketController extends Controller
                 '2' => env('HR_SUPPORT_EMAIL'),
                 '3' => env('IT_SUPPORT_EMAIL'),
                 ];
-                if ($request->action === 'close')
+                if ($request->action === 'cancel')
                     {
                         $recipientEmail = $departmentEmails[$ticket->department_id] ?? env('DEFAULT_DEPARTMENT_EMAIL');
                         Mail::to($recipientEmail)
                         ->send(new TicketClosedMail($ticket));
                     }
 
-                if ($request->action === 'done') 
+                if ($request->action === 'resolved' or $request->action === 'reviewed' ) 
                     {
                         Mail::to($ticket->user->email)
                         ->send(new TicketDoneMail($ticket));

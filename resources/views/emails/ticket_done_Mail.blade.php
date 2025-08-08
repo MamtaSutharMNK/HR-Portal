@@ -1,5 +1,5 @@
 @component('mail::message')
-# Your supprot ticket has been {{ $ticket->status == '3' ? 'Closed' : 'resolved' }}.
+# Your supprot ticket has been {{ $ticket->status == '2' ? 'Resolved' : 'Reviewed' }}.
 
 - **Ticket No:** {{ $data->ticket_no }}
 - **Department:** {{ $data->department->name ?? 'N/A' }}

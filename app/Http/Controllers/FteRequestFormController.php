@@ -160,10 +160,9 @@ class FteRequestFormController extends Controller
             ]);
 
             $to = $request->manager_email_l1;
-            $bcc = $request->hr_email_l1;
+            $cc = $request->hr_email_l1;
             Mail::to($to)
-                    ->cc($to)
-                    ->bcc($bcc)
+                    ->cc($cc)
                     ->send(new FteRequestMail($requestData));
 
             return redirect()->route('index')->with('success', 'Form submitted successfully.');
@@ -176,11 +175,15 @@ class FteRequestFormController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request,string $id)
     {
         $data = RequestForm::where('id', $id)->with(['department','jobDetail','requestingBranch','employeeLevel','actionLog.user:id,name','actionLog.requestForm'])->first();
-
-        return view('fte_list.show',['data'=>$data]);
+        
+        if ($data) {
+            return view('fte_list.show',['data'=>$data, 'view' => $request->query('view'),]);
+        }else{
+            return redirect()->route('fte_request.index')->with('error', 'Request not found');
+        }
     }
 
     /**
@@ -211,68 +214,97 @@ class FteRequestFormController extends Controller
         try {
             $requestForm = RequestForm::findOrFail($request->id);
             $currentUser = Auth::user()->email;
-            $mail = Auth::user()->email;
-            $hrMail = Auth::user()->email;
+            $mail ="";
+            $hrMail = "";
             $currentStatus = $requestForm->status;
             $currentMailStatus = $requestForm->mail_status;
             $message = '';
+            $extraCc = [];
 
             if ($request->action === 'accept') {
+                if ($requestForm->approval_level == 1) {
+                    if ($currentMailStatus === RequestForm::MAIL_PENDING) {
 
-                if ($currentMailStatus === RequestForm::MAIL_PENDING) {
-                    $mail = $requestForm->manager_email_l1;
-                    $hrMail = $requestForm->hr_email_l1;
-                    $requestForm->mail_status = RequestForm::LEVEL1_MAIL_APPROVAL;
-                    $message = 'Approved By Level1';
-                    
-                    if ($requestForm->approval_level == 1) {
+                        $mail = $requestForm->hr_email_l1; // HR Email
+                        $hrMail = $requestForm->hr_email_l1;
                         $requestForm->status = RequestForm::CLOSED;
-                        $hrmail1 = $requestForm->hr_email_l1;
+                        $requestForm->mail_status = RequestForm::LEVEL1_MAIL_APPROVAL;
+                        $message = 'Approved by Level 1';
                     }
-                } 
-                elseif ($currentMailStatus === RequestForm::LEVEL1_MAIL_APPROVAL) {
-                    $mail = $requestForm->manager_email_l2;
-                    $hrMail = $requestForm->hr_email_l2;
-                    $requestForm->mail_status = RequestForm::LEVEL2_MAIL_APPROVAL;
-                    $message = 'Approved By Level 2';
-                    
-                    if ($requestForm->approval_level == 2) {
-                        $requestForm->status = RequestForm::CLOSED;
-                        $hrmail1 = $requestForm->hr_email_l2;
-                    }
-                } 
-                elseif ($currentMailStatus === RequestForm::LEVEL2_MAIL_APPROVAL) {
-                    $mail = $requestForm->manager_email_l3;
-                    $hrMail = $requestForm->hr_email_l3;
-                    $requestForm->mail_status = RequestForm::LEVEL3_MAIL_APPROVAL;
-                    $message = 'Approved By Level 3';
-                
-                    $requestForm->status = RequestForm::CLOSED;
-                    $hrmail1 = $requestForm->hr_email_l3;
                 }
 
+                elseif ($requestForm->approval_level == 2) {
+                    if ($currentMailStatus === RequestForm::MAIL_PENDING) {
+
+                        $mail = $requestForm->manager_email_l2; // M2 email
+                        $hrMail = $requestForm->hr_email_l1;
+                        $requestForm->mail_status = RequestForm::LEVEL1_MAIL_APPROVAL;
+                        $message = 'Approved by Level 1 - Sent to Manager 2';
+                    }
+                    elseif ($currentMailStatus === RequestForm::LEVEL1_MAIL_APPROVAL) {
+
+                        $mail = $requestForm->hr_email_l1; // HR Email
+                        $hrMail = $requestForm->hr_email_l1;
+                        $requestForm->status = RequestForm::CLOSED;
+                        $requestForm->mail_status = RequestForm::LEVEL2_MAIL_APPROVAL;
+                        $message = 'Approved by Level 2';
+                    }
+                }
+
+                elseif ($requestForm->approval_level == 3) {
+                    if ($currentMailStatus === RequestForm::MAIL_PENDING) {
+                       
+                        $mail = $requestForm->manager_email_l2; // M2 email
+                        $hrMail = $requestForm->hr_email_l1;
+                        $requestForm->mail_status = RequestForm::LEVEL1_MAIL_APPROVAL;
+                        $message = 'Approved by Level 1 - Sent to Manager 2';
+                    }
+                    elseif ($currentMailStatus === RequestForm::LEVEL1_MAIL_APPROVAL) {
+                        
+                        $mail = $requestForm->manager_email_l3; // M3 email
+                        $hrMail = $requestForm->hr_email_l1;
+                        $requestForm->mail_status = RequestForm::LEVEL2_MAIL_APPROVAL;
+                        $message = 'Approved by Level 2 - Sent to Manager 3';
+                    }
+                    elseif ($currentMailStatus === RequestForm::LEVEL2_MAIL_APPROVAL) {
+                       
+                        $mail = $requestForm->hr_email_l1; // HR Email
+                        $hrMail = $requestForm->hr_email_l1;
+                        $requestForm->status = RequestForm::CLOSED;
+                        $requestForm->mail_status = RequestForm::LEVEL3_MAIL_APPROVAL;
+                        $message = 'Approved by Level 3';
+                    }
+                }
             }
 
             if ($request->action === 'reject') {
-                        
-                if ($requestForm->mail_status === RequestForm::MAIL_PENDING) {
-                    $requestForm->mail_status = RequestForm::LEVEL1_MAIL_REJECT;
-                    $requestForm->status = RequestForm:: CLOSED;
-                    $message = 'Rejected By Level 1 Manager';
-                } 
-                elseif ($requestForm->mail_status === RequestForm::LEVEL1_MAIL_APPROVAL) {
-                    $requestForm->mail_status = RequestForm::LEVEL2_MAIL_REJECT;
-                    $requestForm->status = RequestForm:: CLOSED;
-                    $message = 'Rejected By Level 2 Manager';
-                } 
-                elseif ($requestForm->mail_status === RequestForm::LEVEL2_MAIL_APPROVAL) {
-                    $requestForm->mail_status = RequestForm::LEVEL3_MAIL_REJECT;
-                    $requestForm->status = RequestForm:: CLOSED;
-                    $message = 'Rejected By Level 3 Manager';
+                if ($requestForm->approval_level == 1) {
+                    if ($currentMailStatus === RequestForm::MAIL_PENDING) {
+                        $requestForm->mail_status = RequestForm::LEVEL1_MAIL_REJECT;
+                        $mail = $requestForm->user->email;
+                        $message = 'Rejected by Level 1 Manager';
+                    }
+                }
+                elseif ($requestForm->approval_level == 2) {
+                    if ($currentMailStatus === RequestForm::LEVEL1_MAIL_APPROVAL) {
+                        $requestForm->mail_status = RequestForm::LEVEL2_MAIL_REJECT;
+                        $mail = $requestForm->user->email;
+                        $extraCc[] = $requestForm->manager_email_l1;
+                        $message = 'Rejected by Level 2 Manager';
+                    }
+                }
+                elseif ($requestForm->approval_level == 3) {
+                    if ($currentMailStatus === RequestForm::LEVEL2_MAIL_APPROVAL) {
+                        $requestForm->mail_status = RequestForm::LEVEL3_MAIL_REJECT;
+                        $mail = $requestForm->user->email;
+                        $extraCc[] = $requestForm->manager_email_l2;
+                        $extraCc[] = $requestForm->manager_email_l1;
+                        $message = 'Rejected by Level 3 Manager';
+                    }
                 }
 
+                $requestForm->status = RequestForm::CLOSED;
                 $requestForm->reason = $request->reason;
-
             }
 
             if ($request->action != 'status-change') {
@@ -290,8 +322,8 @@ class FteRequestFormController extends Controller
 
                 } 
                 elseif ($request->action === 'reject') {
-                    Mail::to($creatorEmail)
-                    ->cc($hrMail)
+                    Mail::to($mail)
+                    ->cc($extraCc)
                     ->send(new FteRejectionMail($requestForm));
                 } 
                     
@@ -324,10 +356,16 @@ class FteRequestFormController extends Controller
                         'description'    => $request->status,      
                     ]);
                     $userEmail = $requestForm->user->email;
+                    $managerMail = $requestForm->manager_email_l1;
 
                     Mail::to($userEmail)
                         ->cc($hrMail)
-                        ->send(new PositionStatusMail($requestForm));
+                        ->send(new PositionStatusMail($requestForm,$userEmail));
+
+                    if($request->status == "done"){
+                        Mail::to($managerMail)
+                            ->send(new PositionStatusMail($requestForm, $managerMail));
+                    }    
 
                     return response()->json([
                         'success' => true,
@@ -418,7 +456,7 @@ class FteRequestFormController extends Controller
                     RequestForm::STATUS_BY_MAIL_ID[$row->mail_status] . '</span>'
                 )
                 ->addColumn('action', function ($row) use ($view) {
-                    $viewUrl = route('fte_request.show', $row->id);
+                    $viewUrl = route('fte_request.show', ['fte_request' => $row->id, 'view' => request('view')]);
                     $currentEmail = Auth::user()->email;
                     $hrEmails = [$row->hr_email_l1, $row->hr_email_l2, $row->hr_email_l3];
                     
@@ -517,6 +555,7 @@ class FteRequestFormController extends Controller
             $form = RequestForm::findOrFail($id);
             $UserEmail = $form->user->email;
             $hrmail = $form->hr_email_l1;
+            $managerEmail = $form->manager_email_l1;
 
             $updatedCount = $form->position_filled + $request->position_filled;
 
@@ -532,7 +571,10 @@ class FteRequestFormController extends Controller
 
             Mail::to($UserEmail)
                         ->cc($hrmail)
-                        ->send(new PositionFilledMail($form));
+                        ->send(new PositionFilledMail($form,$UserEmail));
+            Mail::to($managerEmail)
+                        ->cc($hrmail)
+                        ->send(new PositionFilledMail($form,$managerEmail));
 
             return response()->json(['message' => 'Updated successfully']);
         }

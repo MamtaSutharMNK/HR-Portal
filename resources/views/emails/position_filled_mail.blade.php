@@ -1,6 +1,5 @@
 <x-mail::message>
- 
-    Dear {{ $requestData->user->name ?? 'User' }},
+    Dear {{ $firstName }},
     <br>
     <br>
     We wanted to let you know that positions for your request has been updated. 

@@ -27,7 +27,7 @@ class TicketClosedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Ticket Closed Mail',
+            subject: 'Support Ticket Cacelled Mail',
         );
     }
 

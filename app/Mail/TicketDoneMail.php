@@ -27,7 +27,7 @@ class TicketDoneMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Ticket Done Mail',
+            subject: 'Support Ticket Update Mail',
         );
     }
 

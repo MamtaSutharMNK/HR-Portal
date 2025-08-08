@@ -18,11 +18,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
 
     <link href="{{asset('static/css/fte.css')}}" rel="stylesheet">  
-    <link href="{{asset('static/css/sb-admin-2.min.css')}}" rel="stylesheet">
     <link href="{{asset('static/css/sb-admin-2.css')}}" rel="stylesheet">
+    <link href="{{asset('static/css/sb-admin-2.min.css')}}" rel="stylesheet">
 
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    
     
     <style>
         .dropdown-color{

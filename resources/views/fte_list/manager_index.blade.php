@@ -50,9 +50,25 @@ $(document).ready(function() {
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false,className: 'text-center'},
             { data: 'request_uuid', name: 'request_uuid' , orderable: true, searchable: true },
-            { data: 'department_name', name: 'department.name', orderable: true, searchable: true  },
-            { data: 'department_function', name: 'department_function', orderable: true, searchable: true  },
-            { data: 'date_of_request', name: 'date_of_request' , orderable: true, searchable: true },
+            { data: 'department_name', name: 'department.name', orderable: false, searchable: true  },
+            { data: 'department_function', name: 'department_function', orderable: false, searchable: true  },
+            { data: 'created_at',name: 'created_at',orderable: true,searchable: true,
+                render: function(data, type, row) {
+                    if (!data) return '-';
+
+                    const date = new Date(data);
+
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+                    return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+                }
+            },
             { data: 'status_label', name: 'status', orderable: false, searchable: true },
             { data: 'mail_status_label', name: 'mail_status', orderable: false, searchable: false },
             { data: 'action', name: 'action', orderable: false, searchable: false }
