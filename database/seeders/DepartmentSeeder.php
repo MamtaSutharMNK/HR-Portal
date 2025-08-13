@@ -14,12 +14,24 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('departments')->delete();
+        DB::statement('ALTER TABLE departments AUTO_INCREMENT = 1');
+
         DB::table('departments')->insert([
-            ['name' => 'Software Development'],
+            ['name' => 'Admin'],
+            ['name' => 'Broker Solutions'],
+            ['name' => 'DevOps'],
+            ['name' => 'Finance Operations'],
+            ['name' => 'Human Resource Management'],
+            ['name' => 'IT Analyst'],
+            ['name' => 'IT Qulaity Testing'],
             ['name' => 'IT Support'],
-            ['name' => 'Finance & Accounting '],
-            ['name' => 'Quality Assurance (QA)'],
-            ['name' => 'Data & Analytics']
+            ['name' => 'Software Developer'],
+            ['name' => 'Management & Administration'],
+            ['name' => 'Risk Management'],
+            ['name' => 'Underwriting Operations-CAT Brain'],
+            ['name' => 'Underwriting Support Solutions'],
+            ['name' => 'Compliance'],
         ]);
     }
 }

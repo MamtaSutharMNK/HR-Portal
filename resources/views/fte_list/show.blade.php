@@ -38,10 +38,6 @@
                     <span class="ant-description-content">{{ $data->department->name ?? '-' }}</span>
                 </div>
                 <div class="ant-description-item">
-                    <span class="ant-description-label">Function</span>
-                    <span class="ant-description-content">{{ $data->department_function ?? '-' }}</span>
-                </div>
-                <div class="ant-description-item">
                     <span class="ant-description-label">Branch</span>
                     <span class="ant-description-content">{{ $data->requestingBranch->name ?? '-' }}</span>
                 </div>
@@ -54,25 +50,18 @@
                     <span class="ant-description-label">Manager Email (L1)</span>
                     <span class="ant-description-content">{{ $data->manager_email_l1 ?? '-' }}</span>
                 </div>
-                <div class="ant-description-item">
-                    <span class="ant-description-label">HR Email (L1)</span>
-                    <span class="ant-description-content">{{ $data->hr_email_l1 ?? '-' }}</span>
-                </div>
                 <div class="ant-description-item {{ $data->manager_email_l2 ?? 'd-none' }}">
                     <span class="ant-description-label">Manager Email (L2)</span>
                     <span class="ant-description-content">{{ $data->manager_email_l2 ?? '-' }}</span>
                 </div>
-                <div class="ant-description-item {{ $data->hr_email_l2 ?? 'd-none' }}">
-                    <span class="ant-description-label">HR Email (L2)</span>
-                    <span class="ant-description-content">{{ $data->hr_email_l2 ?? '-' }}</span>
-                </div>
+
                 <div class="ant-description-item {{ $data->manager_email_l3 ?? 'd-none' }}">
                     <span class="ant-description-label">Manager Email (L3)</span>
                     <span class="ant-description-content">{{ $data->manager_email_l3 ?? '-' }}</span>
                 </div>
-                <div class="ant-description-item {{ $data->hr_email_l3 ?? 'd-none' }}">
-                    <span class="ant-description-label">HR Email (L3)</span>
-                    <span class="ant-description-content">{{ $data->hr_email_l3 ?? '-' }}</span>
+                <div class="ant-description-item">
+                    <span class="ant-description-label">Hiring HR Email (L1)</span>
+                    <span class="ant-description-content">{{ $data->hr_email_l1 ?? '-' }}</span>
                 </div>
             </div>
 
@@ -81,10 +70,6 @@
                 <div class="ant-description-item">
                     <span class="ant-description-label">Job Title</span>
                     <span class="ant-description-content">{{ $data->jobDetail->job_title ?? '-' }}</span>
-                </div>
-                <div class="ant-description-item">
-                    <span class="ant-description-label">Employee Level</span>
-                    <span class="ant-description-content">{{ $data->employeeLevel->title ?? '-' }}</span>
                 </div>
                 <div class="ant-description-item">
                     <span class="ant-description-label">No. of Positions</span>
@@ -176,16 +161,41 @@
 
             {{-- Status --}}
             <div class="ant-description-row">
+                @php
+                    $fteStatus = $data->status;
+                    $fteText = \App\Models\RequestForm::STATUS_BY_ID[$fteStatus] ?? '-';
+
+                    $fteBadgeClass = match ($fteStatus) {
+                        1, 6, 7 => 'badge-primary',   
+                        2           => 'badge-warning',   
+                        4           => 'badge-success',   
+                        5           => 'badge-info',      
+                        default     => 'badge-secondary', 
+                    };
+                @endphp
+
                 <div class="ant-description-item">
                     <span class="ant-description-label">FTE Status</span>
-                    <span class="ant-description-content badge badge-success">
-                        {{ \App\Models\RequestForm::STATUS_BY_ID[$data->status] ?? '-' }}
+                    <span class="ant-description-content badge {{ $fteBadgeClass }}">
+                          {{ $fteText }}
                     </span>
                 </div>
+                @php
+                    $status = $data->mail_status;
+                    $statusText = \App\Models\RequestForm::STATUS_BY_MAIL_ID[$status] ?? '-';
+
+                    $badgeClass = match ($status) {
+                        0 => 'badge-primary',           
+                        1, 3, 5 => 'badge-success', 
+                        2, 4, 6 => 'badge-danger',  
+                        default => 'badge-secondary',   
+                    };
+                @endphp
+
                 <div class="ant-description-item">
                     <span class="ant-description-label">Mail Status</span>
-                    <span class="ant-description-content badge badge-warning">
-                        {{ \App\Models\RequestForm::STATUS_BY_MAIL_ID[$data->mail_status] ?? '-' }}
+                    <span class="ant-description-content badge {{ $badgeClass }}">
+                        {{ $statusText }}
                     </span>
                 </div>
             </div>
@@ -233,12 +243,10 @@
 
                 </div>
             </div>
-            @php
-                $backUrl = route('fte_request.index') . ($view ? '?view=' . $view : '');
-            @endphp
+          
             <div class="container-fluid">
                 <div class="d-flex justify-content-end">
-                    <a href="{{ $backUrl}}" class="btn btn-secondary btn-sm">
+                    <a href="{{ route('fte_request.index') }}{{ $view ? '?view=' . $view : '' }}" class="btn btn-secondary btn-sm">
                         ← Go Back
                     </a>
                 </div>

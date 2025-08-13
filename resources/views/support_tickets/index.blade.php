@@ -65,20 +65,9 @@
                             <td class="text-center">{{ $ticket->user->name ?? 'N/A' }}</td>
                             <td class="text-center">
                                 <span id="ticket-status-{{ $ticket->id }}">
-
-                                @if($ticket->status == '0')
-                                    <span class="badge bg-primary text-white">Pending</span>
-                                @elseif($ticket->status == '1')
-                                    <span class="badge bg-primary text-white">In Progress</span>
-                                @elseif($ticket->status == '3')
-                                    <span class="badge bg-danger text-white">Cancelled</span>
-                                @elseif($ticket->status == '4')
-                                    <span class="badge bg-info text-white">Reviewing</span>
-                                @else
-                                    <span class="badge bg-success text-white">Resolved</span>
-                                @endif
-                                  </span>
-
+                                    <span class="badge {{ $ticket->status_badge['class'] }} text-white">
+                                        {{ $ticket->status_badge['label'] }}
+                                    </span>
                             </td>
                             <td class="text-center">
                             @php

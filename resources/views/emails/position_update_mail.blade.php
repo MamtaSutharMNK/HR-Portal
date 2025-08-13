@@ -1,6 +1,6 @@
 <x-mail::message>
 
-    Dear {{$firstName}},
+    Hello {{$firstName}},
     <br>
     <br>
     We wanted to let you know that positions for your request has been updated. 

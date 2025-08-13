@@ -172,42 +172,38 @@ class SupportTicketController extends Controller
     {
         try{
             $ticket = SupportTicket::findOrFail($id);
+            $statusMap = [
+                SupportTicket::STATUS_RESOLVED  => '2',
+                SupportTicket::STATUS_CANCELLED => '3',
+                SupportTicket::STATUS_REVIEWED  => '4',
+            ];
 
-            if ($request->has('action')) {
-                switch ($request->action) {
-                    case 'cancel':
-                        $ticket->status ='3';
-                        break;
-                    case 'resolved':
-                        $ticket->status = '2';
-                        break;
-                    case 'reviewed':
-                        $ticket->status = '4';    
+            if ($request->has('action') && isset($statusMap[$request->action])) {
+                $ticket->status = $statusMap[$request->action];
+            }
+
+            $ticket->reason = $request->reason;
+            $ticket->save();
+
+            $departmentEmails = [
+            '1' => env('ADMIN_SUPPORT_EMAIL'),
+            '2' => env('HR_SUPPORT_EMAIL'),
+            '3' => env('IT_SUPPORT_EMAIL'),
+            ];
+            if ($request->action === SupportTicket::STATUS_CANCELLED)
+                {
+                    $recipientEmail = $departmentEmails[$ticket->department_id] ?? env('DEFAULT_DEPARTMENT_EMAIL');
+                    Mail::to($recipientEmail)
+                    ->send(new TicketClosedMail($ticket));
                 }
 
-                $ticket->reason = $request->reason;
-                $ticket->save();
+            if ($request->action === SupportTicket::STATUS_RESOLVED || $request->action === SupportTicket::STATUS_REVIEWED ) 
+                {
+                    Mail::to($ticket->user->email)
+                    ->send(new TicketDoneMail($ticket));
+                }
 
-                $departmentEmails = [
-                '1' => env('ADMIN_SUPPORT_EMAIL'),
-                '2' => env('HR_SUPPORT_EMAIL'),
-                '3' => env('IT_SUPPORT_EMAIL'),
-                ];
-                if ($request->action === 'cancel')
-                    {
-                        $recipientEmail = $departmentEmails[$ticket->department_id] ?? env('DEFAULT_DEPARTMENT_EMAIL');
-                        Mail::to($recipientEmail)
-                        ->send(new TicketClosedMail($ticket));
-                    }
-
-                if ($request->action === 'resolved' or $request->action === 'reviewed' ) 
-                    {
-                        Mail::to($ticket->user->email)
-                        ->send(new TicketDoneMail($ticket));
-                    }
-
-                return response()->json(['message' => 'Ticket updated successfully.']);
-            }
+            return response()->json(['message' => 'Ticket updated successfully.']);
         } catch(\Exception $e){
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }

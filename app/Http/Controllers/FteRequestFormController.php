@@ -13,12 +13,10 @@ use Ramsey\Uuid\Uuid;
 use App\Models\User;
 use App\Models\Department;
 use App\Models\RequestingBranch;
-use App\Models\EmployeeLevel;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\RequestFormRequest;
 use App\Models\UserHasRole;
 use App\Mail\FteRejectionMail;
-use App\Mail\FteRequestClose;
 use App\Models\ActionLog;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
@@ -46,41 +44,66 @@ class FteRequestFormController extends Controller
      */
     public function index(Request $request)
     {
-        try{
+        try {
             $viewType = $request->query('view');
+            $role = UserHasRole::where('user_id', Auth::id())->first();
+            $departments = Department::where('status', 1)->get();
 
-            $role = UserHasRole::where('user_id', Auth::user()->id)->first();
-            $departments = Department::where('status',1)->get();
-            
-            $query = RequestForm::query();
-            if ($role->role_id !== User::ADMIN) {
-                $query->where(function ($q) {
-                    $q->where('user_id', Auth::id())
-                    ->orWhere('manager_email_l1', Auth::user()->email)
-                    ->orWhere('manager_email_l2', Auth::user()->email)
-                    ->orWhere('manager_email_l3', Auth::user()->email)
-                    ->orWhere('hr_email_l1', Auth::user()->email)
-                    ->orWhere('hr_email_l2', Auth::user()->email)
-                    ->orWhere('hr_email_l3', Auth::user()->email);
-                });
-            }
-
+            $userEmail = Auth::user()->email;
 
             if ($viewType === 'manager') {
-                $managerStatus = [RequestForm::IN_PROGRESS];
-                $data = (clone $query)->whereIn('status', $managerStatus)->orderBy('created_at', 'desc')->get();
-                return view('fte_list.manager_index', compact('data'));
+                $query = RequestForm::query();
+
+                if ($role->role_id !== User::ADMIN) {
+                    $query->where(function ($q) use ($userEmail) {
+
+                        $q->orWhere(function ($sub) use ($userEmail) {
+                            $sub->where('manager_email_l1', $userEmail)
+                                ->whereIn('mail_status', [RequestForm::MAIL_PENDING,RequestForm::LEVEL1_MAIL_APPROVAL,RequestForm::LEVEL2_MAIL_APPROVAL]);
+                        });
+
+                        $q->orWhere(function ($sub) use ($userEmail) {
+                            $sub->where('manager_email_l2', $userEmail)
+                                ->whereIn('mail_status', [RequestForm::LEVEL1_MAIL_APPROVAL,RequestForm::LEVEL2_MAIL_APPROVAL]);
+                        });
+
+                        $q->orWhere(function ($sub) use ($userEmail) {
+                            $sub->where('manager_email_l3', $userEmail)
+                                ->whereIn('mail_status', [
+                                    RequestForm::LEVEL2_MAIL_APPROVAL
+                                ]);
+                        });
+                    });
+                }
+
+                $data = $query->orderBy('created_at', 'desc')->get();
+                return view('fte_list.manager_index', compact('data', 'departments'));
             }
-        
+
             if ($viewType === 'hr') {
+                $query = RequestForm::query();
+
+                if ($role->role_id !== User::ADMIN) {
+                    $query->where(function ($q) use ($userEmail) {
+                        $q->orWhere('user_id', Auth::id())
+                        ->orWhere('manager_email_l1', $userEmail)
+                        ->orWhere('manager_email_l2', $userEmail)
+                        ->orWhere('manager_email_l3', $userEmail)
+                        ->orWhere('hr_email_l1', $userEmail);
+                    });
+                }
+
                 $excludedStatus = [RequestForm::IN_PROGRESS];
-                $data = (clone $query)->whereNotIn('status', $excludedStatus)->orderBy('created_at', 'desc')->get();
-                return view('fte_list.hr_Index', compact('data'));
+                $data = $query->whereNotIn('status', $excludedStatus)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+
+                return view('fte_list.hr_Index', compact('data', 'departments'));
             }
+
         } catch (Exception $e) {
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
-       
     }
 
     /**
@@ -91,9 +114,8 @@ class FteRequestFormController extends Controller
         try{
             $departments = Department::where('status',1)->get();
             $branches = RequestingBranch::where('status',1)->get();
-            $employeeLevels = EmployeeLevel::all();
 
-            return view('fte_request',['branches'=>$branches, 'departments'=>$departments,'employeeLevels'=>$employeeLevels]);
+            return view('fte_request',['branches'=>$branches, 'departments'=>$departments]);
         }catch (\Exception $e) {
         return response()->json(['message' => 'Something went wrong', 'error' => $e->getMessage()], 500);
     }
@@ -130,11 +152,8 @@ class FteRequestFormController extends Controller
                 'hr_email_l3' => $request->hr_email_l3 ?? null,
                 'no_of_positions' => $request->no_of_positions,
                 'type_of_employment' => isset($request->type_of_employment) ? implode(',', $request->type_of_employment) : null,
-                'employment_category' => isset($request->employment_category) ? implode(',', $request->employment_category) : null,
                 'work_location' => $request->work_location ?? null,
                 'target_by_when' => $request->target_by_when ?? null,
-                'department_function' => $request->department_function,
-                'employee_level_id' => $request->employee_level,
                 'currency' => $request->currency,
                 'ctc_type' => $request->ctc_type,
                 'ctc_start_range' => $request->ctc_start_range,
@@ -163,7 +182,7 @@ class FteRequestFormController extends Controller
             $cc = $request->hr_email_l1;
             Mail::to($to)
                     ->cc($cc)
-                    ->send(new FteRequestMail($requestData));
+                    ->send(new FteRequestMail($requestData , $to));
 
             return redirect()->route('index')->with('success', 'Form submitted successfully.');
         } catch (Exception $e) {
@@ -175,9 +194,9 @@ class FteRequestFormController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request,string $id)
+    public function show(Request $request, string $id)
     {
-        $data = RequestForm::where('id', $id)->with(['department','jobDetail','requestingBranch','employeeLevel','actionLog.user:id,name','actionLog.requestForm'])->first();
+        $data = RequestForm::where('id', $id)->with(['department','jobDetail','requestingBranch','actionLog.user:id,name','actionLog.requestForm'])->first();
         
         if ($data) {
             return view('fte_list.show',['data'=>$data, 'view' => $request->query('view'),]);
@@ -214,18 +233,18 @@ class FteRequestFormController extends Controller
         try {
             $requestForm = RequestForm::findOrFail($request->id);
             $currentUser = Auth::user()->email;
-            $mail ="";
+            $mail = "";
             $hrMail = "";
             $currentStatus = $requestForm->status;
             $currentMailStatus = $requestForm->mail_status;
             $message = '';
-            $extraCc = [];
+            $cc = [];
 
             if ($request->action === 'accept') {
-                if ($requestForm->approval_level == 1) {
+                if ($requestForm->approval_level == RequestForm::LEVEL_1) {
                     if ($currentMailStatus === RequestForm::MAIL_PENDING) {
 
-                        $mail = $requestForm->hr_email_l1; // HR Email
+                        $mail = $requestForm->hr_email_l1;
                         $hrMail = $requestForm->hr_email_l1;
                         $requestForm->status = RequestForm::CLOSED;
                         $requestForm->mail_status = RequestForm::LEVEL1_MAIL_APPROVAL;
@@ -233,17 +252,17 @@ class FteRequestFormController extends Controller
                     }
                 }
 
-                elseif ($requestForm->approval_level == 2) {
+                elseif ($requestForm->approval_level == RequestForm::LEVEL_2) {
                     if ($currentMailStatus === RequestForm::MAIL_PENDING) {
 
-                        $mail = $requestForm->manager_email_l2; // M2 email
+                        $mail = $requestForm->manager_email_l2; 
                         $hrMail = $requestForm->hr_email_l1;
                         $requestForm->mail_status = RequestForm::LEVEL1_MAIL_APPROVAL;
                         $message = 'Approved by Level 1 - Sent to Manager 2';
                     }
                     elseif ($currentMailStatus === RequestForm::LEVEL1_MAIL_APPROVAL) {
 
-                        $mail = $requestForm->hr_email_l1; // HR Email
+                        $mail = $requestForm->hr_email_l1; 
                         $hrMail = $requestForm->hr_email_l1;
                         $requestForm->status = RequestForm::CLOSED;
                         $requestForm->mail_status = RequestForm::LEVEL2_MAIL_APPROVAL;
@@ -251,24 +270,24 @@ class FteRequestFormController extends Controller
                     }
                 }
 
-                elseif ($requestForm->approval_level == 3) {
+                elseif ($requestForm->approval_level == RequestForm::LEVEL_3) {
                     if ($currentMailStatus === RequestForm::MAIL_PENDING) {
                        
-                        $mail = $requestForm->manager_email_l2; // M2 email
+                        $mail = $requestForm->manager_email_l2; 
                         $hrMail = $requestForm->hr_email_l1;
                         $requestForm->mail_status = RequestForm::LEVEL1_MAIL_APPROVAL;
                         $message = 'Approved by Level 1 - Sent to Manager 2';
                     }
                     elseif ($currentMailStatus === RequestForm::LEVEL1_MAIL_APPROVAL) {
                         
-                        $mail = $requestForm->manager_email_l3; // M3 email
+                        $mail = $requestForm->manager_email_l3; 
                         $hrMail = $requestForm->hr_email_l1;
                         $requestForm->mail_status = RequestForm::LEVEL2_MAIL_APPROVAL;
                         $message = 'Approved by Level 2 - Sent to Manager 3';
                     }
                     elseif ($currentMailStatus === RequestForm::LEVEL2_MAIL_APPROVAL) {
                        
-                        $mail = $requestForm->hr_email_l1; // HR Email
+                        $mail = $requestForm->hr_email_l1; 
                         $hrMail = $requestForm->hr_email_l1;
                         $requestForm->status = RequestForm::CLOSED;
                         $requestForm->mail_status = RequestForm::LEVEL3_MAIL_APPROVAL;
@@ -278,27 +297,27 @@ class FteRequestFormController extends Controller
             }
 
             if ($request->action === 'reject') {
-                if ($requestForm->approval_level == 1) {
+                if ($requestForm->approval_level == RequestForm::LEVEL_1) {
                     if ($currentMailStatus === RequestForm::MAIL_PENDING) {
                         $requestForm->mail_status = RequestForm::LEVEL1_MAIL_REJECT;
                         $mail = $requestForm->user->email;
                         $message = 'Rejected by Level 1 Manager';
                     }
                 }
-                elseif ($requestForm->approval_level == 2) {
+                elseif ($requestForm->approval_level == RequestForm::LEVEL_2) {
                     if ($currentMailStatus === RequestForm::LEVEL1_MAIL_APPROVAL) {
                         $requestForm->mail_status = RequestForm::LEVEL2_MAIL_REJECT;
                         $mail = $requestForm->user->email;
-                        $extraCc[] = $requestForm->manager_email_l1;
+                        $cc[] = $requestForm->manager_email_l1;
                         $message = 'Rejected by Level 2 Manager';
                     }
                 }
-                elseif ($requestForm->approval_level == 3) {
+                elseif ($requestForm->approval_level == RequestForm::LEVEL_3) {
                     if ($currentMailStatus === RequestForm::LEVEL2_MAIL_APPROVAL) {
                         $requestForm->mail_status = RequestForm::LEVEL3_MAIL_REJECT;
                         $mail = $requestForm->user->email;
-                        $extraCc[] = $requestForm->manager_email_l2;
-                        $extraCc[] = $requestForm->manager_email_l1;
+                        $cc[] = $requestForm->manager_email_l2;
+                        $cc[] = $requestForm->manager_email_l1;
                         $message = 'Rejected by Level 3 Manager';
                     }
                 }
@@ -314,17 +333,17 @@ class FteRequestFormController extends Controller
                 if ($request->action === 'accept') {
                     Mail::to($creatorEmail)
                     ->cc($hrMail)
-                    ->send(new FteUserNotificationMail($requestForm));
+                    ->send(new FteUserNotificationMail($requestForm, $creatorEmail));
 
                     Mail::to($mail)
                     ->cc($hrMail)
-                    ->send(new FteRequestMail($requestForm));
+                    ->send(new FteRequestMail($requestForm, $mail));
 
                 } 
                 elseif ($request->action === 'reject') {
                     Mail::to($mail)
-                    ->cc($extraCc)
-                    ->send(new FteRejectionMail($requestForm));
+                    ->cc($cc)
+                    ->send(new FteRejectionMail($requestForm, $mail));
                 } 
                     
                 ActionLog::create([
@@ -409,28 +428,47 @@ class FteRequestFormController extends Controller
         }
     }
 
-
     public function ajaxList(Request $request)
     {
-        try{
+        try {
             $view = $request->get('view');
 
             $query = RequestForm::with('department');
-
             $role = UserHasRole::where('user_id', Auth::id())->first();
-            
+            $userEmail = Auth::user()->email;
+
             if ($role->role_id !== User::ADMIN) {
-                $query->where(function ($q) {
-                    $q->where('user_id', Auth::id())
-                    ->orWhere('manager_email_l1', Auth::user()->email)
-                    ->orWhere('manager_email_l2', Auth::user()->email)
-                    ->orWhere('manager_email_l3', Auth::user()->email)
-                    ->orWhere('hr_email_l1', Auth::user()->email)
-                    ->orWhere('hr_email_l2', Auth::user()->email)
-                    ->orWhere('hr_email_l3', Auth::user()->email);
+                $query->where(function ($q) use ($userEmail, $view) {
+                    if ($view === 'manager') {
+
+                        $q->orWhere('user_id', Auth::id());
+                        $q->orWhere('hr_email_l1', $userEmail);
+                        // M1
+                        $q->orWhere(function ($sub) use ($userEmail) {
+                            $sub->where('manager_email_l1', $userEmail)
+                                ->whereIn('mail_status', [RequestForm::MAIL_PENDING,RequestForm::LEVEL1_MAIL_APPROVAL,RequestForm::LEVEL2_MAIL_APPROVAL]);
+                        });
+                        // M2
+                        $q->orWhere(function ($sub) use ($userEmail) {
+                            $sub->where('manager_email_l2', $userEmail)
+                                ->whereIn('mail_status', [RequestForm::LEVEL1_MAIL_APPROVAL,RequestForm::LEVEL2_MAIL_APPROVAL]);
+                        });
+
+                        // M3
+                        $q->orWhere(function ($sub) use ($userEmail) {
+                            $sub->where('manager_email_l3', $userEmail)
+                                ->whereIn('mail_status', [RequestForm::LEVEL2_MAIL_APPROVAL]);
+                        });
+                    }
+                    elseif ($view === 'hr') {
+                        $q->orWhere('user_id', Auth::id())
+                        ->orWhere('manager_email_l1', $userEmail)
+                        ->orWhere('manager_email_l2', $userEmail)
+                        ->orWhere('manager_email_l3', $userEmail)
+                        ->orWhere('hr_email_l1', $userEmail);
+                    }
                 });
             }
-
 
             if ($view === 'manager') {
                 $query->whereIn('status', [RequestForm::IN_PROGRESS]);
@@ -446,7 +484,6 @@ class FteRequestFormController extends Controller
                         $color = RequestForm::STATUS_COLORS[RequestForm::IN_PROGRESS] ?? 'primary';
                         return '<span class="badge badge-' . $color . '">IN PROGRESS</span>';
                     }
-
                     $color = RequestForm::STATUS_COLORS[$row->status] ?? 'secondary';
                     $label = RequestForm::STATUS_BY_ID[$row->status] ?? 'UNKNOWN';
                     return '<span class="badge badge-' . $color . '">' . strtoupper($label) . '</span>';
@@ -459,7 +496,7 @@ class FteRequestFormController extends Controller
                     $viewUrl = route('fte_request.show', ['fte_request' => $row->id, 'view' => request('view')]);
                     $currentEmail = Auth::user()->email;
                     $hrEmails = [$row->hr_email_l1, $row->hr_email_l2, $row->hr_email_l3];
-                    
+
                     $rejectedStatuses = [
                         RequestForm::LEVEL1_MAIL_REJECT,
                         RequestForm::LEVEL2_MAIL_REJECT,
@@ -474,14 +511,14 @@ class FteRequestFormController extends Controller
                         <style>
                             .drop-menu { width: 10%; }
                             .btn-group .dropdown { margin-right: 5px; }
-                              .dropdown-menu {
-                                    position: absolute !important;
-                                    will-change: transform;
-                                    z-index: 1060 !important;
-                                }
-                                    .drop-menu {
-                                    min-width: 140px !important; 
-                                }
+                            .dropdown-menu {
+                                position: absolute !important;
+                                will-change: transform;
+                                z-index: 1060 !important;
+                            }
+                            .drop-menu {
+                                min-width: 140px !important; 
+                            }
                         </style>
 
                         <div class="btn-group" role="group">

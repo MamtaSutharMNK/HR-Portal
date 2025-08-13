@@ -20,7 +20,7 @@
                             <div class="col-md-6">
                                 <label class="form-label-custom">Business Unit</label>
                                 <div class="d-flex gap-2">
-                                    <select name="department_id" id="department_id" class="form-control form-control-custom" required>
+                                    <select name="department_id" id="department_id" class="form-control form-control-custom"  title="Select the department that requires the new hire" required>
                                         <option value="">Select Department</option>
                                         @foreach($departments as $department)
                                             <option value="{{ $department->id }}">{{ $department->name }}</option>
@@ -35,7 +35,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-custom">HIRING REGION/Country</label>
-                                <input list="countries" id="country" name="country" class="form-control form-control-custom" required>
+                                <input list="countries" id="country" name="country" class="form-control form-control-custom"  title="Select country where the employee will be based" required>
                                 <datalist id="countries"></datalist>
                                 <div class="invalid-feedback">Please select country</div>
                             </div> 
@@ -43,14 +43,14 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom">Requested By</label>
-                                <input type="text" name="requested_by" class="form-control form-control-custom" required>
+                                <input type="text" name="requested_by" class="form-control form-control-custom" title="Name of the person submitting the request" required>
                                 <div class="invalid-feedback">Enter the name.</div>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label-custom">Requesting Branch</label>
                                 <div class="d-flex gap-2">
-                                    <select name="branch_id" id="branch_id" class="form-control form-control-custom" required>
+                                    <select name="branch_id" id="branch_id" class="form-control form-control-custom"  title="Branch initiating the request" required>
                                         <option value="">Select Requesting Branch</option>
                                         @foreach($branches as $branch)
                                             <option value="{{ $branch->id }}">{{ $branch->name }}</option>
@@ -66,14 +66,24 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom">Approval Level</label>
-                                @foreach (config('dropdown.approval_level') as $key => $value)
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input approval-checkbox" type="radio" name="approval_level"
-                                        value="{{ $key }}" id="approval_level_{{ $key }}" style="margin-left: 7px" required>
-                                    <label class="form-check-label">{{ $value }}</label>
-                                </div>
-                                @endforeach
-                                <div class="invalid-feedback">Select approval level</div>
+                                        @php
+                                            $titles = [
+                                                1 => 'Initial approval by Manager (Local hiring manager)',
+                                                2 => 'Secondary review and approval by senior manager',
+                                                3 => 'Final approval by top-level authority',
+                                            ];
+                                        @endphp
+
+                                        @foreach (config('dropdown.approval_level') as $key => $value)
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input approval-checkbox" type="radio" name="approval_level" value="{{ $key }}" id="approval_level_{{ $key }}" title="{{ $titles[$key] ?? $value }}" style="margin-left: 7px" required>
+                                                <label class="form-check-label" for="approval_level_{{ $key }}" title="{{ $titles[$key] ?? $value }}">
+                                                    {{ $value }}
+                                                </label>
+                                            </div>
+                                        @endforeach
+
+                                        <div class="invalid-feedback">Select approval level</div>
                             </div>
                         </div>
 
@@ -123,12 +133,12 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom">Job Title</label>
-                                <input type="text" id="jobDetailInput" name="job_title" class="form-control form-control-custom" required>
+                                <input type="text" id="jobDetailInput" name="job_title" class="form-control form-control-custom" title="Role of the position to be filled" required>
                                 <div class="invalid-feedback" id="jobsDetailError">Numbers are not allowed</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-custom">Number of Positions</label>
-                                <input type="number" name="no_of_positions" class="form-control form-control-custom" required>
+                                <input type="number" name="no_of_positions" class="form-control form-control-custom" title="How many people are needed for the role" required>
                                 <div class="invalid-feedback">Enter the number of positions</div>
                             </div>
                         </div>
@@ -144,57 +154,25 @@
                             @endforeach
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label-custom">Employment Category</label>
-                            @foreach (config('dropdown.employment_categories') as $key => $value)
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="employment_category[]" value="{{ $key }}" style="margin-left: 7px" >
-                                <label class="form-check-label">{{ $value }}</label>
-                            </div>
-                            @endforeach
-                        </div>
-
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom">Work Location</label>
-                                <input type="text" id="locationInput" name="work_location" class="form-control form-control-custom" required>
+                                <input type="text" id="locationInput" name="work_location" class="form-control form-control-custom" title="Location for the new hire"required>
                                 <div class="invalid-feedback" id="locationError">Numberic not allowed</div>
 
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-custom">Target by when</label>
-                                <input type="date" name="target_by_when" class="form-control form-control-custom" required min="<?= date('Y-m-d'); ?>">
+                                <input type="date" name="target_by_when" class="form-control form-control-custom" title="Target date to finish hiring" required min="<?= date('Y-m-d'); ?>">
                                 <div class="invalid-feedback">Enter a target date</div>
                             </div>
 
                         </div>
 
                         <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label-custom">Department / Function</label>
-                                <input type="text" name="department_function" class="form-control form-control-custom" required >
-                                <div class="invalid-feedback">Please select department function</div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label-custom">Employee Level</label>
-                                <div class="d-flex gap-2">
-                                    <select name="employee_level" id="employee_level" class="form-control form-control-custom" required>
-                                        <option value="">Select Employee Level</option>
-                                        @foreach($employeeLevels as $levels)
-                                            <option value="{{ $levels->id }}">{{ $levels->title }}</option>
-                                        @endforeach
-                                    </select>
-                                    @if (auth()->user()->isAdmin())
-                                        <button type="button" class="btn-outline form-control form-control-custom ms-2" id="openAddLevelModal" style="width: 50px;" data-bs-toggle="modal" data-bs-target="#multiEmployeeLevelModal">+</button>
-                                    @endif    
-                                </div>
-                                <div class="invalid-feedback">Please select Employee Level</div>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
                             <div class="col-md-3">
                             <label class="form-label-custom">Budgeted Currency</label>
-                                <input list="currencies" id="currency" name="currency" class="form-control form-control-custom" required>
+                                <input list="currencies" id="currencyInput" name="currency" class="form-control form-control-custom" title="Currency for salary payments" required>
                                 <datalist id="currencies"></datalist>
                                 <input type="hidden" name="currency_symbol" id="currencySymbol">
                                 <div class="invalid-feedback">Please select currency</div>
@@ -202,7 +180,7 @@
 
                             <div class="col-md-3" id="ctcTypeWrapper">
                                 <label class="form-label-custom">CTC Type</label>
-                                <select id="ctcType" name="ctc_type" class="form-control form-control-custom" required>
+                                <select id="ctcType" name="ctc_type" class="form-control form-control-custom" title="Structure of salary" required>
                                     <option value="">Select Type</option>
                                     @foreach (config('dropdown.ctc_types') as $key => $value)
                                         <option value="{{ $key }}">{{ $value }}</option>
@@ -230,12 +208,12 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom">Education</label>
-                                <input type="text" id="educationInput" name="education" class="form-control form-control-custom" required>
+                                <input type="text" id="educationInput" name="education" class="form-control form-control-custom" title="Education required for the role" required>
                                  <div class="invalid-feedback" id="educationError">Numbers are not allowed in this field.</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-custom">Experience</label>
-                                <input type="number" id="experienceInput" name="experience" class="form-control form-control-custom" required>
+                                <input type="number" id="experienceInput" name="experience" class="form-control form-control-custom" title="Required years of relevant experience" required>
                                 <div class="invalid-feedback" id="experinceError">Enter a numberic value</div>
                             </div>
                         </div>
@@ -243,27 +221,25 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom">Key Skills</label>
-                                <input type="text" id="skillsInput" name="key_skills" class="form-control form-control-custom" required>
+                                <input type="text" id="skillsInput" name="key_skills" class="form-control form-control-custom" title="Technical and soft skills essestial for the role" required>
                                 <div class="invalid-feedback" id="skillsError">Numbers are not allowed</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label-custom exclude">Languages If Required</label>
-                                <input type="text" id="languageInput" name="language_required" class="form-control form-control-custom" >
+                                <label class="form-label-custom exclude">Languages (If Required)</label>
+                                <input type="text" id="languageInput" name="language_required" class="form-control form-control-custom" title="Communication language if required" >
                                 <div class="invalid-feedback" id="languageError">Enter the language</div>
-                            </div>
-                            
-                            
+                            </div> 
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label-custom exclude">Certifications (IF Any)</label>
-                                <input type="text" id="certificationsInput" name="certifications" class="form-control form-control-custom" placeholder="If any (certifications)">
+                                <input type="text" id="certificationsInput" name="certifications" class="form-control form-control-custom" title="Professional certifications required or preferred">
                                 <div class="invalid-feedback" id="certificationsError">Numberic not allowed</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label-custom">Job Description (Brief Desc)</label>
-                                <textarea name="job_description" rows="1" class="form-control form-control-custom" id="editor" required></textarea>
+                                <label class="form-label-custom" title="Short summary of responsibilities and duties">Job Description (Brief Desc)</label>
+                                <textarea name="job_description" rows="1" class="form-control form-control-custom" id="editor"  required></textarea>
                                 <div id="char-count" style="font-size: 12px; margin-top: 5px; color: #555;"></div>
                                 <div class="invalid-feedback">Enter the job description</div>
                             </div>
@@ -302,13 +278,13 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label-custom">Justification Details</label>
-                            <textarea name="justification_details" rows="2" class="form-control form-control-custom" placeholder="Explain the reason for the requisition" required></textarea>
+                            <textarea name="justification_details" rows="2" class="form-control form-control-custom" placeholder="Explain the reason for the requisition" title="Detailed explanation of why the position is required" required></textarea>
                             <div class="invalid-feedback">Enter Justification Details </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label-custom">Impact of Not Hiring</label>
-                            <textarea name="consequences_of_not_hiring" rows="2" class="form-control form-control-custom" required></textarea>
+                            <textarea name="consequences_of_not_hiring" rows="2" class="form-control form-control-custom" title="Potential concequences if the role is not filled" required></textarea>
                             <div class="invalid-feedback">Enter the consequences of not hiring  </div>
                             
                         </div>
@@ -458,41 +434,6 @@
         function isEmailValid(email) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
-
-        // function getHighestLevelSelected() {
-        //     for (let i = 3; i >= 1; i--) {
-        //         if ($(`#approval_level_${i}`).is(':checked')) return i;
-        //     }
-        //     return 0;
-        // }
-
-        // form.addEventListener('submit', function (event) {
-        //     let isValid = true;
-        //     const highest = getHighestLevelSelected();
-
-        //     for (let i = 1; i <= highest; i++) {
-        //         ['manager_email_l' + i, 'hr_email_l' + i].forEach(id => {
-        //             const field = $(`#${id}`);
-        //             if (!isEmailValid(field.val())) {
-        //                 field.addClass('is-invalid');
-        //                 isValid = false;
-        //             } else {
-        //                 field.removeClass('is-invalid');
-        //             }
-        //         });
-        //     }
-
-        //     if (!isValid) {
-        //         event.preventDefault();
-        //         event.stopPropagation();
-        //     }
-        // });
-
-        // $('input[type="email"]').on('input', function () {
-        //     if (isEmailValid($(this).val())) {
-        //         $(this).removeClass('is-invalid');
-        //     }
-        // });
         function getHighestLevelSelected() {
     for (let i = 3; i >= 1; i--) {
         if ($(`#approval_level_${i}`).is(':checked')) return i;
@@ -503,7 +444,6 @@
 function toggleFieldVisibility() {
     const level = getHighestLevelSelected();
 
-    // Show selected approval level sections
     [1, 2, 3].forEach(i => {
         if (i <= level) {
             $(`.approval_level_l${i}`).removeClass('d-none');
@@ -512,17 +452,14 @@ function toggleFieldVisibility() {
         }
     });
 
-    // Show & enable hr_email_l1 always
     $('#hr_email_l1').closest('.col-md-6').show().find('input').prop('disabled', false);
 
-    // Hide & disable hr_email_l2, l3
-    ['#hr_email_l2', '#hr_email_l3'].forEach(selector => {
-        $(selector).closest('.col-md-6').hide();
-        $(selector).prop('disabled', true);
-    });
+    // ['#hr_email_l2', '#hr_email_l3'].forEach(selector => {
+    //     $(selector).closest('.col-md-6').hide();
+    //     $(selector).prop('disabled', true);
+    // });
 }
 
-// Initial render + rebind on level change
 toggleFieldVisibility();
 $('.approval-checkbox').on('change', toggleFieldVisibility);
         
@@ -577,6 +514,7 @@ $('.approval-checkbox').on('change', toggleFieldVisibility);
                 data.forEach(country => {
                     list.append(`<option value="${country.name.common}">`);
                 });
+                $('#country').val('India');
             });
 
         //  Fetch Currencies 
@@ -606,6 +544,13 @@ $('.approval-checkbox').on('change', toggleFieldVisibility);
                     list.append(`<option value="${currency}">`);
                 });
             });
+            const defaultCurrency = 'Indian Rupee (INR)';
+            $('#currencyInput').val(defaultCurrency);
+
+            const defaultCode = 'INR';
+            const defaultSymbol = currencySymbolMap.get(defaultCode) || '';
+            $('#currencySymbol').val(defaultSymbol);
+
 
             $('#currencyInput').on('change', function () {
                 const selected = $(this).val(); // e.g. "Euro (EUR)"
@@ -613,6 +558,7 @@ $('.approval-checkbox').on('change', toggleFieldVisibility);
                 const code = match ? match[1] : null;
 
                 const symbol = currencySymbolMap.get(code) || '';
+                $('#currencySymbol').val(symbol);
                 console.log('Currency symbol:', symbol);
             });
 

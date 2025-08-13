@@ -1,6 +1,6 @@
 <x-mail::message>
  
-    Hello Team,
+    Hello {{ $firstName }},
     <br>
     <br>
     Your FTE request has been Approved.

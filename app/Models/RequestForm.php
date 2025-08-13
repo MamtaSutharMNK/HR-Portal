@@ -26,6 +26,10 @@ class RequestForm extends Model
     const INTERVIEWING = 6;
     const HIRING = 7;
 
+    const LEVEL_1 = 1;
+    const LEVEL_2 = 2;
+    const LEVEL_3 = 3;
+
     public const EMAIL_STATUS_LABELS = [
     0 => 'Mail Pending',
     1 => 'LEVEL 1 Approved',
@@ -51,17 +55,12 @@ class RequestForm extends Model
         'manager_email_l1',
         'hr_email_l1',
         'manager_email_l2',
-        'hr_email_l2',
         'manager_email_l3',
-        'hr_email_l3',
         'no_of_positions',
         'position_filled',
         'type_of_employment',
-        'employment_category',
         'work_location',
         'target_by_when',
-        'department_function',
-        'employee_level_id',
         'currency',
         'ctc_type',
         'ctc_start_range',
@@ -92,12 +91,10 @@ class RequestForm extends Model
     public const STATUS_BY_ID = [
         '1' => 'IN PROGRESS',
         '2' => 'CLOSED',
-        // '3' => 'IN SEARCH',
+        '4' => 'DONE',
         '5' => 'SCREENING',
         '6' => 'INTERVIEWING',
         '7' => 'HIRING',
-         '4' => 'DONE',
-
     ];
 
     public const STATUS_COLORS = [

@@ -13,6 +13,11 @@ use App\Models\User;
 class SupportTicket extends Model
 {
     use hasFactory;
+
+    const STATUS_RESOLVED = 'resolved';
+    const STATUS_CANCELLED = 'cancel';
+    const STATUS_REVIEWED = 'reviewed';
+
     protected $fillable = [
     'uuid',
     'ticket_no',
@@ -56,6 +61,16 @@ class SupportTicket extends Model
     public function issueType()
     {
         return $this->belongsTo(IssueType::class, 'issue_type_id');
+    }
+    public function getStatusBadgeAttribute()
+    {
+        return match ($this->status) {
+            '0' => ['label' => 'Pending', 'class' => 'bg-primary'],
+            '1' => ['label' => 'In Progress', 'class' => 'bg-primary'],
+            '3' => ['label' => 'Cancelled', 'class' => 'bg-danger'],
+            '4' => ['label' => 'Reviewing', 'class' => 'bg-warning'],
+            default => ['label' => 'Resolved', 'class' => 'bg-success'],
+        };
     }
 
 }

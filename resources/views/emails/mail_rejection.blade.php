@@ -1,7 +1,7 @@
 <x-mail::message>
 # Request Rejection Notification
 
-Hello Team,
+Hello {{ $firstName }},
 
 Your request has been reviewed and **has been rejected**.
 

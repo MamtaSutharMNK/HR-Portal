@@ -12,13 +12,16 @@ use Illuminate\Queue\SerializesModels;
 class FteUserNotificationMail extends Mailable
 {
     use Queueable, SerializesModels;
+    public string $firstName;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(public $requestData)
+    public function __construct(public $requestData, public $toEmail)
     {
-        //
+        $localPart = explode('@', $toEmail)[0];
+        preg_match('/^[a-zA-Z]+/', $localPart, $matches);
+        $this->firstName = ucfirst($matches[0] ?? 'User');
     }
 
     /**
@@ -40,6 +43,7 @@ class FteUserNotificationMail extends Mailable
             markdown: 'emails.user_notification',
              with: [
                 'data' => $this->requestData,
+                'firstName' => $this->firstName,
                 'url' => route('fte_request.show', $this->requestData->id),
             ],
         );

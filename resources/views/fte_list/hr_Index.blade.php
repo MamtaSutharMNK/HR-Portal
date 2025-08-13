@@ -16,7 +16,6 @@
                             <th class="text-center">SL.No</th>
                             <th class="text-center">Request Id</th>
                             <th class="text-center">Department</th>
-                            <th class="text-center">Department Function</th>
                             <th class="text-center">Date of request</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Mail Status</th>
@@ -125,7 +124,6 @@
                 { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false,className: 'text-center'},
                 { data: 'request_uuid', name: 'request_uuid' , orderable: true, searchable: true },
                 { data: 'department_name', name: 'department.name', orderable: false, searchable: true  },
-                { data: 'department_function', name: 'department_function', orderable: false, searchable: true  },
                 { data: 'created_at',name: 'created_at',orderable: true,searchable: true,
                     render: function(data, type, row) {
                         if (!data) return '-';
