@@ -25,7 +25,7 @@
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-2">{{ __('Reset Your Password') }}</h1>
+                                        <h1 class="h4 text-gray-900 mb-2" style="font-family: 'Gotham', sans-serif;">{{ __('Reset Your Password') }}</h1>
                                         <p class="mb-4">Please enter your new password below.</p>
                                     </div>
                                     <form method="POST" class="user" action="{{ route('password.update') }}" class="needs-validation" novalidate>

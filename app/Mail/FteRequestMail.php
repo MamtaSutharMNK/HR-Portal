@@ -12,13 +12,15 @@ use Illuminate\Queue\SerializesModels;
 class FteRequestMail extends Mailable
 {
     use Queueable, SerializesModels;
-
+    public string $firstName;
     /**
      * Create a new message instance.
      */
-    public function __construct(public $requestData)
+    public function __construct(public $requestData, public $toEmail)
     {
-        //
+        $localPart = explode('@', $toEmail)[0];
+        preg_match('/^[a-zA-Z]+/', $localPart, $matches);
+        $this->firstName = ucfirst($matches[0] ?? 'User');
     }
 
     /**
@@ -27,7 +29,7 @@ class FteRequestMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Fte Request Mail',
+            subject: 'FTE Request Mail',
         );
     }
 
@@ -40,6 +42,7 @@ class FteRequestMail extends Mailable
             markdown: 'emails.fte_requestMail',
              with: [
                 'data' => $this->requestData,
+                'firstName' => $this->firstName,
                 'url' => route('fte_request.show', $this->requestData->id),
             ],
         );

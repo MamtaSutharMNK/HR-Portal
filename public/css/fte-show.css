@@ -1,0 +1,33 @@
+    .ant-description-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #eaeaea;
+        padding-bottom: 0.5rem;
+    }
+
+    .ant-description-item {
+        flex: 0 0 33.3333%;
+        padding: 0.5rem 1rem;
+    }
+
+    .ant-description-label {
+        font-weight: 600;
+        color: #6c757d;
+        display: block;
+        font-size: 0.9rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .ant-description-content {
+        color: #212529;
+        font-size: 1rem;
+    }
+
+    .card-header h4 {
+        font-weight: 600;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+    }

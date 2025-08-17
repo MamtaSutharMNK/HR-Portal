@@ -1,14 +1,4 @@
-    document.addEventListener("DOMContentLoaded", function() {
-        const jobroleSelect = document.getElementById("jobrole");
-        const bandInput = document.getElementById("band");
-
-        jobroleSelect.addEventListener("change", function() {
-            const selectedOption = jobroleSelect.options[jobroleSelect.selectedIndex];
-            bandInput.value = selectedOption.getAttribute("data-band") || "";
-        });
-    });
-
-    // condtion for ctc ranges
+// condtion for ctc ranges
     document.addEventListener("DOMContentLoaded", function() {
         const startRange = document.querySelector('input[name="ctc_start_range"]');
         const endRange = document.querySelector('input[name="ctc_end_range"]');
